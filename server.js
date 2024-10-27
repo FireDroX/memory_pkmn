@@ -1,15 +1,26 @@
 const { writeFileSync, readFileSync } = require("fs");
-const express = require("express");
 const path = require("path");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-const app = express();
+
+const express = require("express");
+const http = require("http");
 const { Server } = require("socket.io");
-const io = new Server({
-  cors: { origin: "https://memory-pkmn.onrender.com" },
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://memory-pkmn.onrender.com"
+        : "http://192.168.1.105:3000",
+  },
 });
 
-const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use(express.static("client/build"));
@@ -197,10 +208,6 @@ app.get("/*", (_, res) => {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
-app.listen(5000, () => {
-  console.log(`Listening on port : ${PORT}`);
-});
-
 process.on("uncaughtException", function (err) {
   console.log(err);
 });
@@ -238,4 +245,8 @@ io.on("connection", (socket) => {
 
     io.emit("refresh-room", rooms[roomIndex]);
   });
+});
+
+server.listen(5000, () => {
+  console.log(`Listening on port : ${PORT}`);
 });
