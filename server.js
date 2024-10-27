@@ -212,8 +212,6 @@ process.on("uncaughtException", function (err) {
   console.log(err);
 });
 
-io.listen(4000);
-
 io.on("connection", (socket) => {
   socket.on("update-room", ({ room, cards, player, isPair }) => {
     const users = JSON.parse(readFileSync("users.json", "utf8"));
