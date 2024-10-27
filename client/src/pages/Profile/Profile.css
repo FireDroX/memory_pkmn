@@ -1,0 +1,172 @@
+.profile-container {
+  width: 35rem;
+  height: 23rem;
+  background-color: var(--accent10);
+  border-radius: 50px;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.profile-container::after {
+  content: "";
+  position: relative;
+  top: 50%;
+  right: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 18.5rem;
+  border-radius: 25px;
+  background-color: var(--text15);
+}
+
+.profile-infos,
+.profile-invites {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 0.5rem 1rem;
+}
+
+.profile-username {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.profile-username > img {
+  width: 75px;
+  height: 75px;
+  aspect-ratio: 1/2;
+}
+
+.profile-username > h5 {
+  color: var(--text95);
+}
+
+.profile-disconnect {
+  border: none;
+  background-color: var(--primary65);
+  border-radius: 25px;
+  padding: 0.3rem 0.9rem;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.5s ease;
+  width: min-content;
+}
+
+.profile-disconnect:hover {
+  cursor: pointer;
+  background-color: var(--secondary50);
+}
+
+.profile-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.profile-buttons > button {
+  border: none;
+  background-color: var(--primary65);
+  border-radius: 25px;
+  padding: 0.3rem 0.6rem;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.5s ease;
+}
+
+.profile-buttons > button:hover {
+  cursor: pointer;
+  background-color: var(--secondary50);
+}
+
+.profile-invite {
+  display: flex;
+  align-items: end;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-invite > p,
+.profile-infos > p,
+.profile-pairs-buttons > p {
+  height: 25px;
+  margin: 0;
+  color: var(--text65);
+}
+
+.profile-invite > input {
+  border: none;
+  background-color: var(--primary65);
+  border-radius: 25px;
+  padding: 0.3rem 0.6rem;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.5s ease;
+}
+
+.profile-invites > h5 {
+  color: var(--text65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.profile-invitesList {
+  max-height: 18rem;
+  overflow-y: scroll;
+}
+
+.profile-invites > h5 > svg:hover,
+.profile-invitesList > p > i:hover,
+.profile-invitesList > p > svg:hover {
+  cursor: pointer;
+}
+
+.profile-invitesList > p {
+  margin: 0;
+  color: var(--text95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.profile-invitesList > p > i {
+  text-decoration: underline 1px solid;
+}
+
+.profile-pairs-buttons {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: start;
+  gap: 0.25rem;
+}
+
+@media (max-width: 580px) {
+  .profile-container {
+    width: 17rem;
+    height: 46rem;
+    background-color: var(--accent10);
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .profile-container::after {
+    display: none;
+  }
+
+  .profile-infos,
+  .profile-invites {
+    width: 80%;
+    height: 80%;
+  }
+}

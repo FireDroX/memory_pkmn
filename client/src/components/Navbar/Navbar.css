@@ -1,0 +1,23 @@
+.navbar-container {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: auto;
+  background-color: var(--primary15);
+}
+
+.navbar-texts {
+  padding-right: 2rem;
+  color: var(--text85);
+}
+
+.navbar-texts > p {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  gap: 0.5rem;
+}
+
+.navbar-texts > p:hover {
+  cursor: pointer;
+}

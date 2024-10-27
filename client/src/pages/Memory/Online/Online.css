@@ -1,0 +1,60 @@
+.online-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: row;
+}
+
+.player1-container,
+.player2-container {
+  width: 10rem;
+  height: 12rem;
+  color: var(--text95);
+  border-radius: 25px;
+}
+
+.online-ending {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg);
+  opacity: 0.95;
+  border-radius: 25px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.online-playerWon,
+.online-playerLost {
+  height: 7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  padding: 2rem 1rem;
+  color: var(--text95);
+}
+
+.online-playerWon > h5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.online-playerWon > h5 > svg {
+  width: 25px;
+  height: 25px;
+  color: #ffd700;
+}
+
+.online-playerLost > * {
+  width: 60%;
+  font-size: 0.8rem;
+}

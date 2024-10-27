@@ -1,0 +1,44 @@
+roooms.json
+
+{
+  id: ROOM<ID>,
+  player1: {
+    id: USER<ID>,
+    isReady: false,
+    score: 0
+  },
+  player2: {
+    id: USER<ID>,
+    isReady: true,
+    score: 0
+  },
+  playerTurnID: USER<NAME>,
+  cards: [
+    [{id: CARD<id>, state: STATE(n)}, ???, ???, ???, ???, ???, ???],
+    [???, ???, ???, ???, ???, ???, ???],
+    [???, ???, ???, ???, ???, ???, ???],
+    [???, ???, ???, ???, ???, ???, ???]
+  ]
+  // cards: [
+  //   [542, 873, 897, 931, 218, 28, 841],
+  //   [218, 841, 897, 692, 133, 28, 133],
+  //   [124, 953, 124, 953, 931, 660, 660],
+  //   [779, 779, 692, 542, 873, 492, 492]
+  // ]
+}
+
+
+STATE = {
+  0 : Flipped,
+  1 : Turned but incorrect,
+  2 : Correct player1,
+  3 : Correct player2,
+}
+
+
+Everytime two cards are flipped, put every state of 1 -> 0
+
+When clicking on two cards, if correct return state 2 or 3
+(outline, blue or red, keep them flipped)
+
+If incorrect, return state 1 (flip both cards for 5s then hide them)
