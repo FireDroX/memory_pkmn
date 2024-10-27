@@ -115,7 +115,6 @@ const Online = ({ id }) => {
             );
             setCards(updatedCards);
             postRoomValues(updatedCards, false);
-            console.log(updatedCards);
           }, 1200);
         }
       }
@@ -159,7 +158,6 @@ const Online = ({ id }) => {
     });
 
     if (cardsLeft === 0) setEndOfGame(true);
-    console.log(cardsLeft);
   }, [cards]);
 
   return (

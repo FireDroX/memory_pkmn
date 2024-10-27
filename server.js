@@ -6,7 +6,7 @@ require("dotenv").config();
 const app = express();
 const { Server } = require("socket.io");
 const io = new Server({
-  cors: { origin: "https://memory-pkmn.onrender.com:3000" },
+  cors: { origin: "https://memory-pkmn.onrender.com" },
 });
 
 const PORT = process.env.PORT || 5000;
