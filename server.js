@@ -1,11 +1,13 @@
-const { writeFileSync, readFileSync, read } = require("fs");
+const { writeFileSync, readFileSync } = require("fs");
 const express = require("express");
 const path = require("path");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const app = express();
 const { Server } = require("socket.io");
-const io = new Server({ cors: { origin: "http://192.168.1.105:3000" } });
+const io = new Server({
+  cors: { origin: "https://memory-pkmn.onrender.com:3000" },
+});
 
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
