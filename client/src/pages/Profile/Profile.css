@@ -135,6 +135,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.2rem;
+  font-size: 13px;
 }
 
 .profile-invitesList > p > i {
@@ -152,7 +153,7 @@
 @media (max-width: 580px) {
   .profile-container {
     width: 17rem;
-    height: 46rem;
+    height: 38rem;
     background-color: var(--accent10);
     border-radius: 50px;
     display: flex;
@@ -168,5 +169,10 @@
   .profile-invites {
     width: 80%;
     height: 80%;
+  }
+
+  .profile-invitesList {
+    max-height: 5rem;
+    overflow-y: scroll;
   }
 }

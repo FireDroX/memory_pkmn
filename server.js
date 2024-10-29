@@ -1,4 +1,5 @@
-const { writeFileSync, readFileSync } = require("fs");
+const { createClient } = require("@supabase/supabase-js");
+
 const path = require("path");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
@@ -16,24 +17,29 @@ const io = new Server(server, {
   cors: {
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://memory-pkmn.onrender.com"
+        ? undefined
         : "http://192.168.1.105:3000",
   },
 });
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 app.use(express.json());
 
 app.use(express.static("client/build"));
 
 app.post("/login", async (req, res) => {
-  const users = JSON.parse(readFileSync("users.json", "utf8"));
+  const users = await supabase.from("users").select();
   const { name, password } = req.body;
   // If the values are empty
   if (name === "" && password === "")
     return res.json({ status: "Both inputs are required." });
 
   // User verification, if does not exist or password is incorrect
-  const user = users.find((user) => user.name === name);
+  const user = users.data.find((user) => user.name === name);
   if (!user || !(await bcrypt.compare(password, user.password)))
     return res.json({ status: "Incorrect Username or Password !" });
 
@@ -41,53 +47,45 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const users = JSON.parse(readFileSync("users.json", "utf8"));
+  const users = await supabase.from("users").select();
   const { name, password } = req.body;
   // If the values are empty
   if (name === "" && password === "")
     return res.json({ status: "Both inputs are required." });
 
   // If the username is already used
-  if (users.some((user) => user.name === name))
+  if (users.data.some((user) => user.name === name))
     return res.json({ status: "That username is already used." });
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  writeFileSync(
-    "./users.json",
-    JSON.stringify(
-      [
-        ...users,
-        {
-          id: "USER-" + Date.now().toString(),
-          name: name,
-          password: hashedPassword,
-        },
-      ],
-      null,
-      2
-    )
-  );
+  const { error } = await supabase.from("users").insert({
+    id: "USER-" + Date.now().toString(),
+    name: name,
+    password: hashedPassword,
+  });
 
-  return res.json({ status: "Accout created, please Login." });
+  return res.json({
+    status: `${error ? error : "Accout created, please Login."}`,
+  });
 });
 
-app.post("/invite", (req, res) => {
-  const users = JSON.parse(readFileSync("users.json", "utf8"));
-  const rooms = JSON.parse(readFileSync("rooms.json", "utf8"));
+app.post("/invite", async (req, res) => {
+  const users = await supabase.from("users").select();
+  const rooms = await supabase.from("rooms").select();
   const { createdBy, invitedPlayer, pairs } = req.body;
-  const player1 = users.filter((user) => user.name === createdBy)[0];
-  const player2 = users.filter((user) => user.name === invitedPlayer)[0];
+  const player1 = users.data.filter((user) => user.name === createdBy)[0];
+  const player2 = users.data.filter((user) => user.name === invitedPlayer)[0];
 
   if (!player1 || !player2)
     return res.json({ status: "The player does not exists !" });
-  if (rooms.some((room) => room.player1 === player1.id))
+  if (rooms.data.some((room) => room.player1 === player1.id))
     return res.json({ status: "You already created a room." });
   if (
-    (rooms.some((room) => room.player1 === player1.id) &&
-      rooms.some((room) => room.player2 === player2.id)) ||
-    (rooms.some((room) => room.player1 === player2.id) &&
-      rooms.some((room) => room.player2 === player1.id))
+    (rooms.data.some((room) => room.player1 === player1.id) &&
+      rooms.data.some((room) => room.player2 === player2.id)) ||
+    (rooms.data.some((room) => room.player1 === player2.id) &&
+      rooms.data.some((room) => room.player2 === player1.id))
   )
     return res.json({ status: "You already have a room with that person." });
 
@@ -132,72 +130,70 @@ app.post("/invite", (req, res) => {
     );
   };
 
-  writeFileSync(
-    "./rooms.json",
-    JSON.stringify(
-      [
-        ...rooms,
-        {
-          id: roomID,
-          player1: {
-            name: player1.name,
-            id: player1.id,
-            score: 0,
-          },
-          player2: {
-            name: player2.name,
-            id: player2.id,
-            score: 0,
-          },
-          playerTurn: player1.name,
-          cards: setDefaultCards(pairs.c, pairs.r),
-        },
-      ],
-      null,
-      2
-    )
-  );
+  const { error } = await supabase.from("rooms").insert({
+    id: roomID,
+    player1: {
+      name: player1.name,
+      id: player1.id,
+      score: 0,
+    },
+    player2: {
+      name: player2.name,
+      id: player2.id,
+      score: 0,
+    },
+    playerTurn: player1.name,
+    cards: setDefaultCards(pairs.c, pairs.r),
+  });
 
-  return res.json({ status: `The room : ${roomID} has been created.` });
+  return res.json({
+    status: `${error ? error : `The room : ${roomID} has been created.`}`,
+  });
 });
 
-app.post("/rooms/get", (req, res) => {
-  const users = JSON.parse(readFileSync("users.json", "utf8"));
-  const rooms = JSON.parse(readFileSync("rooms.json", "utf8"));
-  const room = rooms.filter((room) => room.id === req.body.room)[0];
+app.post("/rooms/get", async (req, res) => {
+  const users = await supabase.from("users").select();
+  const rooms = await supabase.from("rooms").select();
+  const room = rooms.data.filter((room) => room.id === req.body.room)[0];
   if (!room) return res.sendStatus(204);
-  const player1 = users.filter((player) => player.id === room.player1.id)[0]
-    .name;
-  const player2 = users.filter((player) => player.id === room.player2.id)[0]
-    .name;
+  const player1 = users.data.filter(
+    (player) => player.id === room.player1.id
+  )[0].name;
+  const player2 = users.data.filter(
+    (player) => player.id === room.player2.id
+  )[0].name;
   res.json({
     users: [player1, player2],
     room: room,
   });
 });
 
-app.post("/rooms/delete", (req, res) => {
-  let rooms = JSON.parse(readFileSync("rooms.json", "utf8"));
-  const room = rooms.filter((room) => room.id === req.body.room)[0];
+app.post("/rooms/delete", async (req, res) => {
+  const rooms = await supabase.from("rooms").select();
+  const room = rooms.data.filter((room) => room.id === req.body.room)[0];
   if (!room) return res.sendStatus(204);
   const player = room.player1.name === req.body.name;
   if (!player) return res.sendStatus(204);
 
-  rooms = rooms.filter((r) => r.id !== req.body.room);
-  writeFileSync("./rooms.json", JSON.stringify(rooms, null, 2));
+  // rooms = rooms.filter((r) => r.id !== req.body.room);
+  // writeFileSync("./rooms.json", JSON.stringify(rooms, null, 2));
+
+  await supabase.from("rooms").delete().eq("id", req.body.room);
 
   return res.json({ status: `The room : ${req.body.room} has been deleted.` });
 });
 
-app.get("/invites", (_, res) => {
-  const users = JSON.parse(readFileSync("users.json", "utf8"));
-  const rooms = JSON.parse(readFileSync("rooms.json", "utf8"));
+app.get("/invites", async (_, res) => {
+  const users = await supabase.from("users").select();
+  const rooms = await supabase.from("rooms").select();
   const returnedRooms = [];
-  for (const room of rooms) {
-    const player1 = users.filter((player) => player.id === room.player1.id)[0]
-      .name;
-    const player2 = users.filter((player) => player.id === room.player2.id)[0]
-      .name;
+  for (const room of rooms.data) {
+    const player1 = users.data.filter(
+      (player) => player.id === room.player1.id
+    )[0].name;
+    const player2 = users.data.filter(
+      (player) => player.id === room.player2.id
+    )[0].name;
 
     returnedRooms.push({ id: room.id, player1, player2 });
   }
@@ -213,35 +209,58 @@ process.on("uncaughtException", function (err) {
 });
 
 io.on("connection", (socket) => {
-  socket.on("update-room", ({ room, cards, player, isPair }) => {
-    const users = JSON.parse(readFileSync("users.json", "utf8"));
-    const rooms = JSON.parse(readFileSync("rooms.json", "utf8"));
-    const newRoom = rooms.filter((r) => r.id === room)[0];
-    if (!newRoom) return;
-    const newPlayer = users.filter((p) => p.name === player)[0].name;
-    if (![newRoom.player1.name, newRoom.player2.name].includes(newPlayer))
+  socket.on("update-room", async ({ room, cards, player, isPair }) => {
+    const users = await supabase.from("users").select();
+    const { data: roomData, error: fetchError } = await supabase
+      .from("rooms")
+      .select("*")
+      .eq("id", room)
+      .single();
+
+    if (!roomData) return;
+    const newPlayer = users.data.filter((p) => p.name === player)[0].name;
+    if (![roomData.player1.name, roomData.player2.name].includes(newPlayer))
       return;
 
-    const roomIndex = rooms.indexOf(newRoom);
+    try {
+      if (fetchError) throw fetchError;
 
-    if (isPair) {
-      if (newRoom.player1.name === newPlayer)
-        rooms[roomIndex].player1.score += 1;
-      if (newRoom.player2.name === newPlayer)
-        rooms[roomIndex].player2.score += 1;
-    } else {
-      if (newRoom.player1.name === newRoom.playerTurn) {
-        rooms[roomIndex].playerTurn = newRoom.player2.name;
+      // Check current players and update scores if `isPair`
+      if (isPair) {
+        if (roomData.player1.name === newPlayer) {
+          roomData.player1.score += 1;
+        }
+        if (roomData.player2.name === newPlayer) {
+          roomData.player2.score += 1;
+        }
       } else {
-        rooms[roomIndex].playerTurn = newRoom.player1.name;
+        // Update playerTurn if not a pair
+        roomData.playerTurn =
+          roomData.player1.name === roomData.playerTurn
+            ? roomData.player2.name
+            : roomData.player1.name;
       }
+
+      // Update cards in the room data
+      roomData.cards = cards;
+
+      // Send the updated data back to Supabase
+      const { error: updateError } = await supabase
+        .from("rooms")
+        .update({
+          player1: roomData.player1,
+          player2: roomData.player2,
+          playerTurn: roomData.playerTurn,
+          cards: roomData.cards,
+        })
+        .eq("id", room);
+
+      if (updateError) throw updateError;
+    } catch (error) {
+      console.error("Error updating room:", error);
     }
 
-    rooms[roomIndex].cards = cards;
-
-    writeFileSync("./rooms.json", JSON.stringify(rooms, null, 2));
-
-    io.emit("refresh-room", rooms[roomIndex]);
+    io.emit("refresh-room", roomData);
   });
 });
 

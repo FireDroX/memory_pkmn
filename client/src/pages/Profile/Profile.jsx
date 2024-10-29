@@ -1,5 +1,5 @@
 import "./Profile.css";
-import { useState, useContext } from "react";
+import { useState, useContext, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosRefresh } from "react-icons/io";
 import { FaTrashAlt } from "react-icons/fa";
@@ -75,6 +75,10 @@ const Profile = () => {
     return ((decimal - 1) % 1025) + 1;
   };
 
+  useLayoutEffect(() => {
+    getInvitations();
+  }, []);
+
   return (
     <section className="App">
       <div>
@@ -145,10 +149,18 @@ const Profile = () => {
                       <FaTrashAlt onClick={() => handleDelete(game.id)} />
                     </p>
                   );
-                } else {
+                } else if (name === game.player2) {
                   return (
                     <p key={i}>
                       <strong>{game.player1}</strong> invited you :{" "}
+                      <i onClick={() => handleNavigate(game.id)}>Join</i>
+                    </p>
+                  );
+                } else {
+                  return (
+                    <p key={i}>
+                      <strong>{game.player1}</strong> vs{" "}
+                      <strong>{game.player2}</strong>:{" "}
                       <i onClick={() => handleNavigate(game.id)}>Join</i>
                     </p>
                   );
