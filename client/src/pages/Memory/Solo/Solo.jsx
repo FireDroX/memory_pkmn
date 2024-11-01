@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../../App.css";
 
-const Solo = ({ cards, setCards, setTries, game, setGame }) => {
+const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [playerWon, setPlayerWon] = useState(false);
@@ -121,8 +121,8 @@ const Solo = ({ cards, setCards, setTries, game, setGame }) => {
                 <div className="card-back">
                   <img
                     src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                      card || 0
-                    }.png`}
+                      shinyMode ? "shiny/" : ""
+                    }${card || 0}.png`}
                     alt="Pokemon"
                     draggable={false}
                   />

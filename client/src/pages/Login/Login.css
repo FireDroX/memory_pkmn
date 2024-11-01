@@ -45,11 +45,3 @@
   font-weight: 600;
   transition: all 0.5s ease;
 }
-
-.login-saveInfos {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}

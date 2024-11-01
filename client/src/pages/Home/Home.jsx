@@ -7,6 +7,7 @@ function Home() {
   const [cards, setCards] = useState([]);
   const [tries, setTries] = useState(20);
   const [game, setGame] = useState({ pairs: -1, tries: -1, started: false });
+  const [shinyMode, setShinyMode] = useState(false);
 
   const shuffleArray = (array) => {
     // Fisher-Yates shuffle algorithm to shuffle an array
@@ -81,8 +82,11 @@ function Home() {
               <div className="chooseCards-title">
                 <h4>Memory Game</h4>
                 <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png`}
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                    shinyMode ? "shiny/" : ""
+                  }6.png`}
                   alt="Charmander"
+                  onClick={() => setShinyMode((prev) => !prev)}
                   draggable={false}
                 />
               </div>
@@ -116,6 +120,7 @@ function Home() {
             setCards={setCards}
             setTries={setTries}
             setGame={setGame}
+            shinyMode={shinyMode}
           />
         )}
       </div>

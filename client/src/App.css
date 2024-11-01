@@ -161,6 +161,10 @@ small {
   color: var(--text);
 }
 
+.chooseCards-title > img:hover {
+  cursor: pointer;
+}
+
 .chooseCards-buttons {
   display: flex;
   justify-content: center;

@@ -9,7 +9,6 @@ function Login() {
   const [inputName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState();
-  const [saveInfos, setSaveInfos] = useState(false);
 
   const handlePost = async (postLink) => {
     const requestOptions = {
@@ -28,12 +27,10 @@ function Login() {
       if (json?.status === "" && postLink === "/login") {
         setName(inputName);
         setIsLoggedIn(true);
-        if (saveInfos) {
-          window.localStorage.setItem(
-            "super-secret-login-info",
-            JSON.stringify({ name: inputName, password: password })
-          );
-        }
+        window.localStorage.setItem(
+          "super-secret-login-info",
+          JSON.stringify({ name: inputName, password: password })
+        );
         navigate("");
       }
     }
@@ -66,15 +63,6 @@ function Login() {
           <div className="login-buttons">
             <button onClick={() => handlePost("/login")}>Login</button>
             <button onClick={() => handlePost("/register")}>Register</button>
-          </div>
-          <div className="login-saveInfos">
-            <input
-              type="checkbox"
-              name="infos"
-              value={saveInfos}
-              onChange={(e) => setSaveInfos(e.target.value)}
-            />
-            <p>Save Informations ?</p>
           </div>
         </div>
       </div>
