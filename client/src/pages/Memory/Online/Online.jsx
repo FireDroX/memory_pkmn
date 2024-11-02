@@ -226,8 +226,8 @@ const Online = ({ id }) => {
                         <div className="card-back">
                           <img
                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                              card.id || 0
-                            }.png`}
+                              room.isShiny ? "shiny/" : ""
+                            }${card.id || 0}.png`}
                             alt={"Pokemon Default - " + index + "-" + i}
                             draggable={false}
                           />

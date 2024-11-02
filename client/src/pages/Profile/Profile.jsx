@@ -12,6 +12,7 @@ const Profile = () => {
   const [invitedPlayers, setInvitedPlayers] = useState("");
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
+  const [shinyMode, setShinyMode] = useState(false);
 
   const handleInvite = async () => {
     const requestOptions = {
@@ -21,6 +22,7 @@ const Profile = () => {
         createdBy: name,
         invitedPlayer: invitedPlayers,
         pairs: gamePairs,
+        isShiny: shinyMode,
       }),
     };
 
@@ -131,6 +133,29 @@ const Profile = () => {
                 Invite
               </button>
             </div>
+            <div className="shinyMode-selector">
+              <h6
+                className={!shinyMode ? "shinyMode-text" : ""}
+                style={{ color: !shinyMode ? "unset" : "var(--text45)" }}
+              >
+                {" "}
+                NOT SHINY
+              </h6>
+              <label className="shinyMode-switch">
+                <input
+                  type="checkbox"
+                  name="difficulty"
+                  onChange={() => setShinyMode(!shinyMode)}
+                />
+                <span className="shinyMode-slider shinyMode-round"></span>
+              </label>
+              <h6
+                className={shinyMode ? "shinyMode-text" : ""}
+                style={{ color: shinyMode ? "unset" : "var(--text45)" }}
+              >
+                SHINY
+              </h6>
+            </div>
             <button className="profile-disconnect" onClick={() => navigate("")}>
               Home
             </button>
@@ -140,32 +165,38 @@ const Profile = () => {
               Invites : <IoIosRefresh onClick={getInvitations} />
             </h5>
             <div className="profile-invitesList">
-              {gamesArray.map((game, i) => {
-                if (name === game.player1) {
-                  return (
-                    <p key={i}>
-                      You invited <strong>{game.player2}</strong> :{" "}
-                      <i onClick={() => handleNavigate(game.id)}>Join</i>
-                      <FaTrashAlt onClick={() => handleDelete(game.id)} />
-                    </p>
-                  );
-                } else if (name === game.player2) {
-                  return (
-                    <p key={i}>
-                      <strong>{game.player1}</strong> invited you :{" "}
-                      <i onClick={() => handleNavigate(game.id)}>Join</i>
-                    </p>
-                  );
-                } else {
-                  return (
-                    <p key={i}>
-                      <strong>{game.player1}</strong> vs{" "}
-                      <strong>{game.player2}</strong>:{" "}
-                      <i onClick={() => handleNavigate(game.id)}>Join</i>
-                    </p>
-                  );
-                }
-              })}
+              {gamesArray
+                .sort(
+                  (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime()
+                )
+                .map((game, i) => {
+                  if (name === game.player1) {
+                    return (
+                      <p key={i}>
+                        You invited <strong>{game.player2}</strong> :{" "}
+                        <i onClick={() => handleNavigate(game.id)}>Join</i>
+                        <FaTrashAlt onClick={() => handleDelete(game.id)} />
+                      </p>
+                    );
+                  } else if (name === game.player2) {
+                    return (
+                      <p key={i}>
+                        <strong>{game.player1}</strong> invited you :{" "}
+                        <i onClick={() => handleNavigate(game.id)}>Join</i>
+                      </p>
+                    );
+                  } else {
+                    return (
+                      <p key={i}>
+                        <strong>{game.player1}</strong> vs{" "}
+                        <strong>{game.player2}</strong>:{" "}
+                        <i onClick={() => handleNavigate(game.id)}>Join</i>
+                      </p>
+                    );
+                  }
+                })}
             </div>
           </div>
         </div>

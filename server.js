@@ -73,7 +73,7 @@ app.post("/register", async (req, res) => {
 app.post("/invite", async (req, res) => {
   const users = await supabase.from("users").select();
   const rooms = await supabase.from("rooms").select();
-  const { createdBy, invitedPlayer, pairs } = req.body;
+  const { createdBy, invitedPlayer, pairs, isShiny } = req.body;
   const player1 = users.data.filter((user) => user.name === createdBy)[0];
   const player2 = users.data.filter((user) => user.name === invitedPlayer)[0];
 
@@ -144,6 +144,7 @@ app.post("/invite", async (req, res) => {
     },
     playerTurn: player1.name,
     cards: setDefaultCards(pairs.c, pairs.r),
+    isShiny: isShiny,
   });
 
   return res.json({
@@ -195,7 +196,12 @@ app.get("/invites", async (_, res) => {
       (player) => player.id === room.player2.id
     )[0].name;
 
-    returnedRooms.push({ id: room.id, player1, player2 });
+    returnedRooms.push({
+      id: room.id,
+      player1,
+      player2,
+      created_at: room.created_at,
+    });
   }
   res.json(returnedRooms);
 });
