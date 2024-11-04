@@ -13,6 +13,12 @@ const Profile = () => {
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
 
+  const [delayed, setDelayed] = useState({
+    load: false,
+    invite: false,
+    delete: false,
+  });
+
   const handleInvite = async () => {
     const requestOptions = {
       method: "POST",
@@ -127,7 +133,23 @@ const Profile = () => {
                 ))}
                 <p>Pairs</p>
               </div>
-              <button className="profile-disconnect" onClick={handleInvite}>
+              <button
+                disabled={delayed.invite}
+                className="profile-disconnect"
+                onClick={() => {
+                  handleInvite();
+                  setDelayed((prev) => ({
+                    ...prev,
+                    invite: !prev.invite,
+                  }));
+                  setTimeout(() => {
+                    setDelayed((prev) => ({
+                      ...prev,
+                      invite: !prev.invite,
+                    }));
+                  }, 5000);
+                }}
+              >
                 Invite
               </button>
             </div>
@@ -137,7 +159,23 @@ const Profile = () => {
           </div>
           <div className="profile-invites">
             <h5>
-              Invites : <IoIosRefresh onClick={getInvitations} />
+              Invites :{" "}
+              <IoIosRefresh
+                onClick={() => {
+                  if (delayed.load) return;
+                  getInvitations();
+                  setDelayed((prev) => ({
+                    ...prev,
+                    load: !prev.load,
+                  }));
+                  setTimeout(() => {
+                    setDelayed((prev) => ({
+                      ...prev,
+                      load: !prev.load,
+                    }));
+                  }, 5000);
+                }}
+              />
             </h5>
             <div className="profile-invitesList">
               {gamesArray
@@ -156,7 +194,22 @@ const Profile = () => {
                       <p key={i}>
                         You invited <strong>{game.player2}</strong> :{" "}
                         <span {...parameters}>JOIN</span>
-                        <FaTrashAlt onClick={() => handleDelete(game.id)} />
+                        <FaTrashAlt
+                          onClick={() => {
+                            if (delayed.delete) return;
+                            handleDelete(game.id);
+                            setDelayed((prev) => ({
+                              ...prev,
+                              delete: !prev.delete,
+                            }));
+                            setTimeout(() => {
+                              setDelayed((prev) => ({
+                                ...prev,
+                                delete: !prev.delete,
+                              }));
+                            }, 5000);
+                          }}
+                        />
                       </p>
                     );
                   } else if (name === game.player2) {

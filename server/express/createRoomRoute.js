@@ -11,19 +11,19 @@ const supabase = createClient(
 router.post("/", async (req, res) => {
   const users = await supabase.from("users").select();
   const rooms = await supabase.from("rooms").select();
-  const { createdBy, invitedPlayer, pairs, isShiny } = req.body;
+  const { createdBy, invitedPlayer, pairs } = req.body;
   const player1 = users.data.filter((user) => user.name === createdBy)[0];
   const player2 = users.data.filter((user) => user.name === invitedPlayer)[0];
 
   if (!player1 || !player2)
     return res.json({ status: "The player does not exists !" });
-  if (rooms.data.some((room) => room.player1 === player1.id))
+  if (rooms.data.some((room) => room.player1.id === player1.id))
     return res.json({ status: "You already created a room." });
   if (
-    (rooms.data.some((room) => room.player1 === player1.id) &&
-      rooms.data.some((room) => room.player2 === player2.id)) ||
-    (rooms.data.some((room) => room.player1 === player2.id) &&
-      rooms.data.some((room) => room.player2 === player1.id))
+    (rooms.data.some((room) => room.player1.id === player1.id) &&
+      rooms.data.some((room) => room.player2.id === player2.id)) ||
+    (rooms.data.some((room) => room.player1.id === player2.id) &&
+      rooms.data.some((room) => room.player2.id === player1.id))
   )
     return res.json({ status: "You already have a room with that person." });
 

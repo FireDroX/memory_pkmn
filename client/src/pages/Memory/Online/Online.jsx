@@ -5,6 +5,8 @@ import { socket } from "../../../socket";
 import "../../../App.css";
 import "./Online.css";
 
+import Loading from "../../../components/Loading/Loading";
+
 const Online = ({ id }) => {
   const { name, isLoggedIn } = useContext(UserContext);
   const [roomExists, setRoomExists] = useState(true);
@@ -182,7 +184,7 @@ const Online = ({ id }) => {
     <section className="App">
       <div>
         {!roomExists || users.length === 0 ? (
-          <h5>The room is loading or does not exists</h5>
+          <Loading />
         ) : (
           <div className="online-container">
             <div
