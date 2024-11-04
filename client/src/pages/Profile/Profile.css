@@ -118,6 +118,8 @@
 }
 
 .profile-invitesList {
+  position: relative;
+  height: 18rem;
   max-height: 18rem;
   overflow-y: scroll;
 }
@@ -185,4 +187,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.profile-leaderboard {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
 }

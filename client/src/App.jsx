@@ -10,6 +10,7 @@ import Login from "./pages/Login/Login";
 import Profile from "./pages/Profile/Profile";
 import Online from "./pages/Memory/Online/Online";
 import Waiting from "./pages/Waiting/Waiting";
+import Leaderboard from "./pages/Leaderboard/Leaderboard";
 
 function App() {
   const { setName, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
@@ -25,6 +26,8 @@ function App() {
     }, [location]);
 
     switch (page) {
+      case "leaderboard":
+        return <Leaderboard />;
       case "login":
         return <Login />;
       case "online":

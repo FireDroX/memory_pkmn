@@ -7,6 +7,7 @@ const registerRoute = require("./registerRoute");
 const createRoomRoute = require("./createRoomRoute");
 const roomsRoute = require("./roomsRoute");
 const invitesRoute = require("./invitesRoute");
+const getLeaderboards = require("./getLeaderboards");
 
 // Use routes
 router.use("/login", loginRoute);
@@ -14,5 +15,6 @@ router.use("/register", registerRoute);
 router.use("/invite", createRoomRoute);
 router.use("/rooms", roomsRoute);
 router.use("/invites", invitesRoute);
+router.use("/leaderboard", getLeaderboards);
 
 module.exports = router;

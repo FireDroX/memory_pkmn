@@ -238,6 +238,12 @@ const Profile = () => {
                     );
                   }
                 })}
+              <button
+                className="profile-disconnect profile-leaderboard"
+                onClick={() => navigate("?query=leaderboard")}
+              >
+                Leaderboard
+              </button>
             </div>
           </div>
         </div>
