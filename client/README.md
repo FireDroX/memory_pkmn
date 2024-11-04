@@ -1,6 +1,6 @@
-# Memory Game Frontend
+# PokeFlip Online Frontend
 
-This is the frontend for the Memory Game, built with React. It supports both solo and multiplayer modes with real-time updates using Socket.IO and state management via React Context.
+This is the frontend for PokeFlip Online, built with React. It supports both solo and multiplayer modes with real-time updates using Socket.IO and state management via React Context.
 
 ## Table of Contents
 

@@ -1,4 +1,4 @@
-# Memory Game Backend
+# PokeFlip Online Backend
 
 This backend handles user authentication, game room creation, and multiplayer communication using Express, Socket.IO, and Supabase. It supports both solo and multiplayer modes with real-time interactions.
 
