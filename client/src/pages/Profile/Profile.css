@@ -1,6 +1,6 @@
 .profile-container {
   width: 40rem;
-  height: 26rem;
+  height: 23rem;
   background-color: var(--accent10);
   border-radius: 50px;
   display: flex;
@@ -178,76 +178,4 @@
     max-height: 5rem;
     overflow-y: scroll;
   }
-}
-
-/* The switch - the box around the slider */
-.shinyMode-switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 1.5rem;
-}
-
-/* Hide default HTML checkbox */
-.shinyMode-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.shinyMode-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--text35);
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-.shinyMode-slider:before {
-  position: absolute;
-  content: "";
-  height: 1.1rem;
-  width: 1.1rem;
-  left: 4px;
-  bottom: 3px;
-  background-color: var(--text85);
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-input:checked + .shinyMode-slider:before {
-  -webkit-transform: translateX(34px);
-  -ms-transform: translateX(34px);
-  transform: translateX(34px);
-}
-
-/* Rounded sliders */
-.shinyMode-slider.shinyMode-round {
-  border-radius: 34px;
-}
-
-.shinyMode-slider.shinyMode-round:before {
-  border-radius: 50%;
-}
-
-.shinyMode-selector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  height: 1.5rem;
-}
-
-.shinyMode-text {
-  background-image: url(https://cdn.7tv.app/paint/01HGV83AY80000421YCKFBCF2F/layer/01JAMR2D63BRKZ3FVDZ0BDZXW8/1x.webp);
-  filter: drop-shadow(0px 0px 0.1px rgba(237, 175, 2, 1))
-    drop-shadow(1px 1px 0.1px rgba(157, 62, 12, 1));
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
 }

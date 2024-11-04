@@ -80,7 +80,7 @@ function Home() {
           <div className="chooseCards">
             <div className="chooseCards-select">
               <div className="chooseCards-title">
-                <h4>Memory Game</h4>
+                <h4>PokeFlip Online</h4>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                     shinyMode ? "shiny/" : ""
@@ -124,6 +124,18 @@ function Home() {
           />
         )}
       </div>
+      <a
+        href="https://pokeapi.co/"
+        target="_blank"
+        style={{
+          position: "absolute",
+          bottom: 5,
+          left: 10,
+          color: "var(--text15)",
+        }}
+      >
+        PokeAPI
+      </a>
     </section>
   );
 }

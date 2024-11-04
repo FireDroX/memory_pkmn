@@ -14,12 +14,15 @@ const Online = ({ id }) => {
   const [room, setRoom] = useState();
   const [endOfGame, setEndOfGame] = useState(false);
 
-  const postRoomValues = async (updatedCars, isPair) => {
+  const postRoomValues = async (updatedCars, isPair, isPairShiny) => {
     socket.emit("update-room", {
       room: id,
       cards: updatedCars,
       player: name,
-      isPair: isPair,
+      pair: {
+        isPair,
+        shiny: isPairShiny,
+      },
     });
   };
 
@@ -53,7 +56,7 @@ const Online = ({ id }) => {
     return ((decimal - 1) % 1025) + 1;
   };
 
-  const handleFlipCard = (coll, row, index) => {
+  const handleFlipCard = (coll, row, index, isShiny) => {
     if (
       [2, 3].includes(cards[coll][row].state) ||
       flippedCards.some((c) => c.index === index)
@@ -66,7 +69,10 @@ const Online = ({ id }) => {
     card.classList.add("card-flipped");
     const cardValue = Number(card.dataset.pokemon);
 
-    const newFlippedCards = [...flippedCards, { index, cardValue, coll, row }];
+    const newFlippedCards = [
+      ...flippedCards,
+      { index, cardValue, coll, row, shiny: isShiny },
+    ];
     setFlippedCards(() => {
       if (newFlippedCards.length === 2) {
         const [firstCard, secondCard] = newFlippedCards;
@@ -92,7 +98,11 @@ const Online = ({ id }) => {
               })
             );
             setCards(updatedCards);
-            postRoomValues(updatedCards, true);
+            postRoomValues(
+              updatedCards,
+              true,
+              firstCard.shiny && secondCard.shiny ? true : false
+            );
           }, 1200);
         } else {
           // Not a match, flip them back after a delay
@@ -122,7 +132,7 @@ const Online = ({ id }) => {
               })
             );
             setCards(updatedCards);
-            postRoomValues(updatedCards, false);
+            postRoomValues(updatedCards, false, false);
           }, 1200);
         }
       }
@@ -221,7 +231,12 @@ const Online = ({ id }) => {
                             room.player1.ready &&
                             room.player2.ready
                           )
-                            handleFlipCard(index, i, i + index * row.length);
+                            handleFlipCard(
+                              index,
+                              i,
+                              i + index * row.length,
+                              card.shiny
+                            );
                         }}
                         style={{
                           border:
@@ -242,7 +257,7 @@ const Online = ({ id }) => {
                         <div className="card-back">
                           <img
                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                              room.isShiny ? "shiny/" : ""
+                              card.shiny ? "shiny/" : ""
                             }${card.id || 0}.png`}
                             alt={"Pokemon Default - " + index + "-" + i}
                             draggable={false}
