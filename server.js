@@ -1,5 +1,3 @@
-const { createClient } = require("@supabase/supabase-js");
-
 const path = require("path");
 require("dotenv").config();
 
@@ -20,11 +18,6 @@ const io = new Server(server, {
         : "http://192.168.1.105:3000",
   },
 });
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
 
 // Import Express routes
 const routes = require("./server/express");

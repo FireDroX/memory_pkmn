@@ -98,6 +98,7 @@ router.post("/", async (req, res) => {
 
   return res.json({
     status: `${error ? error : `The room : ${roomID} has been created.`}`,
+    roomID,
   });
 });
 

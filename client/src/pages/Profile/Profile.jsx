@@ -75,6 +75,10 @@ const Profile = () => {
     navigate("");
   };
 
+  const handleWaiting = () => {
+    navigate(`?query=waiting`);
+  };
+
   const stringToDecimal = (str) => {
     let decimal = 0;
     str.split("").map((char) => (decimal += char.charCodeAt(0)));
@@ -133,25 +137,30 @@ const Profile = () => {
                 ))}
                 <p>Pairs</p>
               </div>
-              <button
-                disabled={delayed.invite}
-                className="profile-disconnect"
-                onClick={() => {
-                  handleInvite();
-                  setDelayed((prev) => ({
-                    ...prev,
-                    invite: !prev.invite,
-                  }));
-                  setTimeout(() => {
+              <div className="profile-buttons-joining">
+                <button className="profile-disconnect" onClick={handleWaiting}>
+                  Random
+                </button>
+                <button
+                  disabled={delayed.invite}
+                  className="profile-disconnect"
+                  onClick={() => {
+                    handleInvite();
                     setDelayed((prev) => ({
                       ...prev,
                       invite: !prev.invite,
                     }));
-                  }, 5000);
-                }}
-              >
-                Invite
-              </button>
+                    setTimeout(() => {
+                      setDelayed((prev) => ({
+                        ...prev,
+                        invite: !prev.invite,
+                      }));
+                    }, 5000);
+                  }}
+                >
+                  Invite
+                </button>
+              </div>
             </div>
             <button className="profile-disconnect" onClick={() => navigate("")}>
               Home
