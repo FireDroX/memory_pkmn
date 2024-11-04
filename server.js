@@ -43,7 +43,11 @@ app.post("/login", async (req, res) => {
   if (!user || !(await bcrypt.compare(password, user.password)))
     return res.json({ status: "Incorrect Username or Password !" });
 
-  return res.json({ status: "" });
+  return res.json({
+    status: "",
+    online_games_won: user.online_games_won,
+    created_at: user.created_at,
+  });
 });
 
 app.post("/register", async (req, res) => {
@@ -63,6 +67,7 @@ app.post("/register", async (req, res) => {
     id: "USER-" + Date.now().toString(),
     name: name,
     password: hashedPassword,
+    online_games_won: 0,
   });
 
   return res.json({
@@ -136,11 +141,13 @@ app.post("/invite", async (req, res) => {
       name: player1.name,
       id: player1.id,
       score: 0,
+      ready: false,
     },
     player2: {
       name: player2.name,
       id: player2.id,
       score: 0,
+      ready: false,
     },
     playerTurn: player1.name,
     cards: setDefaultCards(pairs.c, pairs.r),
@@ -176,9 +183,6 @@ app.post("/rooms/delete", async (req, res) => {
   const player = room.player1.name === req.body.name;
   if (!player) return res.sendStatus(204);
 
-  // rooms = rooms.filter((r) => r.id !== req.body.room);
-  // writeFileSync("./rooms.json", JSON.stringify(rooms, null, 2));
-
   await supabase.from("rooms").delete().eq("id", req.body.room);
 
   return res.json({ status: `The room : ${req.body.room} has been deleted.` });
@@ -201,6 +205,7 @@ app.get("/invites", async (_, res) => {
       player1,
       player2,
       created_at: room.created_at,
+      isShiny: room.isShiny,
     });
   }
   res.json(returnedRooms);
@@ -215,6 +220,38 @@ process.on("uncaughtException", function (err) {
 });
 
 io.on("connection", (socket) => {
+  // Listen for the "user-connected" event
+  socket.on("user-connected", async ({ name, id }) => {
+    const { data: roomData, error: fetchError } = await supabase
+      .from("rooms")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (name === roomData.player1.name) {
+      roomData.player1.ready = true;
+    } else if (name === roomData.player2.name) {
+      roomData.player2.ready = true;
+    }
+
+    try {
+      // Send the updated data back to Supabase
+      const { error: updateError } = await supabase
+        .from("rooms")
+        .update({
+          player1: roomData.player1,
+          player2: roomData.player2,
+        })
+        .eq("id", id);
+
+      if (updateError) throw updateError;
+    } catch (error) {
+      console.error("Error updating room:", error);
+    }
+
+    io.emit("refresh-room", roomData);
+  });
+
   socket.on("update-room", async ({ room, cards, player, isPair }) => {
     const users = await supabase.from("users").select();
     const { data: roomData, error: fetchError } = await supabase
@@ -224,8 +261,10 @@ io.on("connection", (socket) => {
       .single();
 
     if (!roomData) return;
-    const newPlayer = users.data.filter((p) => p.name === player)[0].name;
-    if (![roomData.player1.name, roomData.player2.name].includes(newPlayer))
+    const newPlayer = users.data.filter((p) => p.name === player)[0];
+    if (
+      ![roomData.player1.name, roomData.player2.name].includes(newPlayer.name)
+    )
       return;
 
     try {
@@ -233,11 +272,35 @@ io.on("connection", (socket) => {
 
       // Check current players and update scores if `isPair`
       if (isPair) {
-        if (roomData.player1.name === newPlayer) {
+        if (roomData.player1.name === newPlayer.name) {
           roomData.player1.score += 1;
         }
-        if (roomData.player2.name === newPlayer) {
+        if (roomData.player2.name === newPlayer.name) {
           roomData.player2.score += 1;
+        }
+
+        let cardsLeft = cards.flat(1).length || undefined;
+
+        cards.forEach((coll, collIndex) => {
+          coll.forEach((card, index) => {
+            if (card.state === 1) {
+              flipCards(index + collIndex * coll.length);
+            } else if ([2, 3].includes(card.state)) {
+              cardsLeft -= 1;
+            }
+          });
+        });
+
+        if (cardsLeft === 0) {
+          // Send the updated data back to Supabase
+          const { error: updateUserError } = await supabase
+            .from("users")
+            .update({
+              online_games_won: newPlayer.online_games_won + 1,
+            })
+            .eq("id", newPlayer.id);
+
+          if (updateUserError) throw updateUserError;
         }
       } else {
         // Update playerTurn if not a pair

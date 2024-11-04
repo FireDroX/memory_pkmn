@@ -12,6 +12,19 @@
   height: 12rem;
   color: var(--text95);
   border-radius: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+  padding: 0.5rem;
+  transition: all 0.5s;
+}
+
+.player1-container > img,
+.player2-container > img {
+  border-radius: 10px;
+  transition: all 0.5s;
 }
 
 .online-ending {

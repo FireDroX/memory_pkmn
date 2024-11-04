@@ -123,7 +123,7 @@
 }
 
 .profile-invites > h5 > svg:hover,
-.profile-invitesList > p > i:hover,
+.profile-invitesList > p > span:hover,
 .profile-invitesList > p > svg:hover {
   cursor: pointer;
 }

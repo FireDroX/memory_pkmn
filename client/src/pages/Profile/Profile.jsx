@@ -172,11 +172,16 @@ const Profile = () => {
                     new Date(a.created_at).getTime()
                 )
                 .map((game, i) => {
+                  const parameters = {
+                    className: game.isShiny ? "shinyMode-text" : "",
+                    onClick: () => handleNavigate(game.id),
+                    style: { fontWeight: 700 },
+                  };
                   if (name === game.player1) {
                     return (
                       <p key={i}>
                         You invited <strong>{game.player2}</strong> :{" "}
-                        <i onClick={() => handleNavigate(game.id)}>Join</i>
+                        <span {...parameters}>JOIN</span>
                         <FaTrashAlt onClick={() => handleDelete(game.id)} />
                       </p>
                     );
@@ -184,7 +189,7 @@ const Profile = () => {
                     return (
                       <p key={i}>
                         <strong>{game.player1}</strong> invited you :{" "}
-                        <i onClick={() => handleNavigate(game.id)}>Join</i>
+                        <span {...parameters}>JOIN</span>
                       </p>
                     );
                   } else {
@@ -192,7 +197,7 @@ const Profile = () => {
                       <p key={i}>
                         <strong>{game.player1}</strong> vs{" "}
                         <strong>{game.player2}</strong>:{" "}
-                        <i onClick={() => handleNavigate(game.id)}>Join</i>
+                        <span {...parameters}>JOIN</span>
                       </p>
                     );
                   }

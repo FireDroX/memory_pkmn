@@ -37,6 +37,14 @@ const Online = ({ id }) => {
     setUsers(json.users);
     setRoom(json.room);
     setCards(json.room.cards);
+
+    // Update user to be ready
+    if (
+      (name === json.room.player1.name && !json.room.player1.ready) ||
+      (name === json.room.player2.name && !json.room.player2.ready)
+    ) {
+      socket.emit("user-connected", { name, id });
+    }
   };
 
   const stringToDecimal = (str) => {
@@ -177,10 +185,16 @@ const Online = ({ id }) => {
                 )}.png`}
                 alt="User"
                 draggable={false}
+                style={{
+                  outline:
+                    users[0] === room.playerTurn
+                      ? "solid 1px lightgreen"
+                      : "solid 1px transparent",
+                }}
               />
               <h5
                 style={{
-                  color: users[0] === room.playerTurn ? "lightgreen" : "unset",
+                  color: room.player1.ready ? "lightgreen" : "unset",
                 }}
               >
                 {users[0]}
@@ -203,7 +217,9 @@ const Online = ({ id }) => {
                             flippedCards.length <= 1 &&
                             isLoggedIn &&
                             room.playerTurn === name &&
-                            [0, 1].includes(card.state)
+                            [0, 1].includes(card.state) &&
+                            room.player1.ready &&
+                            room.player2.ready
                           )
                             handleFlipCard(index, i, i + index * row.length);
                         }}
@@ -248,10 +264,16 @@ const Online = ({ id }) => {
                 )}.png`}
                 alt="User"
                 draggable={false}
+                style={{
+                  outline:
+                    users[1] === room.playerTurn
+                      ? "solid 1px lightgreen"
+                      : "solid 1px transparent",
+                }}
               />
               <h5
                 style={{
-                  color: users[1] === room.playerTurn ? "lightgreen" : "unset",
+                  color: room.player2.ready ? "lightgreen" : "unset",
                 }}
               >
                 {users[1]}
