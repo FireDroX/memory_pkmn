@@ -13,6 +13,12 @@ const Profile = () => {
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
 
+  const [delayed, setDelayed] = useState({
+    load: false,
+    invite: false,
+    delete: false,
+  });
+
   const handleInvite = async () => {
     const requestOptions = {
       method: "POST",
@@ -67,6 +73,10 @@ const Profile = () => {
     setName("");
     setIsLoggedIn(false);
     navigate("");
+  };
+
+  const handleWaiting = () => {
+    navigate(`?query=waiting`);
   };
 
   const stringToDecimal = (str) => {
@@ -127,9 +137,30 @@ const Profile = () => {
                 ))}
                 <p>Pairs</p>
               </div>
-              <button className="profile-disconnect" onClick={handleInvite}>
-                Invite
-              </button>
+              <div className="profile-buttons-joining">
+                <button className="profile-disconnect" onClick={handleWaiting}>
+                  Random
+                </button>
+                <button
+                  disabled={delayed.invite}
+                  className="profile-disconnect"
+                  onClick={() => {
+                    handleInvite();
+                    setDelayed((prev) => ({
+                      ...prev,
+                      invite: !prev.invite,
+                    }));
+                    setTimeout(() => {
+                      setDelayed((prev) => ({
+                        ...prev,
+                        invite: !prev.invite,
+                      }));
+                    }, 5000);
+                  }}
+                >
+                  Invite
+                </button>
+              </div>
             </div>
             <button className="profile-disconnect" onClick={() => navigate("")}>
               Home
@@ -137,35 +168,82 @@ const Profile = () => {
           </div>
           <div className="profile-invites">
             <h5>
-              Invites : <IoIosRefresh onClick={getInvitations} />
+              Invites :{" "}
+              <IoIosRefresh
+                onClick={() => {
+                  if (delayed.load) return;
+                  getInvitations();
+                  setDelayed((prev) => ({
+                    ...prev,
+                    load: !prev.load,
+                  }));
+                  setTimeout(() => {
+                    setDelayed((prev) => ({
+                      ...prev,
+                      load: !prev.load,
+                    }));
+                  }, 5000);
+                }}
+              />
             </h5>
             <div className="profile-invitesList">
-              {gamesArray.map((game, i) => {
-                if (name === game.player1) {
-                  return (
-                    <p key={i}>
-                      You invited <strong>{game.player2}</strong> :{" "}
-                      <i onClick={() => handleNavigate(game.id)}>Join</i>
-                      <FaTrashAlt onClick={() => handleDelete(game.id)} />
-                    </p>
-                  );
-                } else if (name === game.player2) {
-                  return (
-                    <p key={i}>
-                      <strong>{game.player1}</strong> invited you :{" "}
-                      <i onClick={() => handleNavigate(game.id)}>Join</i>
-                    </p>
-                  );
-                } else {
-                  return (
-                    <p key={i}>
-                      <strong>{game.player1}</strong> vs{" "}
-                      <strong>{game.player2}</strong>:{" "}
-                      <i onClick={() => handleNavigate(game.id)}>Join</i>
-                    </p>
-                  );
-                }
-              })}
+              {gamesArray
+                .sort(
+                  (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime()
+                )
+                .map((game, i) => {
+                  const parameters = {
+                    onClick: () => handleNavigate(game.id),
+                    style: { fontWeight: 700 },
+                  };
+                  if (name === game.player1) {
+                    return (
+                      <p key={i}>
+                        You invited <strong>{game.player2}</strong> :{" "}
+                        <span {...parameters}>JOIN</span>
+                        <FaTrashAlt
+                          onClick={() => {
+                            if (delayed.delete) return;
+                            handleDelete(game.id);
+                            setDelayed((prev) => ({
+                              ...prev,
+                              delete: !prev.delete,
+                            }));
+                            setTimeout(() => {
+                              setDelayed((prev) => ({
+                                ...prev,
+                                delete: !prev.delete,
+                              }));
+                            }, 5000);
+                          }}
+                        />
+                      </p>
+                    );
+                  } else if (name === game.player2) {
+                    return (
+                      <p key={i}>
+                        <strong>{game.player1}</strong> invited you :{" "}
+                        <span {...parameters}>JOIN</span>
+                      </p>
+                    );
+                  } else {
+                    return (
+                      <p key={i}>
+                        <strong>{game.player1}</strong> vs{" "}
+                        <strong>{game.player2}</strong>:{" "}
+                        <span {...parameters}>JOIN</span>
+                      </p>
+                    );
+                  }
+                })}
+              <button
+                className="profile-disconnect profile-leaderboard"
+                onClick={() => navigate("?query=leaderboard")}
+              >
+                Leaderboard
+              </button>
             </div>
           </div>
         </div>

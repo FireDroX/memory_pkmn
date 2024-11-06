@@ -9,9 +9,11 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Profile from "./pages/Profile/Profile";
 import Online from "./pages/Memory/Online/Online";
+import Waiting from "./pages/Waiting/Waiting";
+import Leaderboard from "./pages/Leaderboard/Leaderboard";
 
 function App() {
-  const { setName, setIsLoggedIn } = useContext(UserContext);
+  const { setName, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
   function DynamicPage() {
     const [page, setPage] = useState(null);
     const [roomID, setRoomID] = useState(null);
@@ -24,12 +26,16 @@ function App() {
     }, [location]);
 
     switch (page) {
+      case "leaderboard":
+        return <Leaderboard />;
       case "login":
         return <Login />;
-      case "profile":
-        return <Profile />;
       case "online":
         return <Online id={roomID} />;
+      case "profile":
+        return isLoggedIn ? <Profile /> : <Home />;
+      case "waiting":
+        return isLoggedIn ? <Waiting /> : <Home />;
       default:
         return <Home />;
     }
