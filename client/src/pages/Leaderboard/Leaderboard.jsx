@@ -50,12 +50,11 @@ const Leaderboard = () => {
                     <br />
                     {(() => {
                       if (!name) return;
-                      const user = leaderboards.shiny_pairs_found.filter(
+                      const user = leaderboards.game_wons.filter(
                         (user) => user.name === name
                       )[0];
                       if (!user) return;
-                      const index =
-                        leaderboards.shiny_pairs_found.indexOf(user);
+                      const index = leaderboards.game_wons.indexOf(user);
                       return (
                         <p key={index}>
                           <span>

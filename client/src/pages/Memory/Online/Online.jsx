@@ -2,7 +2,7 @@ import { useState, useLayoutEffect, useContext, useEffect } from "react";
 import { FaCrown } from "react-icons/fa";
 import { UserContext } from "../../../utils/UserContext";
 import { socket } from "../../../socket";
-import "../../../App.css";
+import "../../../pages/Memory/Solo/Solo.css";
 import "./Online.css";
 
 import Loading from "../../../components/Loading/Loading";
@@ -15,6 +15,7 @@ const Online = ({ id }) => {
   const [flippedCards, setFlippedCards] = useState([]);
   const [room, setRoom] = useState();
   const [endOfGame, setEndOfGame] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(true);
 
   const postRoomValues = async (updatedCars, isPair, isPairShiny) => {
     socket.emit("update-room", {
@@ -180,194 +181,224 @@ const Online = ({ id }) => {
     if (cardsLeft === 0) setEndOfGame(true);
   }, [cards]);
 
+  const updateOrientation = () => {
+    // Checks if width is greater than height (landscape mode)
+    if (window.innerWidth > window.innerHeight) {
+      setIsLandscape(true);
+    } else {
+      setIsLandscape(false);
+    }
+  };
+
+  useEffect(() => {
+    updateOrientation();
+    window.addEventListener("resize", updateOrientation);
+    return () => {
+      window.removeEventListener("resize", updateOrientation);
+    };
+  }, []);
+
   return (
     <section className="App">
       <div>
         {!roomExists || users.length === 0 ? (
           <Loading />
         ) : (
-          <div className="online-container">
-            <div
-              className="player1-container"
-              style={{ border: "2px solid lightblue" }}
-            >
-              <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                  users[0]
-                )}.png`}
-                alt="User"
-                draggable={false}
-                style={{
-                  outline:
-                    users[0] === room.playerTurn
-                      ? "solid 1px lightgreen"
-                      : "solid 1px transparent",
-                }}
-              />
-              <h5
-                style={{
-                  color: room.player1.ready ? "lightgreen" : "unset",
-                }}
-              >
-                {users[0]}
-              </h5>
-              <small>{room.player1.score} pairs found</small>
-            </div>
-            <div className="cards">
-              <div className="cards-column">
-                {cards.map((row, index) => (
-                  <div className="cards-row" key={index}>
-                    {row.map((card, i) => (
-                      <div
-                        className={`card ${
-                          [2, 3].includes(card.state) ? "card-flipped" : ""
-                        }`}
-                        data-pokemon={card.id}
-                        key={index + "-" + i}
-                        onClick={() => {
-                          if (
-                            flippedCards.length <= 1 &&
-                            isLoggedIn &&
-                            room.playerTurn === name &&
-                            [0, 1].includes(card.state) &&
-                            room.player1.ready &&
-                            room.player2.ready
-                          )
-                            handleFlipCard(
-                              index,
-                              i,
-                              i + index * row.length,
-                              card.shiny
-                            );
-                        }}
-                        style={{
-                          border:
-                            card.state === 2
-                              ? "2px solid lightblue"
-                              : card.state === 3
-                              ? "2px solid lightcoral"
-                              : "none",
-                        }}
-                      >
-                        <div className="card-front">
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png`}
-                            alt={"Pokemon - " + index + "-" + i}
-                            draggable={false}
-                          />
-                        </div>
-                        <div className="card-back">
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                              card.shiny ? "shiny/" : ""
-                            }${card.id || 0}.png`}
-                            alt={"Pokemon Default - " + index + "-" + i}
-                            draggable={false}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div
-              className="player2-container"
-              style={{ border: "2px solid lightcoral" }}
-            >
-              <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                  users[1]
-                )}.png`}
-                alt="User"
-                draggable={false}
-                style={{
-                  outline:
-                    users[1] === room.playerTurn
-                      ? "solid 1px lightgreen"
-                      : "solid 1px transparent",
-                }}
-              />
-              <h5
-                style={{
-                  color: room.player2.ready ? "lightgreen" : "unset",
-                }}
-              >
-                {users[1]}
-              </h5>
-              <small>{room.player2.score} pairs found</small>
-            </div>
-            {endOfGame ? (
-              <div className="online-ending">
-                {(() => {
-                  const Winner = (first, second) => {
-                    return (
-                      <>
-                        <div className="online-playerWon">
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                              users[first]
-                            )}.png`}
-                            alt="User"
-                            draggable={false}
-                          />
-                          <h5>
-                            WON <FaCrown />
-                          </h5>
-                        </div>
-                        <div className="online-playerLost">
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                              users[second]
-                            )}.png`}
-                            alt="User"
-                            draggable={false}
-                          />
-                          <h5>LOST</h5>
-                        </div>
-                      </>
-                    );
-                  };
-                  if (room.player1.score > room.player2.score) {
-                    return Winner(0, 1);
-                  } else if (room.player2.score > room.player1.score) {
-                    return Winner(1, 0);
-                  } else {
-                    return (
-                      <>
-                        <div className="online-playerWon">
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                              users[0]
-                            )}.png`}
-                            alt="User"
-                            draggable={false}
-                          />
-                          <h5>
-                            TIE <FaCrown />
-                          </h5>
-                        </div>
-                        <div className="online-playerWon">
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                              users[1]
-                            )}.png`}
-                            alt="User"
-                            draggable={false}
-                          />
-                          <h5>
-                            TIE <FaCrown />
-                          </h5>
-                        </div>
-                      </>
-                    );
-                  }
-                })()}
-              </div>
-            ) : (
+          <>
+            {/* Portrait Mode Warning */}
+            {isLandscape ? (
               false
+            ) : (
+              <div className="portrait-warning">
+                Please rotate your device to landscape mode for a better
+                experience.
+              </div>
             )}
-          </div>
+
+            {/* Game Content */}
+            <div className="online-container">
+              <div
+                className="player1-container"
+                style={{ border: "2px solid lightblue" }}
+              >
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                    users[0]
+                  )}.png`}
+                  alt="User"
+                  draggable={false}
+                  style={{
+                    outline:
+                      users[0] === room.playerTurn
+                        ? "solid 1px lightgreen"
+                        : "solid 1px transparent",
+                  }}
+                />
+                <h6
+                  style={{
+                    color: room.player1.ready ? "lightgreen" : "unset",
+                  }}
+                >
+                  {users[0]}
+                </h6>
+                <small>{room.player1.score} pairs found</small>
+              </div>
+              <div className="cards">
+                <div className="cards-column">
+                  {cards.map((row, index) => (
+                    <div className="cards-row" key={index}>
+                      {row.map((card, i) => (
+                        <div
+                          className={`card ${
+                            [2, 3].includes(card.state) ? "card-flipped" : ""
+                          }`}
+                          data-pokemon={card.id}
+                          key={index + "-" + i}
+                          onClick={() => {
+                            if (
+                              flippedCards.length <= 1 &&
+                              isLoggedIn &&
+                              room.playerTurn === name &&
+                              [0, 1].includes(card.state) &&
+                              room.player1.ready &&
+                              room.player2.ready
+                            )
+                              handleFlipCard(
+                                index,
+                                i,
+                                i + index * row.length,
+                                card.shiny
+                              );
+                          }}
+                          style={{
+                            border:
+                              card.state === 2
+                                ? "2px solid lightblue"
+                                : card.state === 3
+                                ? "2px solid lightcoral"
+                                : "none",
+                          }}
+                        >
+                          <div className="card-front">
+                            <img
+                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png`}
+                              alt={"Pokemon - " + index + "-" + i}
+                              draggable={false}
+                            />
+                          </div>
+                          <div className="card-back">
+                            <img
+                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                                card.shiny ? "shiny/" : ""
+                              }${card.id || 0}.png`}
+                              alt={"Pokemon Default - " + index + "-" + i}
+                              draggable={false}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div
+                className="player2-container"
+                style={{ border: "2px solid lightcoral" }}
+              >
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                    users[1]
+                  )}.png`}
+                  alt="User"
+                  draggable={false}
+                  style={{
+                    outline:
+                      users[1] === room.playerTurn
+                        ? "solid 1px lightgreen"
+                        : "solid 1px transparent",
+                  }}
+                />
+                <h6
+                  style={{
+                    color: room.player2.ready ? "lightgreen" : "unset",
+                  }}
+                >
+                  {users[1]}
+                </h6>
+                <small>{room.player2.score} pairs found</small>
+              </div>
+              {endOfGame ? (
+                <div className="online-ending">
+                  {(() => {
+                    const Winner = (first, second) => {
+                      return (
+                        <>
+                          <div className="online-playerWon">
+                            <img
+                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                                users[first]
+                              )}.png`}
+                              alt="User"
+                              draggable={false}
+                            />
+                            <h5>
+                              WON <FaCrown />
+                            </h5>
+                          </div>
+                          <div className="online-playerLost">
+                            <img
+                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                                users[second]
+                              )}.png`}
+                              alt="User"
+                              draggable={false}
+                            />
+                            <h5>LOST</h5>
+                          </div>
+                        </>
+                      );
+                    };
+                    if (room.player1.score > room.player2.score) {
+                      return Winner(0, 1);
+                    } else if (room.player2.score > room.player1.score) {
+                      return Winner(1, 0);
+                    } else {
+                      return (
+                        <>
+                          <div className="online-playerWon">
+                            <img
+                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                                users[0]
+                              )}.png`}
+                              alt="User"
+                              draggable={false}
+                            />
+                            <h5>
+                              TIE <FaCrown />
+                            </h5>
+                          </div>
+                          <div className="online-playerWon">
+                            <img
+                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                                users[1]
+                              )}.png`}
+                              alt="User"
+                              draggable={false}
+                            />
+                            <h5>
+                              TIE <FaCrown />
+                            </h5>
+                          </div>
+                        </>
+                      );
+                    }
+                  })()}
+                </div>
+              ) : (
+                false
+              )}
+            </div>
+          </>
         )}
       </div>
     </section>

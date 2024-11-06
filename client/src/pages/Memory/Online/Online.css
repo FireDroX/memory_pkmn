@@ -8,8 +8,8 @@
 
 .player1-container,
 .player2-container {
-  width: 10rem;
-  height: 12rem;
+  width: 20vh;
+  height: 30vh;
   color: var(--text95);
   border-radius: 25px;
 
@@ -25,6 +25,7 @@
 .player2-container > img {
   border-radius: 10px;
   transition: all 0.5s;
+  height: 15vh;
 }
 
 .online-ending {

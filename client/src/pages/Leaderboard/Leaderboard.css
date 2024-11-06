@@ -1,6 +1,6 @@
 .leaderboard-container {
-  width: 40rem;
-  height: 23rem;
+  width: 35rem;
+  height: 20rem;
   background-color: var(--accent10);
   border-radius: 50px;
   display: flex;
@@ -76,5 +76,11 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+  }
+}
+
+@media (orientation: landscape) {
+  .leaderboard-container {
+    margin-top: 3.5rem;
   }
 }

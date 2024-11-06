@@ -1,0 +1,107 @@
+.cards {
+  margin-top: 3.5rem;
+}
+
+.cards > h6 {
+  padding-top: 2vh;
+  color: var(--text);
+}
+
+.cards-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.cards-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2vh;
+}
+
+.card {
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  position: relative;
+  height: 18vh;
+  width: 12vh;
+  background-color: var(--accent20);
+  border-radius: 15px;
+  text-align: center;
+  transition: transform 1.2s, border 0.5s ease;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.card:hover {
+  cursor: pointer;
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+}
+
+.card-back {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+.card-flipped {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+.card-found {
+  border: 2px solid var(--accent);
+}
+
+.card-not-found {
+  border: 2px solid red;
+}
+
+/* Mobile Portrait Warning Overlay */
+.portrait-warning {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: var(--text55);
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  text-align: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+@media (orientation: portrait) {
+  .portrait-warning {
+    display: flex;
+  }
+
+  /* Hide the game area in portrait mode */
+  .cards {
+    display: none;
+  }
+}
