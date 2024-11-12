@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../../utils/UserContext";
 import "./Solo.css";
 
 const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
+  const { name, isLoggedIn, setUserProfile } = useContext(UserContext);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [playerWon, setPlayerWon] = useState(false);
@@ -76,7 +78,27 @@ const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
   };
 
   useEffect(() => {
-    if (game.pairs === 0) setPlayerWon(true);
+    if (game.pairs === 0) {
+      setPlayerWon(true);
+      if (isLoggedIn) {
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            xp: 5,
+          }),
+        };
+
+        fetch("/update", requestOptions).then((data) => {
+          if (data.status === 200) {
+            data.json().then((json) => {
+              setUserProfile(json.profile);
+            });
+          }
+        });
+      }
+    }
     if (game.tries === 0) {
       setPlayerLost(true);
       const everyCards = document.getElementsByClassName("card");

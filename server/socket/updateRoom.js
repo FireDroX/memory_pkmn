@@ -44,13 +44,26 @@ module.exports = (io) => {
           });
 
           if (cardsLeft === 0) {
+            let player = null;
+            if (roomData.player1.score > roomData.player2.score) {
+              player = users.data.filter(
+                (p) => p.name === roomData.player1.name
+              )[0];
+            } else if (roomData.player1.score < roomData.player2.score) {
+              player = users.data.filter(
+                (p) => p.name === roomData.player2.name
+              )[0];
+            }
+
+            if (player === null) return;
+
             // Send the updated data back to Supabase
             const { error: updateUserError } = await supabase
               .from("users")
               .update({
-                online_games_won: newPlayer.online_games_won + 1,
+                online_games_won: player.online_games_won + 1,
               })
-              .eq("id", newPlayer.id);
+              .eq("id", player.id);
 
             if (updateUserError) throw updateUserError;
           }

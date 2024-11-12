@@ -15,17 +15,22 @@ router.get("/", async (_, res) => {
   for (const room of rooms.data) {
     const player1 = users.data.filter(
       (player) => player.id === room.player1.id
-    )[0].name;
+    )[0];
     const player2 = users.data.filter(
       (player) => player.id === room.player2.id
-    )[0].name;
+    )[0];
 
     returnedRooms.push({
       id: room.id,
-      player1,
-      player2,
+      player1: {
+        name: player1.name,
+        skin: player1.user_profile.inventory[0].colors[0],
+      },
+      player2: {
+        name: player2.name,
+        skin: player2.user_profile.inventory[0].colors[0],
+      },
       created_at: room.created_at,
-      isShiny: room.isShiny,
     });
   }
   res.json(returnedRooms);

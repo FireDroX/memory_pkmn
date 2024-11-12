@@ -13,7 +13,8 @@ import Waiting from "./pages/Waiting/Waiting";
 import Leaderboard from "./pages/Leaderboard/Leaderboard";
 
 function App() {
-  const { setName, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
+  const { setName, isLoggedIn, setIsLoggedIn, setUserProfile } =
+    useContext(UserContext);
   function DynamicPage() {
     const [page, setPage] = useState(null);
     const [roomID, setRoomID] = useState(null);
@@ -55,8 +56,11 @@ function App() {
 
     fetch("/login", requestOptions).then((data) => {
       if (data.status === 200) {
-        setName(name);
-        setIsLoggedIn(true);
+        data.json().then((json) => {
+          setName(name);
+          setIsLoggedIn(true);
+          setUserProfile(json.profile);
+        });
       }
     });
   }, []);

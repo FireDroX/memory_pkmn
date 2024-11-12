@@ -1,4 +1,5 @@
 import "./Profile.css";
+import "../../utils/CustomColors.css";
 import { useState, useContext, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosRefresh } from "react-icons/io";
@@ -6,7 +7,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
 
 const Profile = () => {
-  const { name, setName, setIsLoggedIn } = useContext(UserContext);
+  const { name, setName, setIsLoggedIn, userProfile } = useContext(UserContext);
   const navigate = useNavigate();
   const [status, setStatus] = useState();
   const [invitedPlayers, setInvitedPlayers] = useState("");
@@ -102,7 +103,12 @@ const Profile = () => {
                 alt="User"
                 draggable={false}
               />
-              <h5>{name}</h5>
+              <h5
+                className={userProfile.inventory[0].colors[0]}
+                data-name={name}
+              >
+                {name}
+              </h5>
             </div>
             <p style={{ color: "red", fontSize: "10px" }}>{status}</p>
             <div className="profile-invite">
@@ -198,11 +204,17 @@ const Profile = () => {
                     onClick: () => handleNavigate(game.id),
                     style: { fontWeight: 700 },
                   };
-                  if (name === game.player1) {
+                  if (name === game.player1.name) {
                     return (
                       <p key={i}>
-                        You invited <strong>{game.player2}</strong> :{" "}
-                        <span {...parameters}>JOIN</span>
+                        You invited{" "}
+                        <strong
+                          className={game.player2.skin}
+                          data-name={game.player2.name}
+                        >
+                          {game.player2.name}
+                        </strong>{" "}
+                        : <span {...parameters}>JOIN</span>
                         <FaTrashAlt
                           onClick={() => {
                             if (delayed.delete) return;
@@ -221,19 +233,35 @@ const Profile = () => {
                         />
                       </p>
                     );
-                  } else if (name === game.player2) {
+                  } else if (name === game.player2.name) {
                     return (
                       <p key={i}>
-                        <strong>{game.player1}</strong> invited you :{" "}
-                        <span {...parameters}>JOIN</span>
+                        <strong
+                          className={game.player1.skin}
+                          data-name={game.player1.name}
+                        >
+                          {game.player1.name}
+                        </strong>{" "}
+                        invited you : <span {...parameters}>JOIN</span>
                       </p>
                     );
                   } else {
                     return (
                       <p key={i}>
-                        <strong>{game.player1}</strong> vs{" "}
-                        <strong>{game.player2}</strong>:{" "}
-                        <span {...parameters}>JOIN</span>
+                        <strong
+                          className={game.player1.skin}
+                          data-name={game.player1.name}
+                        >
+                          {game.player1.name}
+                        </strong>{" "}
+                        vs{" "}
+                        <strong
+                          className={game.player2.skin}
+                          data-name={game.player2.name}
+                        >
+                          {game.player2.name}
+                        </strong>
+                        : <span {...parameters}>JOIN</span>
                       </p>
                     );
                   }

@@ -25,6 +25,7 @@ router.post("/", async (req, res) => {
     status: "",
     online_games_won: user.online_games_won,
     created_at: user.created_at,
+    profile: user.user_profile,
   });
 });
 
