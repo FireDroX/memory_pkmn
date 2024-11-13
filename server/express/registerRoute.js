@@ -28,6 +28,16 @@ router.post("/", async (req, res) => {
     password: hashedPassword,
     online_games_won: 0,
     shiny_pairs_found: 0,
+    user_profile: {
+      level: 0,
+      xp: 0,
+      xpNeeded: 10,
+      inventory: [
+        {
+          colors: ["color-default"],
+        },
+      ],
+    },
   });
 
   return res.json({

@@ -11,7 +11,7 @@ const supabase = createClient(
 );
 
 router.post("/", async (req, res) => {
-  const { name, xp } = req.body;
+  const { name, xp, userProfile = undefined } = req.body;
   const { data: player } = await supabase
     .from("users")
     .select("*")
@@ -21,17 +21,16 @@ router.post("/", async (req, res) => {
   if (!player) return res.json({ status: "Player does not exists." });
 
   const { level, xp: xpOld, xpNeeded } = player.user_profile;
-  const updatedUser = player.user_profile;
+  const updatedUser = userProfile || player.user_profile;
 
-  if (xpOld + xp >= xpNeeded) {
-    if (levels.length <= level + 1) return;
+  if (xpOld + xp >= xpNeeded && levels.length > level + 1) {
     const newInfos = levels[level + 1];
     updatedUser.level = newInfos.level;
     updatedUser.xp = xpOld + xp - xpNeeded;
     updatedUser.xpNeeded = newInfos.xpNeeded;
     if (
       newInfos.rewards?.color &&
-      !updatedUser.inventory[0].colors.unshift(newInfos.rewards.color)
+      !updatedUser.inventory[0].colors.includes(newInfos.rewards.color)
     ) {
       updatedUser.inventory[0].colors.push(newInfos.rewards.color);
     }

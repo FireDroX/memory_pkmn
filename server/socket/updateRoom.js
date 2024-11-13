@@ -4,6 +4,8 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
+const levels = require("../utils/Levels");
+
 module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("update-room", async ({ room, cards, player, pair }) => {
@@ -57,11 +59,33 @@ module.exports = (io) => {
 
             if (player === null) return;
 
+            // Add XP
+            const XP = 15; // 15xp per online game won
+            const { level, xp: xpOld, xpNeeded } = player.user_profile;
+            const updatedUser = player.user_profile;
+            if (xpOld + XP >= xpNeeded && levels.length > level + 1) {
+              const newInfos = levels[level + 1];
+              updatedUser.level = newInfos.level;
+              updatedUser.xp = xpOld + XP - xpNeeded;
+              updatedUser.xpNeeded = newInfos.xpNeeded;
+              if (
+                newInfos.rewards?.color &&
+                !updatedUser.inventory[0].colors.includes(
+                  newInfos.rewards.color
+                )
+              ) {
+                updatedUser.inventory[0].colors.push(newInfos.rewards.color);
+              }
+            } else {
+              updatedUser.xp = xpOld + XP;
+            }
+
             // Send the updated data back to Supabase
             const { error: updateUserError } = await supabase
               .from("users")
               .update({
                 online_games_won: player.online_games_won + 1,
+                user_profile: updatedUser,
               })
               .eq("id", player.id);
 

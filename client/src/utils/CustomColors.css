@@ -1,28 +1,52 @@
 /* REWARD COLOR DEFAULT */
 
-.levels-color-default {
+.color-default {
   color: var(--text95);
 }
 
 /* REWARD COLOR 1 */
 /* From Uiverse.io by alexreyes091 */
-.levels-color-1 {
+.color-1 {
   color: var(--text85);
   text-shadow: rgba(240, 46, 170, 0.4) 2px 2px, rgba(240, 46, 170, 0.3) 4px 4px,
     rgba(240, 46, 170, 0.2) 6px 6px;
 }
 
 /* REWARD COLOR 2 */
+/* From Uiverse.io by alexreyes091 */
+.color-2 {
+  color: var(--text85);
+  text-shadow: rgba(0, 229, 113, 0.4) 2px 2px, rgba(0, 210, 168, 0.3) 4px 4px,
+    rgba(0, 186, 214, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR 3 */
+/* From Uiverse.io by alexreyes091 */
+.color-3 {
+  color: var(--text85);
+  text-shadow: rgba(235, 153, 40, 0.4) 2px 2px, rgba(178, 154, 4, 0.3) 4px 4px,
+    rgba(119, 150, 19, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR 4 */
+/* From Uiverse.io by alexreyes091 */
+.color-4 {
+  color: var(--text85);
+  text-shadow: rgba(195, 252, 241, 0.4) 2px 2px,
+    rgba(150, 221, 231, 0.3) 4px 4px, rgba(120, 188, 220, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR GLITCH */
 /* From Uiverse.io by andrew-demchenk0 */
-.levels-color-2 {
+.color-glitch {
   position: relative;
   color: var(--text95);
   z-index: 1;
   animation: shift 1s ease-in-out infinite alternate;
 }
 
-.levels-color-2:before,
-.levels-color-2:after {
+.color-glitch:before,
+.color-glitch:after {
   display: block;
   content: attr(data-name);
   position: absolute;
@@ -31,13 +55,13 @@
   opacity: 0.8;
 }
 
-.levels-color-2:before {
+.color-glitch:before {
   animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
   color: #8b00ff;
   z-index: -1;
 }
 
-.levels-color-2:after {
+.color-glitch:after {
   animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both
     infinite;
   color: #00e571;

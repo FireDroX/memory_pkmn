@@ -34,7 +34,9 @@ const Navbar = () => {
               <div className="progress-bar">
                 <div
                   className="progress-fill"
-                  style={{ width: `${xpPercentage}%` }}
+                  style={{
+                    width: `${xpPercentage >= 100 ? 100 : xpPercentage}%`,
+                  }}
                 ></div>
               </div>
               {userProfile.xp} / {userProfile.xpNeeded}

@@ -68,18 +68,7 @@ const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
   };
 
   const resetValues = () => {
-    setCards([]);
-    setFlippedCards([]);
-    setMatchedCards([]);
-    setTries(20);
-    setPlayerWon(false);
-    setPlayerLost(false);
-    setGame({ pairs: -1, tries: -1, started: false });
-  };
-
-  useEffect(() => {
     if (game.pairs === 0) {
-      setPlayerWon(true);
       if (isLoggedIn) {
         const requestOptions = {
           method: "POST",
@@ -98,6 +87,20 @@ const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
           }
         });
       }
+    }
+
+    setCards([]);
+    setFlippedCards([]);
+    setMatchedCards([]);
+    setTries(20);
+    setPlayerWon(false);
+    setPlayerLost(false);
+    setGame({ pairs: -1, tries: -1, started: false });
+  };
+
+  useEffect(() => {
+    if (game.pairs === 0) {
+      setPlayerWon(true);
     }
     if (game.tries === 0) {
       setPlayerLost(true);

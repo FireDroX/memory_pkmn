@@ -76,10 +76,6 @@ const Profile = () => {
     navigate("");
   };
 
-  const handleWaiting = () => {
-    navigate(`?query=waiting`);
-  };
-
   const stringToDecimal = (str) => {
     let decimal = 0;
     str.split("").map((char) => (decimal += char.charCodeAt(0)));
@@ -106,6 +102,7 @@ const Profile = () => {
               <h5
                 className={userProfile.inventory[0].colors[0]}
                 data-name={name}
+                onClick={() => navigate("?query=colors")}
               >
                 {name}
               </h5>
@@ -144,9 +141,6 @@ const Profile = () => {
                 <p>Pairs</p>
               </div>
               <div className="profile-buttons-joining">
-                <button className="profile-disconnect" onClick={handleWaiting}>
-                  Random
-                </button>
                 <button
                   disabled={delayed.invite}
                   className="profile-disconnect"
