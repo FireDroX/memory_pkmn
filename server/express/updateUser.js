@@ -28,11 +28,12 @@ router.post("/", async (req, res) => {
     updatedUser.level = newInfos.level;
     updatedUser.xp = xpOld + xp - xpNeeded;
     updatedUser.xpNeeded = newInfos.xpNeeded;
-    if (
-      newInfos.rewards?.color &&
-      !updatedUser.inventory[0].colors.includes(newInfos.rewards.color)
-    ) {
-      updatedUser.inventory[0].colors.push(newInfos.rewards.color);
+    if (newInfos.rewards.colors.length > 0) {
+      newInfos.rewards.colors.map((color) => {
+        if (!updatedUser.inventory[0].colors.includes(color)) {
+          updatedUser.inventory[0].colors.push(color);
+        }
+      });
     }
   } else {
     updatedUser.xp = xpOld + xp;

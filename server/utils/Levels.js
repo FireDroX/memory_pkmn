@@ -3,42 +3,42 @@ module.exports = [
     level: 0,
     xpNeeded: 10,
     rewards: {
-      color: "color-default",
+      colors: ["color-default"],
     },
   },
   {
     level: 1,
     xpNeeded: 50,
     rewards: {
-      color: "color-1",
+      colors: ["color-1", "color-5"],
     },
   },
   {
     level: 2,
     xpNeeded: 100,
     rewards: {
-      color: "color-2",
+      colors: ["color-2", "color-9"],
     },
   },
   {
     level: 3,
     xpNeeded: 150,
     rewards: {
-      color: "color-3",
+      colors: ["color-3", "color-7"],
     },
   },
   {
     level: 4,
     xpNeeded: 200,
     rewards: {
-      color: "color-4",
+      colors: ["color-6", "color-8"],
     },
   },
   {
     level: 5,
     xpNeeded: 250,
     rewards: {
-      color: "color-glitch",
+      colors: ["color-4", "color-glitch"],
     },
   },
 ];

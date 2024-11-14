@@ -1,6 +1,6 @@
 .leaderboard-container {
-  width: 35rem;
-  height: 20rem;
+  width: 42rem;
+  height: 22rem;
   background-color: var(--accent10);
   border-radius: 50px;
   display: flex;
@@ -49,8 +49,8 @@
   justify-content: center;
   gap: 0.75rem;
 
-  height: 1.5rem;
-  font-size: 20px;
+  height: 1.3rem;
+  font-size: 18px;
   color: var(--text75);
 }
 
@@ -66,8 +66,9 @@
 
 @media (max-width: 580px) {
   .leaderboard-container {
+    margin-top: 8rem;
     width: 20rem;
-    height: 35rem;
+    height: auto;
     padding: 2rem 1rem;
   }
 

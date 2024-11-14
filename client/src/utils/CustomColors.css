@@ -36,6 +36,51 @@
     rgba(150, 221, 231, 0.3) 4px 4px, rgba(120, 188, 220, 0.2) 6px 6px;
 }
 
+/* REWARD COLOR 5 */
+.color-5 {
+  background-image: radial-gradient(circle, #fff 20%, #f5f 50%, #a0a 80%);
+  filter: drop-shadow(0px 0px 0.1px #f5f) drop-shadow(0px 0px 4px #a0a);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 6 */
+.color-6 {
+  background-image: linear-gradient(90deg, #a00, #f55, #a00, #f55);
+  filter: drop-shadow(0px 0px 0.1px #f55) drop-shadow(0px 0px 4px #a00);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 7 */
+.color-7 {
+  background-image: linear-gradient(90deg, #ff5, #fff, #ff5, #fff);
+  filter: drop-shadow(0px 0px 0.1px #fff) drop-shadow(0px 0px 4px #ff5);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 8 */
+.color-8 {
+  background-image: linear-gradient(90deg, #0a0, #5f5, #0a0, #5f5);
+  filter: drop-shadow(0px 0px 0.1px #5f5) drop-shadow(0px 0px 4px #0a0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 9 */
+.color-9 {
+  background-image: linear-gradient(90deg, #5ff, #55f, #5ff, #55f);
+  filter: drop-shadow(0px 0px 0.1px #5ff) drop-shadow(0px 0px 4px #55f);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
 /* REWARD COLOR GLITCH */
 /* From Uiverse.io by andrew-demchenk0 */
 .color-glitch {
