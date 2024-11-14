@@ -57,9 +57,11 @@ function App() {
     fetch("/login", requestOptions).then((data) => {
       if (data.status === 200) {
         data.json().then((json) => {
-          setName(name);
-          setIsLoggedIn(true);
-          setUserProfile(json.profile);
+          if (json?.status === "") {
+            setName(name);
+            setIsLoggedIn(true);
+            setUserProfile(json.profile);
+          }
         });
       }
     });
