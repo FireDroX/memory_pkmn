@@ -4,6 +4,8 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
+const levels = require("../utils/Levels");
+
 module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("update-room", async ({ room, cards, player, pair }) => {
@@ -44,13 +46,47 @@ module.exports = (io) => {
           });
 
           if (cardsLeft === 0) {
+            let player = null;
+            if (roomData.player1.score > roomData.player2.score) {
+              player = users.data.filter(
+                (p) => p.name === roomData.player1.name
+              )[0];
+            } else if (roomData.player1.score < roomData.player2.score) {
+              player = users.data.filter(
+                (p) => p.name === roomData.player2.name
+              )[0];
+            }
+
+            if (player === null) return;
+
+            // Add XP
+            const XP = 15; // 15xp per online game won
+            const { level, xp: xpOld, xpNeeded } = player.user_profile;
+            const updatedUser = player.user_profile;
+            if (xpOld + XP >= xpNeeded && levels.length > level + 1) {
+              const newInfos = levels[level + 1];
+              updatedUser.level = newInfos.level;
+              updatedUser.xp = xpOld + XP - xpNeeded;
+              updatedUser.xpNeeded = newInfos.xpNeeded;
+              if (newInfos.rewards.colors.length > 0) {
+                newInfos.rewards.colors.map((color) => {
+                  if (!updatedUser.inventory[0].colors.includes(color)) {
+                    updatedUser.inventory[0].colors.push(color);
+                  }
+                });
+              }
+            } else {
+              updatedUser.xp = xpOld + XP;
+            }
+
             // Send the updated data back to Supabase
             const { error: updateUserError } = await supabase
               .from("users")
               .update({
-                online_games_won: newPlayer.online_games_won + 1,
+                online_games_won: player.online_games_won + 1,
+                user_profile: updatedUser,
               })
-              .eq("id", newPlayer.id);
+              .eq("id", player.id);
 
             if (updateUserError) throw updateUserError;
           }

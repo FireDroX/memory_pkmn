@@ -12,11 +12,16 @@ router.get("/", async (_, res) => {
   const users = await supabase.from("users").select();
 
   const leaderboard = {
+    levels: [],
     game_wons: [],
     shiny_pairs_found: [],
   };
 
   users.data.map((user) => {
+    leaderboard.levels.push({
+      name: user.name,
+      score: user.user_profile.level,
+    });
     leaderboard.game_wons.push({
       name: user.name,
       score: user.online_games_won,
@@ -28,6 +33,7 @@ router.get("/", async (_, res) => {
   });
 
   res.json({
+    levels: leaderboard.levels.sort((a, b) => b.score - a.score),
     game_wons: leaderboard.game_wons.sort((a, b) => b.score - a.score),
     shiny_pairs_found: leaderboard.shiny_pairs_found.sort(
       (a, b) => b.score - a.score

@@ -5,17 +5,21 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [name, setName] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    inventory: [{ colors: [] }],
+    xp: 0,
+    xpNeeded: 100,
+    level: 1,
+  });
 
-  return (
-    <UserContext.Provider
-      value={{
-        name,
-        setName,
-        isLoggedIn,
-        setIsLoggedIn,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-  );
+  const value = {
+    name,
+    setName,
+    isLoggedIn,
+    setIsLoggedIn,
+    userProfile,
+    setUserProfile,
+  };
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

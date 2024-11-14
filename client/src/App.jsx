@@ -9,11 +9,12 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Profile from "./pages/Profile/Profile";
 import Online from "./pages/Memory/Online/Online";
-import Waiting from "./pages/Waiting/Waiting";
 import Leaderboard from "./pages/Leaderboard/Leaderboard";
+import Colors from "./pages/Colors/Colors";
 
 function App() {
-  const { setName, isLoggedIn, setIsLoggedIn } = useContext(UserContext);
+  const { setName, isLoggedIn, setIsLoggedIn, setUserProfile } =
+    useContext(UserContext);
   function DynamicPage() {
     const [page, setPage] = useState(null);
     const [roomID, setRoomID] = useState(null);
@@ -34,8 +35,8 @@ function App() {
         return <Online id={roomID} />;
       case "profile":
         return isLoggedIn ? <Profile /> : <Home />;
-      case "waiting":
-        return isLoggedIn ? <Waiting /> : <Home />;
+      case "colors":
+        return isLoggedIn ? <Colors /> : <Home />;
       default:
         return <Home />;
     }
@@ -55,8 +56,11 @@ function App() {
 
     fetch("/login", requestOptions).then((data) => {
       if (data.status === 200) {
-        setName(name);
-        setIsLoggedIn(true);
+        data.json().then((json) => {
+          setName(name);
+          setIsLoggedIn(true);
+          setUserProfile(json.profile);
+        });
       }
     });
   }, []);

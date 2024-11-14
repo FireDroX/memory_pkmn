@@ -1,0 +1,182 @@
+/* REWARD COLOR DEFAULT */
+
+.color-default {
+  color: var(--text95);
+}
+
+/* REWARD COLOR 1 */
+/* From Uiverse.io by alexreyes091 */
+.color-1 {
+  color: var(--text85);
+  text-shadow: rgba(240, 46, 170, 0.4) 2px 2px, rgba(240, 46, 170, 0.3) 4px 4px,
+    rgba(240, 46, 170, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR 2 */
+/* From Uiverse.io by alexreyes091 */
+.color-2 {
+  color: var(--text85);
+  text-shadow: rgba(0, 229, 113, 0.4) 2px 2px, rgba(0, 210, 168, 0.3) 4px 4px,
+    rgba(0, 186, 214, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR 3 */
+/* From Uiverse.io by alexreyes091 */
+.color-3 {
+  color: var(--text85);
+  text-shadow: rgba(235, 153, 40, 0.4) 2px 2px, rgba(178, 154, 4, 0.3) 4px 4px,
+    rgba(119, 150, 19, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR 4 */
+/* From Uiverse.io by alexreyes091 */
+.color-4 {
+  color: var(--text85);
+  text-shadow: rgba(195, 252, 241, 0.4) 2px 2px,
+    rgba(150, 221, 231, 0.3) 4px 4px, rgba(120, 188, 220, 0.2) 6px 6px;
+}
+
+/* REWARD COLOR 5 */
+.color-5 {
+  background-image: radial-gradient(circle, #fff 20%, #f5f 50%, #a0a 80%);
+  filter: drop-shadow(0px 0px 0.1px #f5f) drop-shadow(0px 0px 4px #a0a);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 6 */
+.color-6 {
+  background-image: linear-gradient(90deg, #a00, #f55, #a00, #f55);
+  filter: drop-shadow(0px 0px 0.1px #f55) drop-shadow(0px 0px 4px #a00);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 7 */
+.color-7 {
+  background-image: linear-gradient(90deg, #ff5, #fff, #ff5, #fff);
+  filter: drop-shadow(0px 0px 0.1px #fff) drop-shadow(0px 0px 4px #ff5);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 8 */
+.color-8 {
+  background-image: linear-gradient(90deg, #0a0, #5f5, #0a0, #5f5);
+  filter: drop-shadow(0px 0px 0.1px #5f5) drop-shadow(0px 0px 4px #0a0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR 9 */
+.color-9 {
+  background-image: linear-gradient(90deg, #5ff, #55f, #5ff, #55f);
+  filter: drop-shadow(0px 0px 0.1px #5ff) drop-shadow(0px 0px 4px #55f);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* REWARD COLOR GLITCH */
+/* From Uiverse.io by andrew-demchenk0 */
+.color-glitch {
+  position: relative;
+  color: var(--text95);
+  z-index: 1;
+  animation: shift 1s ease-in-out infinite alternate;
+}
+
+.color-glitch:before,
+.color-glitch:after {
+  display: block;
+  content: attr(data-name);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.8;
+}
+
+.color-glitch:before {
+  animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: #8b00ff;
+  z-index: -1;
+}
+
+.color-glitch:after {
+  animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both
+    infinite;
+  color: #00e571;
+  z-index: -2;
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-1px, 1px);
+  }
+
+  40% {
+    transform: translate(-1px, -1px);
+  }
+
+  60% {
+    transform: translate(1px, 1px);
+  }
+
+  80% {
+    transform: translate(1px, -1px);
+  }
+
+  to {
+    transform: translate(0);
+  }
+}
+
+@keyframes shift {
+  0%,
+  40%,
+  44%,
+  58%,
+  61%,
+  65%,
+  69%,
+  73%,
+  100% {
+    transform: skewX(0deg);
+  }
+
+  41% {
+    transform: skewX(10deg);
+  }
+
+  42% {
+    transform: skewX(-10deg);
+  }
+
+  59% {
+    transform: skewX(40deg) skewY(10deg);
+  }
+
+  60% {
+    transform: skewX(-40deg) skewY(-10deg);
+  }
+
+  63% {
+    transform: skewX(10deg) skewY(-5deg);
+  }
+
+  70% {
+    transform: skewX(-50deg) skewY(-20deg);
+  }
+
+  71% {
+    transform: skewX(10deg) skewY(-10deg);
+  }
+}

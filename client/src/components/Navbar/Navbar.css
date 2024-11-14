@@ -15,7 +15,7 @@
   height: 100%;
 }
 
-.navbar-texts > p {
+.navbar-texts > * {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,4 +24,25 @@
 
 .navbar-texts > p:hover {
   cursor: pointer;
+}
+
+.progress-bar {
+  width: 10rem;
+  height: 10px;
+  background-color: var(--primary25); /* Background color of the progress bar */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 5px;
+  background-color: var(--text85); /* Progress bar fill color */
+  transition: width 0.4s ease; /* Smooth animation on level progress */
+}
+
+@media (max-width: 580px) {
+  .progress-container {
+    display: none;
+  }
 }

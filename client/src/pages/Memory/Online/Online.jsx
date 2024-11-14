@@ -92,7 +92,7 @@ const Online = ({ id }) => {
                   (collIndex === secondCard.coll && rowIndex === secondCard.row)
                 ) {
                   // Return a new object with state updated to 2 or 3
-                  return { ...card, state: name === users[0] ? 2 : 3 };
+                  return { ...card, state: name === users[0].name ? 2 : 3 };
                 } else if (card.state === 1) {
                   return { ...card, state: 0 };
                 }
@@ -223,25 +223,27 @@ const Online = ({ id }) => {
               >
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                    users[0]
+                    users[0].name
                   )}.png`}
                   alt="User"
                   draggable={false}
                   style={{
                     outline:
-                      users[0] === room.playerTurn
+                      users[0].name === room.playerTurn
                         ? "solid 1px lightgreen"
                         : "solid 1px transparent",
                   }}
                 />
-                <h6
+                <h6 className={users[0].skin} data-name={users[0].name}>
+                  {users[0].name}
+                </h6>
+                <small
                   style={{
                     color: room.player1.ready ? "lightgreen" : "unset",
                   }}
                 >
-                  {users[0]}
-                </h6>
-                <small>{room.player1.score} pairs found</small>
+                  {room.player1.score} pairs found
+                </small>
               </div>
               <div className="cards">
                 <div className="cards-column">
@@ -307,25 +309,27 @@ const Online = ({ id }) => {
               >
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                    users[1]
+                    users[1].name
                   )}.png`}
                   alt="User"
                   draggable={false}
                   style={{
                     outline:
-                      users[1] === room.playerTurn
+                      users[1].name === room.playerTurn
                         ? "solid 1px lightgreen"
                         : "solid 1px transparent",
                   }}
                 />
-                <h6
+                <h6 className={users[1].skin} data-name={users[1].name}>
+                  {users[1].name}
+                </h6>
+                <small
                   style={{
                     color: room.player2.ready ? "lightgreen" : "unset",
                   }}
                 >
-                  {users[1]}
-                </h6>
-                <small>{room.player2.score} pairs found</small>
+                  {room.player2.score} pairs found
+                </small>
               </div>
               {endOfGame ? (
                 <div className="online-ending">
@@ -336,7 +340,7 @@ const Online = ({ id }) => {
                           <div className="online-playerWon">
                             <img
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[first]
+                                users[first].name
                               )}.png`}
                               alt="User"
                               draggable={false}
@@ -348,7 +352,7 @@ const Online = ({ id }) => {
                           <div className="online-playerLost">
                             <img
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[second]
+                                users[second].name
                               )}.png`}
                               alt="User"
                               draggable={false}
@@ -368,7 +372,7 @@ const Online = ({ id }) => {
                           <div className="online-playerWon">
                             <img
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[0]
+                                users[0].name
                               )}.png`}
                               alt="User"
                               draggable={false}
@@ -380,7 +384,7 @@ const Online = ({ id }) => {
                           <div className="online-playerWon">
                             <img
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[1]
+                                users[1].name
                               )}.png`}
                               alt="User"
                               draggable={false}

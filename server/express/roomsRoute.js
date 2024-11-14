@@ -15,12 +15,15 @@ router.post("/get", async (req, res) => {
   if (!room) return res.sendStatus(204);
   const player1 = users.data.filter(
     (player) => player.id === room.player1.id
-  )[0].name;
+  )[0];
   const player2 = users.data.filter(
     (player) => player.id === room.player2.id
-  )[0].name;
+  )[0];
   res.json({
-    users: [player1, player2],
+    users: [
+      { name: player1.name, skin: player1.user_profile.inventory[0].colors[0] },
+      { name: player2.name, skin: player2.user_profile.inventory[0].colors[0] },
+    ],
     room: room,
   });
 });
