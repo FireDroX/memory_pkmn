@@ -9,6 +9,13 @@ function Home() {
   const [game, setGame] = useState({ pairs: -1, tries: -1, started: false });
   const [shinyMode, setShinyMode] = useState(false);
 
+  // Check if it's the weekend in Europe/Paris timezone
+  const parisTime = new Date().toLocaleString("en-US", {
+    timeZone: "Europe/Paris",
+  });
+  const parisDate = new Date(parisTime);
+  const isWeekend = parisDate.getDay() === 6 || parisDate.getDay() === 0; // Saturday or Sunday
+
   const shuffleArray = (array) => {
     // Fisher-Yates shuffle algorithm to shuffle an array
     for (let i = array.length - 1; i > 0; i--) {
@@ -118,6 +125,7 @@ function Home() {
             cards={cards}
             game={game}
             setCards={setCards}
+            tries={tries}
             setTries={setTries}
             setGame={setGame}
             shinyMode={shinyMode}
@@ -136,6 +144,20 @@ function Home() {
       >
         PokeAPI
       </a>
+      {isWeekend ? (
+        <span
+          style={{
+            position: "absolute",
+            bottom: 5,
+            right: 10,
+            color: "var(--text15)",
+          }}
+        >
+          DOUBLE XP WEEK-END !
+        </span>
+      ) : (
+        false
+      )}
     </section>
   );
 }
