@@ -40,7 +40,9 @@ const Leaderboard = () => {
                         `${index + 1}.`
                       )}
                     </span>
-                    <span>{levels.name}</span>
+                    <span className={levels.color} data-name={levels.name}>
+                      {levels.name}
+                    </span>
                     <span>({levels.score})</span>
                   </p>
                 ))}
@@ -67,7 +69,9 @@ const Leaderboard = () => {
                               `${index + 1}.`
                             )}
                           </span>
-                          <span>{user.name}</span>
+                          <span className={user.color} data-name={user.name}>
+                            {user.name}
+                          </span>
                           <span>({user.score})</span>
                         </p>
                       );
@@ -97,7 +101,12 @@ const Leaderboard = () => {
                           `${index + 1}.`
                         )}
                       </span>
-                      <span>{game_wons.name}</span>
+                      <span
+                        className={game_wons.color}
+                        data-name={game_wons.name}
+                      >
+                        {game_wons.name}
+                      </span>
                       <span>({game_wons.score})</span>
                     </p>
                   ))}
@@ -124,7 +133,9 @@ const Leaderboard = () => {
                               `${index + 1}.`
                             )}
                           </span>
-                          <span>{user.name}</span>
+                          <span className={user.color} data-name={user.name}>
+                            {user.name}
+                          </span>
                           <span>({user.score})</span>
                         </p>
                       );
@@ -154,7 +165,12 @@ const Leaderboard = () => {
                           `${index + 1}.`
                         )}
                       </span>
-                      <span>{shiny_pairs_found.name}</span>
+                      <span
+                        className={shiny_pairs_found.color}
+                        data-name={shiny_pairs_found.name}
+                      >
+                        {shiny_pairs_found.name}
+                      </span>
                       <span>({shiny_pairs_found.score})</span>
                     </p>
                   ))}
@@ -182,7 +198,9 @@ const Leaderboard = () => {
                               `${index + 1}.`
                             )}
                           </span>
-                          <span>{user.name}</span>
+                          <span className={user.color} data-name={user.name}>
+                            {user.name}
+                          </span>
                           <span>({user.score})</span>
                         </p>
                       );
