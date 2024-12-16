@@ -43,14 +43,6 @@ const Online = ({ id }) => {
     setUsers(json.users);
     setRoom(json.room);
     setCards(json.room.cards);
-
-    // Update user to be ready
-    if (
-      (name === json.room.player1.name && !json.room.player1.ready) ||
-      (name === json.room.player2.name && !json.room.player2.ready)
-    ) {
-      socket.emit("user-connected", { name, id });
-    }
   };
 
   const stringToDecimal = (str) => {
@@ -61,7 +53,7 @@ const Online = ({ id }) => {
 
   const handleFlipCard = (coll, row, index, isShiny) => {
     if (
-      [2, 3].includes(cards[coll][row].state) ||
+      [2, 3, 4, 5].includes(cards[coll][row].state) ||
       flippedCards.some((c) => c.index === index)
     ) {
       // If the card is already matched or currently flipped, do nothing
@@ -91,8 +83,11 @@ const Online = ({ id }) => {
                     rowIndex === firstCard.row) ||
                   (collIndex === secondCard.coll && rowIndex === secondCard.row)
                 ) {
-                  // Return a new object with state updated to 2 or 3
-                  return { ...card, state: name === users[0].name ? 2 : 3 };
+                  // Return a new object with state updated to 2, 3, 4 or 5
+                  return {
+                    ...card,
+                    state: users.findIndex((user) => user.name === name) + 2,
+                  };
                 } else if (card.state === 1) {
                   return { ...card, state: 0 };
                 }
@@ -172,7 +167,7 @@ const Online = ({ id }) => {
       coll.forEach((card, index) => {
         if (card.state === 1) {
           flipCards(index + collIndex * coll.length);
-        } else if ([2, 3].includes(card.state)) {
+        } else if ([2, 3, 4, 5].includes(card.state)) {
           cardsLeft -= 1;
         }
       });
@@ -215,35 +210,103 @@ const Online = ({ id }) => {
               </div>
             )}
 
-            {/* Game Content */}
-            <div className="online-container">
-              <div
-                className="player1-container"
-                style={{ border: "2px solid lightblue" }}
-              >
-                <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                    users[0].name
-                  )}.png`}
-                  alt="User"
-                  draggable={false}
-                  style={{
-                    outline:
-                      users[0].name === room.playerTurn
-                        ? "solid 1px lightgreen"
-                        : "solid 1px transparent",
-                  }}
-                />
-                <h6 className={users[0].skin} data-name={users[0].name}>
-                  {users[0].name}
-                </h6>
-                <small
-                  style={{
-                    color: room.player1.ready ? "lightgreen" : "unset",
+            {/* Ready button */}
+            {isLandscape &&
+            room.players.filter((user) => user.name === name).length > 0 &&
+            room.players.filter((user) => user.ready).length !==
+              room.players.length ? (
+              <div className="portrait-warning online-ready">
+                <p>
+                  Players :{" "}
+                  {room.players.filter((user) => user.ready === true).length}/
+                  {room.players.length}
+                </p>
+                <button
+                  onClick={() => {
+                    if (
+                      room.players.filter((user) => user.name === name)[0]
+                        ?.ready
+                    )
+                      return;
+
+                    socket.emit("user-connected", { name, id });
                   }}
                 >
-                  {room.player1.score} pairs found
-                </small>
+                  READY
+                </button>
+              </div>
+            ) : (
+              false
+            )}
+
+            {/* Game Content */}
+            <div className="online-container">
+              <div>
+                {users[0] ? (
+                  <div
+                    className="player-container"
+                    style={{ border: "2px solid lightblue" }}
+                  >
+                    <img
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                        users[0].name
+                      )}.png`}
+                      alt="User"
+                      draggable={false}
+                      style={{
+                        outline:
+                          users[0].name === room.playerTurn
+                            ? "solid 1px lightgreen"
+                            : "solid 1px transparent",
+                      }}
+                    />
+                    <h6 className={users[0].skin} data-name={users[0].name}>
+                      {users[0].name}
+                    </h6>
+                    <small
+                      style={{
+                        color: room.players[0].ready ? "lightgreen" : "unset",
+                      }}
+                    >
+                      {room.players[0].score} pairs found
+                    </small>
+                  </div>
+                ) : (
+                  false
+                )}
+                <br />
+                {users[3] ? (
+                  <div
+                    className="player-container"
+                    style={{ border: "2px solid burlywood" }}
+                  >
+                    <img
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                        users[3].name
+                      )}.png`}
+                      alt="User"
+                      draggable={false}
+                      style={{
+                        outline:
+                          users[3].name === room.playerTurn
+                            ? "solid 1px burlywood"
+                            : "solid 1px transparent",
+                      }}
+                    />
+                    <h6 className={users[3].skin} data-name={users[3].name}>
+                      {users[3].name}
+                    </h6>
+                    <small
+                      style={{
+                        color: room.players[3].ready ? "burlywood" : "unset",
+                      }}
+                    >
+                      {room.players[3].score} pairs found
+                    </small>
+                  </div>
+                ) : (
+                  false
+                )}
               </div>
               <div className="cards">
                 <div className="cards-column">
@@ -252,7 +315,9 @@ const Online = ({ id }) => {
                       {row.map((card, i) => (
                         <div
                           className={`card ${
-                            [2, 3].includes(card.state) ? "card-flipped" : ""
+                            [2, 3, 4, 5].includes(card.state)
+                              ? "card-flipped"
+                              : ""
                           }`}
                           data-pokemon={card.id}
                           key={index + "-" + i}
@@ -261,9 +326,7 @@ const Online = ({ id }) => {
                               flippedCards.length <= 1 &&
                               isLoggedIn &&
                               room.playerTurn === name &&
-                              [0, 1].includes(card.state) &&
-                              room.player1.ready &&
-                              room.player2.ready
+                              [0, 1].includes(card.state)
                             )
                               handleFlipCard(
                                 index,
@@ -278,6 +341,10 @@ const Online = ({ id }) => {
                                 ? "2px solid lightblue"
                                 : card.state === 3
                                 ? "2px solid lightcoral"
+                                : card.state === 4
+                                ? "2px solid lightgreen"
+                                : card.state === 5
+                                ? "2px solid burlywood"
                                 : "none",
                           }}
                         >
@@ -303,100 +370,105 @@ const Online = ({ id }) => {
                   ))}
                 </div>
               </div>
-              <div
-                className="player2-container"
-                style={{ border: "2px solid lightcoral" }}
-              >
-                <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                    users[1].name
-                  )}.png`}
-                  alt="User"
-                  draggable={false}
-                  style={{
-                    outline:
-                      users[1].name === room.playerTurn
-                        ? "solid 1px lightgreen"
-                        : "solid 1px transparent",
-                  }}
-                />
-                <h6 className={users[1].skin} data-name={users[1].name}>
-                  {users[1].name}
-                </h6>
-                <small
-                  style={{
-                    color: room.player2.ready ? "lightgreen" : "unset",
-                  }}
-                >
-                  {room.player2.score} pairs found
-                </small>
+              <div>
+                {users[1] ? (
+                  <div
+                    className="player-container"
+                    style={{ border: "2px solid lightcoral" }}
+                  >
+                    <img
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                        users[1].name
+                      )}.png`}
+                      alt="User"
+                      draggable={false}
+                      style={{
+                        outline:
+                          users[1].name === room.playerTurn
+                            ? "solid 1px lightgreen"
+                            : "solid 1px transparent",
+                      }}
+                    />
+                    <h6 className={users[1].skin} data-name={users[1].name}>
+                      {users[1].name}
+                    </h6>
+                    <small
+                      style={{
+                        color: room.players[1].ready ? "lightgreen" : "unset",
+                      }}
+                    >
+                      {room.players[1].score} pairs found
+                    </small>
+                  </div>
+                ) : (
+                  false
+                )}
+                <br />
+                {users[2] ? (
+                  <div
+                    className="player-container"
+                    style={{ border: "2px solid lightgreen" }}
+                  >
+                    <img
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                        users[2].name
+                      )}.png`}
+                      alt="User"
+                      draggable={false}
+                      style={{
+                        outline:
+                          users[2].name === room.playerTurn
+                            ? "solid 1px lightgreen"
+                            : "solid 1px transparent",
+                      }}
+                    />
+                    <h6 className={users[2].skin} data-name={users[2].name}>
+                      {users[2].name}
+                    </h6>
+                    <small
+                      style={{
+                        color: room.players[2].ready ? "lightgreen" : "unset",
+                      }}
+                    >
+                      {room.players[2].score} pairs found
+                    </small>
+                  </div>
+                ) : (
+                  false
+                )}
               </div>
               {endOfGame ? (
                 <div className="online-ending">
-                  {(() => {
-                    const Winner = (first, second) => {
-                      return (
-                        <>
-                          <div className="online-playerWon">
-                            <img
-                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[first].name
-                              )}.png`}
-                              alt="User"
-                              draggable={false}
-                            />
-                            <h5>
-                              WON <FaCrown />
-                            </h5>
-                          </div>
-                          <div className="online-playerLost">
-                            <img
-                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[second].name
-                              )}.png`}
-                              alt="User"
-                              draggable={false}
-                            />
-                            <h5>LOST</h5>
-                          </div>
-                        </>
-                      );
-                    };
-                    if (room.player1.score > room.player2.score) {
-                      return Winner(0, 1);
-                    } else if (room.player2.score > room.player1.score) {
-                      return Winner(1, 0);
-                    } else {
-                      return (
-                        <>
-                          <div className="online-playerWon">
-                            <img
-                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[0].name
-                              )}.png`}
-                              alt="User"
-                              draggable={false}
-                            />
-                            <h5>
-                              TIE <FaCrown />
-                            </h5>
-                          </div>
-                          <div className="online-playerWon">
-                            <img
-                              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                                users[1].name
-                              )}.png`}
-                              alt="User"
-                              draggable={false}
-                            />
-                            <h5>
-                              TIE <FaCrown />
-                            </h5>
-                          </div>
-                        </>
-                      );
-                    }
-                  })()}
+                  {room.players
+                    .sort((a, b) => a.score + b.score)
+                    .map((player, endIndex) => (
+                      <>
+                        <div
+                          className={
+                            endIndex === 0
+                              ? "online-playerWon"
+                              : "online-playerLost"
+                          }
+                        >
+                          <img
+                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                              player.name
+                            )}.png`}
+                            alt="User"
+                            draggable={false}
+                          />
+                          <h5>
+                            {endIndex === 0 ? (
+                              <>
+                                WON <FaCrown />
+                              </>
+                            ) : (
+                              "LOST"
+                            )}
+                          </h5>
+                        </div>
+                      </>
+                    ))}
                 </div>
               ) : (
                 false

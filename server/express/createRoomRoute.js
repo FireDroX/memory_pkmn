@@ -11,21 +11,29 @@ const supabase = createClient(
 router.post("/", async (req, res) => {
   const users = await supabase.from("users").select();
   const rooms = await supabase.from("rooms").select();
-  const { createdBy, invitedPlayer, pairs } = req.body;
-  const player1 = users.data.filter((user) => user.name === createdBy)[0];
-  const player2 = users.data.filter((user) => user.name === invitedPlayer)[0];
+  const { createdBy, invitedPlayer, players, pairs } = req.body;
 
-  if (!player1 || !player2)
-    return res.json({ status: "The player does not exists !" });
-  if (rooms.data.some((room) => room.player1.id === player1.id))
+  const playersList = players.map((player) => {
+    const dbPlayer = users.data.filter((user) => user.name === player)[0];
+    if (!dbPlayer)
+      return {
+        name: undefined,
+      };
+    else {
+      return {
+        name: dbPlayer.name,
+        id: dbPlayer.id,
+        score: 0,
+        ready: false,
+      };
+    }
+  });
+
+  if (playersList.filter((player) => player.name === undefined).length > 0)
+    return res.json({ status: "One of the player does not exists !" });
+
+  if (rooms.data.some((room) => room.players[0].id === playersList[0].id))
     return res.json({ status: "You already created a room." });
-  if (
-    (rooms.data.some((room) => room.player1.id === player1.id) &&
-      rooms.data.some((room) => room.player2.id === player2.id)) ||
-    (rooms.data.some((room) => room.player1.id === player2.id) &&
-      rooms.data.some((room) => room.player2.id === player1.id))
-  )
-    return res.json({ status: "You already have a room with that person." });
 
   const roomID = "ROOM-" + Date.now().toString();
 
@@ -80,21 +88,10 @@ router.post("/", async (req, res) => {
 
   const { error } = await supabase.from("rooms").insert({
     id: roomID,
-    player1: {
-      name: player1.name,
-      id: player1.id,
-      score: 0,
-      ready: false,
-    },
-    player2: {
-      name: player2.name,
-      id: player2.id,
-      score: 0,
-      ready: false,
-    },
-    playerTurn: player1.name,
+    players: playersList,
+    playerTurn: "null",
     cards: setDefaultCards(pairs.c, pairs.r),
-  });
+  }); 
 
   return res.json({
     status: `${error ? error : `The room : ${roomID} has been created.`}`,

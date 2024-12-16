@@ -10,9 +10,14 @@ const Profile = () => {
   const { name, setName, setIsLoggedIn, userProfile } = useContext(UserContext);
   const navigate = useNavigate();
   const [status, setStatus] = useState();
-  const [invitedPlayers, setInvitedPlayers] = useState("");
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
+  const [players, setPlayers] = useState([
+    { name: name, enabled: true },
+    { name: "", enabled: true },
+    { name: "", enabled: false },
+    { name: "", enabled: false },
+  ]);
 
   const [delayed, setDelayed] = useState({
     load: false,
@@ -25,22 +30,43 @@ const Profile = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        createdBy: name,
-        invitedPlayer: invitedPlayers,
+        players: players
+          .filter((player) => player.enabled)
+          .map((player) => player.name),
         pairs: gamePairs,
       }),
     };
 
-    if (invitedPlayers === "")
-      setStatus("Enter someone first before inviting.");
-    else if (name === invitedPlayers) setStatus("You can't invite yourself !");
+    if (
+      players.filter((player) => player.enabled && player.name.trim() === "")
+        .length > 0
+    )
+      setStatus("Name can't be empty.");
+    else if (
+      players
+        .filter((player, index) => player.enabled && index !== 0)
+        .includes(name)
+    )
+      setStatus("You can't invite yourself !");
+    else if (
+      players.filter((player, index) => player.enabled && index !== 0)
+        .length === 0
+    )
+      setStatus("You need to invite at least one player !");
     else {
       const data = await fetch("/invite", requestOptions);
       const json = await data.json();
 
       setStatus(json?.status);
     }
-    setInvitedPlayers("");
+
+    setPlayers([
+      { name: name, enabled: true },
+      { name: "", enabled: true },
+      { name: "", enabled: false },
+      { name: "", enabled: false },
+    ]);
+
     getInvitations();
   };
 
@@ -109,13 +135,43 @@ const Profile = () => {
             </div>
             <p style={{ color: "red", fontSize: "10px" }}>{status}</p>
             <div className="profile-invite">
-              <p>Invite a Player</p>
-              <input
-                type="text"
-                name="player"
-                value={invitedPlayers}
-                onChange={(e) => setInvitedPlayers(e.target.value)}
-              />
+              <div className="profile-inputs">
+                {players.map((player, index) => (
+                  <div
+                    className="profile-player-input"
+                    key={"player-input-" + index}
+                  >
+                    <div>
+                      <p>Player {index + 1}</p>
+                      <input
+                        type="checkbox"
+                        name="player-enabled"
+                        checked={player.enabled}
+                        disabled={index === 0 ? true : false}
+                        onChange={() => {
+                          const updatedPlayers = [...players]; // Create a copy of the array
+                          updatedPlayers[index].enabled =
+                            !updatedPlayers[index].enabled; // Update the specific index
+                          if (updatedPlayers[index].enabled === false)
+                            updatedPlayers[index].name = "";
+                          setPlayers(updatedPlayers); // Set the new array as state
+                        }}
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      name="player"
+                      value={player.name}
+                      disabled={index === 0 ? true : !player.enabled}
+                      onChange={(e) => {
+                        const updatedPlayers = [...players]; // Create a copy of the array
+                        updatedPlayers[index].name = e.target.value; // Update the specific index
+                        setPlayers(updatedPlayers); // Set the new array as state
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
               <div className="profile-pairs-buttons">
                 {[
                   { c: 4, r: 5 },
@@ -198,17 +254,24 @@ const Profile = () => {
                     onClick: () => handleNavigate(game.id),
                     style: { fontWeight: 700 },
                   };
-                  if (name === game.player1.name) {
-                    return (
-                      <p key={i}>
-                        You invited{" "}
-                        <strong
-                          className={game.player2.skin}
-                          data-name={game.player2.name}
-                        >
-                          {game.player2.name}
-                        </strong>{" "}
-                        : <span {...parameters}>JOIN</span>
+
+                  return (
+                    <p key={i}>
+                      {game.players.map((player, player_index, array) => (
+                        <>
+                          <strong
+                            className={player.skin}
+                            data-name={player.name}
+                          >
+                            {player.name}
+                          </strong>
+                          <small>
+                            {player_index < array.length - 1 && " vs "}
+                          </small>
+                        </>
+                      ))}{" "}
+                      : <span {...parameters}>JOIN</span>
+                      {game.players[0].name === name ? (
                         <FaTrashAlt
                           onClick={() => {
                             if (delayed.delete) return;
@@ -225,48 +288,19 @@ const Profile = () => {
                             }, 5000);
                           }}
                         />
-                      </p>
-                    );
-                  } else if (name === game.player2.name) {
-                    return (
-                      <p key={i}>
-                        <strong
-                          className={game.player1.skin}
-                          data-name={game.player1.name}
-                        >
-                          {game.player1.name}
-                        </strong>{" "}
-                        invited you : <span {...parameters}>JOIN</span>
-                      </p>
-                    );
-                  } else {
-                    return (
-                      <p key={i}>
-                        <strong
-                          className={game.player1.skin}
-                          data-name={game.player1.name}
-                        >
-                          {game.player1.name}
-                        </strong>{" "}
-                        vs{" "}
-                        <strong
-                          className={game.player2.skin}
-                          data-name={game.player2.name}
-                        >
-                          {game.player2.name}
-                        </strong>
-                        : <span {...parameters}>JOIN</span>
-                      </p>
-                    );
-                  }
+                      ) : (
+                        false
+                      )}
+                    </p>
+                  );
                 })}
-              <button
-                className="profile-disconnect profile-leaderboard"
-                onClick={() => navigate("?query=leaderboard")}
-              >
-                Leaderboard
-              </button>
             </div>
+            <button
+              className="profile-disconnect profile-leaderboard"
+              onClick={() => navigate("?query=leaderboard")}
+            >
+              Leaderboard
+            </button>
           </div>
         </div>
         <button

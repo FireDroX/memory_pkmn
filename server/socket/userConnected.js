@@ -14,10 +14,20 @@ module.exports = (io) => {
         .eq("id", id)
         .single();
 
-      if (name === roomData.player1.name) {
-        roomData.player1.ready = true;
-      } else if (name === roomData.player2.name) {
-        roomData.player2.ready = true;
+      const userIndex = roomData.players.findIndex(
+        (player) => player.name === name
+      );
+
+      roomData.players[userIndex].ready = true;
+
+      if (
+        roomData.players.filter((player) => player.ready === true).length ===
+        roomData.players.length
+      ) {
+        const randomName =
+          roomData.players[Math.floor(Math.random() * roomData.players.length)]
+            .name;
+        roomData.playerTurn = randomName;
       }
 
       try {
@@ -25,8 +35,8 @@ module.exports = (io) => {
         const { error: updateError } = await supabase
           .from("rooms")
           .update({
-            player1: roomData.player1,
-            player2: roomData.player2,
+            players: roomData.players,
+            playerTurn: roomData.playerTurn,
           })
           .eq("id", id);
 

@@ -19,45 +19,38 @@ module.exports = (io) => {
       if (!roomData) return;
       const newPlayer = users.data.filter((p) => p.name === player)[0];
       if (
-        ![roomData.player1.name, roomData.player2.name].includes(newPlayer.name)
+        roomData.players.filter((player) => player.name === newPlayer.name)
+          .length === 0
       )
         return;
+
+      const playerIndex = roomData.players.findIndex(
+        (player) => player.name === newPlayer.name
+      );
 
       try {
         if (fetchError) throw fetchError;
 
         // Check current players and update scores if `isPair`
         if (pair.isPair) {
-          if (roomData.player1.name === newPlayer.name) {
-            roomData.player1.score += 1;
-          }
-          if (roomData.player2.name === newPlayer.name) {
-            roomData.player2.score += 1;
-          }
+          roomData.players[playerIndex].score += 1;
 
           let cardsLeft = cards.flat(1).length || undefined;
 
           cards.forEach((coll, _) => {
             coll.forEach((card, _) => {
-              if ([2, 3].includes(card.state)) {
+              if ([2, 3, 4, 5].includes(card.state)) {
                 cardsLeft -= 1;
               }
             });
           });
 
           if (cardsLeft === 0) {
-            let player = null;
-            if (roomData.player1.score > roomData.player2.score) {
-              player = users.data.filter(
-                (p) => p.name === roomData.player1.name
-              )[0];
-            } else if (roomData.player1.score < roomData.player2.score) {
-              player = users.data.filter(
-                (p) => p.name === roomData.player2.name
-              )[0];
-            }
-
-            if (player === null) return;
+            const player = users.data.filter(
+              (p) =>
+                p.name ===
+                roomData.players.sort((a, b) => a.score + b.score)[0].name
+            )[0];
 
             // Add XP
             const XP = 15; // 15xp per online game won
@@ -105,9 +98,7 @@ module.exports = (io) => {
         } else {
           // Update playerTurn if not a pair
           roomData.playerTurn =
-            roomData.player1.name === roomData.playerTurn
-              ? roomData.player2.name
-              : roomData.player1.name;
+            roomData.players[(playerIndex + 1) % roomData.players.length].name;
         }
 
         // Update cards in the room data
@@ -117,8 +108,7 @@ module.exports = (io) => {
         const { error: updateError } = await supabase
           .from("rooms")
           .update({
-            player1: roomData.player1,
-            player2: roomData.player2,
+            players: roomData.players,
             playerTurn: roomData.playerTurn,
             cards: roomData.cards,
           })
