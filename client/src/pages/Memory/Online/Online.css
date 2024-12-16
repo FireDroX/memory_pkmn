@@ -6,8 +6,7 @@
   flex-direction: row;
 }
 
-.player1-container,
-.player2-container {
+.player-container {
   width: 20vh;
   height: 30vh;
   color: var(--text95);
@@ -21,8 +20,7 @@
   transition: all 0.5s;
 }
 
-.player1-container > img,
-.player2-container > img {
+.player-container > img {
   border-radius: 10px;
   transition: all 0.5s;
   height: 15vh;
@@ -71,4 +69,24 @@
 .online-playerLost > * {
   width: 60%;
   font-size: 0.8rem;
+}
+
+.online-ready {
+  display: flex;
+  flex-direction: column;
+}
+
+.online-ready > button {
+  border: none;
+  background-color: var(--primary65);
+  border-radius: 25px;
+  padding: 0.3rem 0.6rem;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.5s ease;
+}
+
+.online-ready > button:hover {
+  cursor: pointer;
+  background-color: var(--secondary50);
 }

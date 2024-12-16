@@ -1,6 +1,6 @@
 .profile-container {
   width: 40rem;
-  height: 20rem;
+  height: 25rem;
   background-color: var(--accent10);
   border-radius: 50px;
   display: flex;
@@ -87,6 +87,14 @@
   gap: 0.75rem;
 }
 
+.profile-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  row-gap: 0.5rem;
+  column-gap: 1.6rem;
+}
+
 .profile-invite > p,
 .profile-infos > p,
 .profile-pairs-buttons > p {
@@ -95,7 +103,7 @@
   color: var(--text65);
 }
 
-.profile-invite > input {
+.profile-player-input > input {
   border: none;
   background-color: var(--primary65);
   border-radius: 25px;
@@ -103,6 +111,17 @@
   color: var(--text);
   font-weight: 600;
   transition: all 0.5s ease;
+  width: 6rem;
+}
+
+.profile-player-input > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 0.5rem;
+  color: var(--text65);
+  line-height: 0rem;
 }
 
 .profile-invites > h5 {
@@ -117,7 +136,12 @@
   position: relative;
   height: 18rem;
   max-height: 18rem;
-  overflow-y: scroll;
+}
+
+.profile-invitesList > p {
+  max-width: 20rem;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .profile-invites > h5 > svg:hover,
@@ -177,6 +201,10 @@
     max-height: 10rem;
     overflow-y: scroll;
   }
+
+  .profile-player-input > input {
+    width: 4.5rem;
+  }
 }
 
 .profile-buttons-joining {
@@ -187,7 +215,7 @@
 }
 
 .profile-leaderboard {
-  position: absolute;
+  position: relative;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);

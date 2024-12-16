@@ -2,7 +2,15 @@ import { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../../utils/UserContext";
 import "./Solo.css";
 
-const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
+const Solo = ({
+  cards,
+  setCards,
+  tries,
+  setTries,
+  game,
+  setGame,
+  shinyMode,
+}) => {
   const { name, isLoggedIn, setUserProfile } = useContext(UserContext);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
@@ -67,6 +75,40 @@ const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
     });
   };
 
+  const calculateXp = (tries, pairs) => {
+    // Define parameters for adjustment
+    const minOutput = 1;
+    const maxOutput = 15;
+    const minTries = 10;
+    const maxTries = 100;
+    const triesWeight = 2.5; // Increase to make tries have a stronger impact
+    const pairsWeight = 2.0; // Reduce pairs weight slightly for a more subtle effect
+
+    // Calculate base output with stronger impact from tries
+    const baseValue =
+      ((maxOutput - minOutput) / (maxTries - minTries)) *
+        (maxTries / tries) *
+        triesWeight +
+      minOutput;
+    const finalValue = baseValue * (pairs / 14) * pairsWeight;
+
+    // Check if it's the weekend in Europe/Paris timezone
+    const parisTime = new Date().toLocaleString("en-US", {
+      timeZone: "Europe/Paris",
+    });
+    const parisDate = new Date(parisTime);
+    const isWeekend = parisDate.getDay() === 6 || parisDate.getDay() === 0; // Saturday or Sunday
+
+    // Ensure the final result is within the 1-25 range
+    const roundedValue = Math.min(
+      Math.max(Math.round(finalValue), minOutput),
+      maxOutput
+    );
+
+    // Double XP on weekends
+    return isWeekend ? roundedValue * 2 : roundedValue;
+  };
+
   const resetValues = () => {
     if (game.pairs === 0) {
       if (isLoggedIn) {
@@ -75,7 +117,7 @@ const Solo = ({ cards, setCards, setTries, game, setGame, shinyMode }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: name,
-            xp: 5,
+            xp: calculateXp(tries, cards.flat().length / 2),
           }),
         };
 
