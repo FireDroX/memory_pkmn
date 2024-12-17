@@ -67,17 +67,36 @@ function Login() {
     };
   }, [connect, inputName, password, confirmPassword]);
 
+  const setConnectPage = (connect) => {
+    setConnect(connect);
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+    setStatus("");
+  };
+
+  const stringToDecimal = (str) => {
+    let decimal = 0;
+    str.split("").map((char) => (decimal += char.charCodeAt(0)));
+    return ((decimal - 1) % 1025) + 1;
+  };
+
   return (
     <section className="App">
       <div>
         <div className="login-container">
+          <div className="login-container-data">
+            <img
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                inputName
+              )}.png`}
+              alt="User"
+              draggable={false}
+            />
+            {status ? <p style={{ color: "red" }}>{status}</p> : false}
+          </div>
           {connect ? (
-            <>
-              {status ? (
-                <p style={{ color: "var(--text85)" }}>{status}</p>
-              ) : (
-                false
-              )}
+            <div className="login-container-inputs">
               <div className="login-inputs">
                 <p>Your Username</p>
                 <input
@@ -104,20 +123,14 @@ function Login() {
                 <button onClick={() => handlePost("/login")}>Login</button>
                 <small
                   className="login-change-pages"
-                  onClick={() => setConnect(false)}
+                  onClick={() => setConnectPage(false)}
                 >
                   Create Your Account
                 </small>
               </div>
-            </>
+            </div>
           ) : (
-            <>
-              {" "}
-              {status ? (
-                <p style={{ color: "var(--text85)" }}>{status}</p>
-              ) : (
-                false
-              )}
+            <div className="login-container-inputs">
               <div className="login-inputs">
                 <p>Your Username</p>
                 <input
@@ -154,7 +167,7 @@ function Login() {
               <div className="login-buttons">
                 <small
                   className="login-change-pages"
-                  onClick={() => setConnect(true)}
+                  onClick={() => setConnectPage(true)}
                 >
                   Log in Your Account
                 </small>
@@ -162,7 +175,7 @@ function Login() {
                   Register
                 </button>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
