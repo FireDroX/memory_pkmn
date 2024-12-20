@@ -19,14 +19,7 @@ const Navbar = () => {
   return (
     <div className="navbar-container">
       <div className="navbar-texts">
-        <p
-          onClick={() => {
-            navigate("");
-            window.location.reload();
-          }}
-        >
-          Home
-        </p>
+        <p onClick={() => navigate("")}>Home</p>
         {name !== "" && isLoggedIn ? (
           <>
             <div className="progress-container">

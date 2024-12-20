@@ -109,7 +109,7 @@ const Solo = ({
     return isWeekend ? roundedValue * 2 : roundedValue;
   };
 
-  const resetValues = () => {
+  useEffect(() => {
     if (game.pairs === 0) {
       if (isLoggedIn) {
         const requestOptions = {
@@ -124,24 +124,11 @@ const Solo = ({
         fetch("/update", requestOptions).then((data) => {
           if (data.status === 200) {
             data.json().then((json) => {
-              setUserProfile(json.profile);
+              setTimeout(() => setUserProfile(json.profile), 5000);
             });
           }
         });
       }
-    }
-
-    setCards([]);
-    setFlippedCards([]);
-    setMatchedCards([]);
-    setTries(20);
-    setPlayerWon(false);
-    setPlayerLost(false);
-    setGame({ pairs: -1, tries: -1, started: false });
-  };
-
-  useEffect(() => {
-    if (game.pairs === 0) {
       setPlayerWon(true);
     }
     if (game.tries === 0) {
@@ -246,7 +233,6 @@ const Solo = ({
                 <small style={{ color: "var(--text)" }}>
                   With {game.tries} tr{game.tries > 1 ? "ies" : "y"} left !
                 </small>
-                <button onClick={resetValues}>Play Again !</button>
               </div>
             </div>
           </div>
@@ -265,7 +251,6 @@ const Solo = ({
                 <small style={{ color: "var(--text)" }}>
                   There is {game.pairs} pair{game.pairs > 1 ? "s" : ""} left...
                 </small>
-                <button onClick={resetValues}>Play Again !</button>
               </div>
             </div>
           </div>

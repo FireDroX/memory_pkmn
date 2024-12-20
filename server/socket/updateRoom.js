@@ -49,7 +49,7 @@ module.exports = (io) => {
             const player = users.data.filter(
               (p) =>
                 p.name ===
-                roomData.players.sort((a, b) => b.score - a.score)[0].name
+                [...roomData.players].sort((a, b) => b.score - a.score)[0].name
             )[0];
 
             // Add XP

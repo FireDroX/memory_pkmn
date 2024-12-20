@@ -289,7 +289,7 @@ const Online = ({ id }) => {
                       style={{
                         outline:
                           users[3].name === room.playerTurn
-                            ? "solid 1px burlywood"
+                            ? "solid 1px lightgreen"
                             : "solid 1px transparent",
                       }}
                     />
@@ -298,7 +298,7 @@ const Online = ({ id }) => {
                     </h6>
                     <small
                       style={{
-                        color: room.players[3].ready ? "burlywood" : "unset",
+                        color: room.players[3].ready ? "lightgreen" : "unset",
                       }}
                     >
                       {room.players[3].score} pairs found
