@@ -3,32 +3,35 @@ const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
-const { createClient } = require("@supabase/supabase-js");
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+const db = require("../../db");
+const { promisify } = require("util");
+
+// Promisify sqlite
+const dbGet = promisify(db.get.bind(db));
+const dbRun = promisify(db.run.bind(db));
 
 router.post("/", async (req, res) => {
-  const users = await supabase.from("users").select();
-  const { name, password } = req.body;
-  // If the values are empty
-  if (name === "" && password === "")
-    return res.json({ status: "Both inputs are required." });
+  try {
+    const { name, password } = req.body;
 
-  // If the username is already used
-  if (users.data.some((user) => user.name === name))
-    return res.json({ status: "That username is already used." });
+    // Vérif inputs
+    if (!name || !password) {
+      return res.json({ status: "Both inputs are required." });
+    }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    // Vérifier si username existe déjà
+    const existingUser = await dbGet(`SELECT * FROM users WHERE name = ?`, [
+      name,
+    ]);
 
-  const { error } = await supabase.from("users").insert({
-    id: "USER-" + Date.now().toString(),
-    name: name,
-    password: hashedPassword,
-    online_games_won: 0,
-    shiny_pairs_found: 0,
-    user_profile: {
+    if (existingUser) {
+      return res.json({ status: "That username is already used." });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
       level: 0,
       xp: 0,
       xpNeeded: 10,
@@ -37,12 +40,35 @@ router.post("/", async (req, res) => {
           colors: ["color-default"],
         },
       ],
-    },
-  });
+    };
 
-  return res.json({
-    status: `${error ? error : "Accout created, please Login."}`,
-  });
+    // Insert user
+    await dbRun(
+      `INSERT INTO users (
+        id,
+        name,
+        password,
+        online_games_won,
+        shiny_pairs_found,
+        user_profile
+      ) VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        "USER-" + Date.now().toString(),
+        name,
+        hashedPassword,
+        0,
+        0,
+        JSON.stringify(newUser),
+      ],
+    );
+
+    return res.json({
+      status: "Account created, please Login.",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({ status: "Error creating account" });
+  }
 });
 
 module.exports = router;

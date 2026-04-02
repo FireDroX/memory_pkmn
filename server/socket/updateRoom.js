@@ -1,44 +1,57 @@
-const { createClient } = require("@supabase/supabase-js");
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
-
+const db = require("../../db");
 const levels = require("../utils/Levels");
+const { promisify } = require("util");
+
+// Promisify sqlite methods
+const dbGet = promisify(db.get.bind(db));
+const dbAll = promisify(db.all.bind(db));
+const dbRun = promisify(db.run.bind(db));
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("update-room", async ({ room, cards, player, pair }) => {
-      const users = await supabase.from("users").select();
-      const { data: roomData, error: fetchError } = await supabase
-        .from("rooms")
-        .select("*")
-        .eq("id", room)
-        .single();
-
-      if (!roomData) return;
-      const newPlayer = users.data.filter((p) => p.name === player)[0];
-      if (
-        roomData.players.filter((player) => player.name === newPlayer.name)
-          .length === 0
-      )
-        return;
-
-      const playerIndex = roomData.players.findIndex(
-        (player) => player.name === newPlayer.name
-      );
-
       try {
-        if (fetchError) throw fetchError;
+        // Get users
+        const users = await dbAll(`SELECT * FROM users`);
 
-        // Check current players and update scores if `isPair`
+        // Get room
+        const roomDataRaw = await dbGet(`SELECT * FROM rooms WHERE id = ?`, [
+          room,
+        ]);
+
+        if (!roomDataRaw) return;
+
+        // Parse JSON fields
+        const roomData = {
+          ...roomDataRaw,
+          players: JSON.parse(roomDataRaw.players || "[]"),
+          cards: JSON.parse(roomDataRaw.cards || "[]"),
+        };
+
+        const parsedUsers = users.map((u) => ({
+          ...u,
+          user_profile: JSON.parse(u.user_profile || "{}"),
+        }));
+
+        const newPlayer = parsedUsers.find((p) => p.name === player);
+        if (!newPlayer) return;
+
+        if (
+          roomData.players.filter((p) => p.name === newPlayer.name).length === 0
+        )
+          return;
+
+        const playerIndex = roomData.players.findIndex(
+          (p) => p.name === newPlayer.name,
+        );
+
         if (pair.isPair) {
           roomData.players[playerIndex].score += 1;
 
-          let cardsLeft = cards.flat(1).length || undefined;
+          let cardsLeft = cards.flat(1).length || 0;
 
-          cards.forEach((coll, _) => {
-            coll.forEach((card, _) => {
+          cards.forEach((coll) => {
+            coll.forEach((card) => {
               if ([2, 3, 4, 5].includes(card.state)) {
                 cardsLeft -= 1;
               }
@@ -46,80 +59,80 @@ module.exports = (io) => {
           });
 
           if (cardsLeft === 0) {
-            const player = users.data.filter(
-              (p) =>
-                p.name ===
-                [...roomData.players].sort((a, b) => b.score - a.score)[0].name
-            )[0];
+            const winnerName = [...roomData.players].sort(
+              (a, b) => b.score - a.score,
+            )[0].name;
 
-            // Add XP
-            const XP = 15; // 15xp per online game won
-            const { level, xp: xpOld, xpNeeded } = player.user_profile;
-            const updatedUser = player.user_profile;
-            if (xpOld + XP >= xpNeeded && levels.length > level + 1) {
-              const newInfos = levels[level + 1];
-              updatedUser.level = newInfos.level;
-              updatedUser.xp = xpOld + XP - xpNeeded;
-              updatedUser.xpNeeded = newInfos.xpNeeded;
-              if (newInfos.rewards.colors.length > 0) {
-                newInfos.rewards.colors.map((color) => {
+            const winner = parsedUsers.find((p) => p.name === winnerName);
+
+            if (winner) {
+              const XP = 15;
+              const { level, xp: xpOld, xpNeeded } = winner.user_profile;
+              const updatedUser = { ...winner.user_profile };
+
+              if (xpOld + XP >= xpNeeded && levels.length > level + 1) {
+                const newInfos = levels[level + 1];
+                updatedUser.level = newInfos.level;
+                updatedUser.xp = xpOld + XP - xpNeeded;
+                updatedUser.xpNeeded = newInfos.xpNeeded;
+
+                newInfos.rewards.colors.forEach((color) => {
                   if (!updatedUser.inventory[0].colors.includes(color)) {
                     updatedUser.inventory[0].colors.push(color);
                   }
                 });
+              } else {
+                updatedUser.xp = xpOld + XP;
               }
-            } else {
-              updatedUser.xp = xpOld + XP;
+
+              await dbRun(
+                `UPDATE users SET 
+                  online_games_won = ?, 
+                  user_profile = ? 
+                 WHERE id = ?`,
+                [
+                  winner.online_games_won + 1,
+                  JSON.stringify(updatedUser),
+                  winner.id,
+                ],
+              );
             }
-
-            // Send the updated data back to Supabase
-            const { error: updateUserError } = await supabase
-              .from("users")
-              .update({
-                online_games_won: player.online_games_won + 1,
-                user_profile: updatedUser,
-              })
-              .eq("id", player.id);
-
-            if (updateUserError) throw updateUserError;
           }
 
           if (pair.shiny) {
-            // Send the updated data back to Supabase
-            const { error: updateUserError } = await supabase
-              .from("users")
-              .update({
-                shiny_pairs_found: newPlayer.shiny_pairs_found + 1,
-              })
-              .eq("id", newPlayer.id);
-
-            if (updateUserError) throw updateUserError;
+            await dbRun(
+              `UPDATE users SET 
+                shiny_pairs_found = ? 
+               WHERE id = ?`,
+              [newPlayer.shiny_pairs_found + 1, newPlayer.id],
+            );
           }
         } else {
-          // Update playerTurn if not a pair
           roomData.playerTurn =
             roomData.players[(playerIndex + 1) % roomData.players.length].name;
         }
 
-        // Update cards in the room data
+        // Update room
         roomData.cards = cards;
 
-        // Send the updated data back to Supabase
-        const { error: updateError } = await supabase
-          .from("rooms")
-          .update({
-            players: roomData.players,
-            playerTurn: roomData.playerTurn,
-            cards: roomData.cards,
-          })
-          .eq("id", room);
+        await dbRun(
+          `UPDATE rooms SET 
+            players = ?, 
+            playerTurn = ?, 
+            cards = ?
+           WHERE id = ?`,
+          [
+            JSON.stringify(roomData.players),
+            roomData.playerTurn,
+            JSON.stringify(roomData.cards),
+            room,
+          ],
+        );
 
-        if (updateError) throw updateError;
+        io.emit("refresh-room", roomData);
       } catch (error) {
         console.error("Error updating room:", error);
       }
-
-      io.emit("refresh-room", roomData);
     });
   });
 };

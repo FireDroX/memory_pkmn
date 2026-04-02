@@ -6,18 +6,11 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? undefined
-        : "http://192.168.1.105:3000",
-  },
-});
+const io = new Server(server);
 
 // Import Express routes
 const routes = require("./server/express");
@@ -33,6 +26,6 @@ app.get("/*", (_, res) => {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
-server.listen(5000, () => {
+server.listen(PORT, () => {
   console.log(`Listening on port : ${PORT}`);
 });

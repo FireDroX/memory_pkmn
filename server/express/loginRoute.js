@@ -3,30 +3,50 @@ const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
-const { createClient } = require("@supabase/supabase-js");
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+const db = require("../../db");
+const { promisify } = require("util");
+
+// Promisify sqlite
+const dbGet = promisify(db.get.bind(db));
 
 router.post("/", async (req, res) => {
-  const users = await supabase.from("users").select();
-  const { name, password } = req.body;
-  // If the values are empty
-  if (name === "" && password === "")
-    return res.json({ status: "Both inputs are required." });
+  try {
+    const { name, password } = req.body;
 
-  // User verification, if does not exist or password is incorrect
-  const user = users.data.find((user) => user.name === name);
-  if (!user || !(await bcrypt.compare(password, user.password)))
-    return res.json({ status: "Incorrect Username or Password !" });
+    // Vérif inputs
+    if (name === "" && password === "") {
+      return res.json({ status: "Both inputs are required." });
+    }
 
-  return res.json({
-    status: "",
-    online_games_won: user.online_games_won,
-    created_at: user.created_at,
-    profile: user.user_profile,
-  });
+    // Récupérer utilisateur
+    const userRaw = await dbGet(`SELECT * FROM users WHERE name = ?`, [name]);
+
+    if (!userRaw) {
+      return res.json({ status: "Incorrect Username or Password !" });
+    }
+
+    // Vérifier password
+    const isValid = await bcrypt.compare(password, userRaw.password);
+    if (!isValid) {
+      return res.json({ status: "Incorrect Username or Password !" });
+    }
+
+    // Parse JSON profile
+    const user = {
+      ...userRaw,
+      user_profile: JSON.parse(userRaw.user_profile || "{}"),
+    };
+
+    return res.json({
+      status: "",
+      online_games_won: user.online_games_won,
+      created_at: user.created_at,
+      profile: user.user_profile,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({ status: "Login error" });
+  }
 });
 
 module.exports = router;
