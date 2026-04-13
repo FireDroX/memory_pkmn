@@ -51,7 +51,7 @@ function Home() {
       Array.from({ length: rows }, (_, rowIndex) => {
         const flatIndex = columnIndex * rows + rowIndex;
         return shuffledCards[flatIndex];
-      })
+      }),
     );
     setCards(array);
 
@@ -132,18 +132,32 @@ function Home() {
           />
         )}
       </div>
-      <a
-        href="https://pokeapi.co/"
-        target="_blank"
-        style={{
-          position: "absolute",
-          bottom: 5,
-          left: 10,
-          color: "var(--text15)",
-        }}
-      >
-        PokeAPI
-      </a>
+      <span>
+        <a
+          href="https://pokeapi.co/"
+          target="_blank"
+          style={{
+            position: "absolute",
+            bottom: 5,
+            left: 10,
+            color: "var(--text15)",
+          }}
+        >
+          PokeAPI
+        </a>
+        <a
+          href="/mentions-legales"
+          target="_blank"
+          style={{
+            position: "absolute",
+            bottom: 5,
+            left: 95,
+            color: "var(--text15)",
+          }}
+        >
+          Mentions Légales
+        </a>
+      </span>
       {isWeekend ? (
         <span
           style={{
