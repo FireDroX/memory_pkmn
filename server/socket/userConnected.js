@@ -1,16 +1,16 @@
-const db = require("../../db");
-const { promisify } = require("util");
-
-// Promisify sqlite
-const dbGet = promisify(db.get.bind(db));
-const dbRun = promisify(db.run.bind(db));
-
 module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("user-connected", async ({ name, id }) => {
       try {
+        const pool = await require("../../db");
+
         // Récupérer la room
-        const roomRaw = await dbGet(`SELECT * FROM rooms WHERE id = ?`, [id]);
+        const roomResult = await pool
+          .request()
+          .input("id", id)
+          .query(`SELECT * FROM rooms WHERE id = @id`);
+
+        const roomRaw = roomResult.recordset[0];
 
         if (!roomRaw) return;
 
@@ -44,13 +44,16 @@ module.exports = (io) => {
         }
 
         // Update DB
-        await dbRun(
-          `UPDATE rooms SET 
-            players = ?, 
-            playerTurn = ?
-           WHERE id = ?`,
-          [JSON.stringify(roomData.players), roomData.playerTurn, id],
-        );
+        await pool
+          .request()
+          .input("players", JSON.stringify(roomData.players))
+          .input("playerTurn", roomData.playerTurn)
+          .input("id", id).query(`
+            UPDATE rooms SET 
+              players = @players,
+              playerTurn = @playerTurn
+            WHERE id = @id
+          `);
 
         io.emit("refresh-room", roomData);
       } catch (error) {

@@ -1,17 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const db = require("../../db");
-const { promisify } = require("util");
-
-// Promisify sqlite
-const dbAll = promisify(db.all.bind(db));
-const dbRun = promisify(db.run.bind(db));
-
 router.post("/", async (req, res) => {
   try {
-    const users = await dbAll(`SELECT * FROM users`);
-    const rooms = await dbAll(`SELECT * FROM rooms`);
+    const pool = await require("../../db");
+
+    const usersResult = await pool.query(`SELECT * FROM users`);
+    const roomsResult = await pool.query(`SELECT * FROM rooms`);
+
+    const users = usersResult.recordset;
+    const rooms = roomsResult.recordset;
 
     const { createdBy, invitedPlayer, players, pairs } = req.body;
 
@@ -91,16 +89,19 @@ router.post("/", async (req, res) => {
       );
     };
 
-    // Insert room
-    await dbRun(
-      `INSERT INTO rooms (id, players, playerTurn, cards) VALUES (?, ?, ?, ?)`,
-      [
-        roomID,
-        JSON.stringify(playersList),
-        "null",
-        JSON.stringify(setDefaultCards(pairs.c, pairs.r)),
-      ],
-    );
+    // Insert room (MSSQL)
+    const request = `
+      INSERT INTO rooms (id, players, playerTurn, cards)
+      VALUES (@id, @players, @playerTurn, @cards)
+    `;
+
+    await pool
+      .request()
+      .input("id", roomID)
+      .input("players", JSON.stringify(playersList))
+      .input("playerTurn", "null")
+      .input("cards", JSON.stringify(setDefaultCards(pairs.c, pairs.r)))
+      .query(request);
 
     return res.json({
       status: `The room : ${roomID} has been created.`,

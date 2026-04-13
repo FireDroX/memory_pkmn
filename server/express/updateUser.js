@@ -1,20 +1,25 @@
 const express = require("express");
 const router = express.Router();
 
-const db = require("../../db");
-const { promisify } = require("util");
 const levels = require("../utils/Levels");
-
-// Promisify sqlite
-const dbGet = promisify(db.get.bind(db));
-const dbRun = promisify(db.run.bind(db));
 
 router.post("/", async (req, res) => {
   try {
+    const pool = await require("../../db");
+
     const { name, xp, userProfile = undefined } = req.body;
 
     // Récupérer le joueur
-    const playerRaw = await dbGet(`SELECT * FROM users WHERE name = ?`, [name]);
+    const selectRequest = `
+      SELECT * FROM users WHERE name = @name
+    `;
+
+    const result = await pool
+      .request()
+      .input("name", name)
+      .query(selectRequest);
+
+    const playerRaw = result.recordset[0];
 
     if (!playerRaw) return res.json({ status: "Player does not exists." });
 
@@ -30,6 +35,7 @@ router.post("/", async (req, res) => {
     // Check level up
     if (xpOld + xp >= xpNeeded && levels.length > level + 1) {
       const newInfos = levels[level + 1];
+
       updatedUser.level = newInfos.level;
       updatedUser.xp = xpOld + xp - xpNeeded;
       updatedUser.xpNeeded = newInfos.xpNeeded;
@@ -46,10 +52,17 @@ router.post("/", async (req, res) => {
     }
 
     // Update user in DB
-    await dbRun(`UPDATE users SET user_profile = ? WHERE name = ?`, [
-      JSON.stringify(updatedUser),
-      name,
-    ]);
+    const updateRequest = `
+      UPDATE users
+      SET user_profile = @user_profile
+      WHERE name = @name
+    `;
+
+    await pool
+      .request()
+      .input("user_profile", JSON.stringify(updatedUser))
+      .input("name", name)
+      .query(updateRequest);
 
     return res.json({
       status: "",

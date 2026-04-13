@@ -1,20 +1,22 @@
 const express = require("express");
 const router = express.Router();
 
-const db = require("../../db");
-const { promisify } = require("util");
-
-// Promisify sqlite
-const dbGet = promisify(db.get.bind(db));
-const dbAll = promisify(db.all.bind(db));
-const dbRun = promisify(db.run.bind(db));
-
 router.post("/get", async (req, res) => {
   try {
-    const usersRaw = await dbAll(`SELECT * FROM users`);
-    const roomRaw = await dbGet(`SELECT * FROM rooms WHERE id = ?`, [
-      req.body.room,
-    ]);
+    const pool = await require("../../db");
+
+    const usersResult = await pool.query(`SELECT * FROM users`);
+
+    const roomRequest = `
+      SELECT * FROM rooms WHERE id = @id
+    `;
+
+    const roomResult = await pool
+      .request()
+      .input("id", req.body.room)
+      .query(roomRequest);
+
+    const roomRaw = roomResult.recordset[0];
 
     if (!roomRaw) return res.sendStatus(204);
 
@@ -25,7 +27,7 @@ router.post("/get", async (req, res) => {
       cards: JSON.parse(roomRaw.cards || "[]"),
     };
 
-    const users = usersRaw.map((u) => ({
+    const users = usersResult.recordset.map((u) => ({
       ...u,
       user_profile: JSON.parse(u.user_profile || "{}"),
     }));
@@ -51,9 +53,18 @@ router.post("/get", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   try {
-    const roomRaw = await dbGet(`SELECT * FROM rooms WHERE id = ?`, [
-      req.body.room,
-    ]);
+    const pool = await require("../../db");
+
+    const roomRequest = `
+      SELECT * FROM rooms WHERE id = @id
+    `;
+
+    const roomResult = await pool
+      .request()
+      .input("id", req.body.room)
+      .query(roomRequest);
+
+    const roomRaw = roomResult.recordset[0];
 
     if (!roomRaw) return res.sendStatus(204);
 
@@ -66,7 +77,11 @@ router.post("/delete", async (req, res) => {
 
     if (!isOwner) return res.sendStatus(204);
 
-    await dbRun(`DELETE FROM rooms WHERE id = ?`, [req.body.room]);
+    const deleteRequest = `
+      DELETE FROM rooms WHERE id = @id
+    `;
+
+    await pool.request().input("id", req.body.room).query(deleteRequest);
 
     return res.json({
       status: `The room : ${req.body.room} has been deleted.`,

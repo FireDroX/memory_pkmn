@@ -3,14 +3,10 @@ const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
-const db = require("../../db");
-const { promisify } = require("util");
-
-// Promisify sqlite
-const dbGet = promisify(db.get.bind(db));
-
 router.post("/", async (req, res) => {
   try {
+    const pool = await require("../../db");
+
     const { name, password } = req.body;
 
     // Vérif inputs
@@ -19,7 +15,13 @@ router.post("/", async (req, res) => {
     }
 
     // Récupérer utilisateur
-    const userRaw = await dbGet(`SELECT * FROM users WHERE name = ?`, [name]);
+    const request = `
+      SELECT * FROM users WHERE name = @name
+    `;
+
+    const result = await pool.request().input("name", name).query(request);
+
+    const userRaw = result.recordset[0];
 
     if (!userRaw) {
       return res.json({ status: "Incorrect Username or Password !" });

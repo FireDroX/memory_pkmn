@@ -1,15 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const db = require("../../db");
-const { promisify } = require("util");
-
-// Promisify sqlite
-const dbAll = promisify(db.all.bind(db));
-
 router.get("/", async (_, res) => {
   try {
-    const usersRaw = await dbAll(`SELECT * FROM users`);
+    const pool = await require("../../db");
+
+    const result = await pool.query(`SELECT * FROM users`);
+    const usersRaw = result.recordset;
 
     // Parser user_profile JSON
     const users = usersRaw.map((user) => ({

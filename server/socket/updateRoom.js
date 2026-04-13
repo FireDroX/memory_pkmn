@@ -1,24 +1,22 @@
-const db = require("../../db");
 const levels = require("../utils/Levels");
-const { promisify } = require("util");
-
-// Promisify sqlite methods
-const dbGet = promisify(db.get.bind(db));
-const dbAll = promisify(db.all.bind(db));
-const dbRun = promisify(db.run.bind(db));
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("update-room", async ({ room, cards, player, pair }) => {
       try {
+        const pool = await require("../../db");
+
         // Get users
-        const users = await dbAll(`SELECT * FROM users`);
+        const usersResult = await pool.query(`SELECT * FROM users`);
+        const users = usersResult.recordset;
 
         // Get room
-        const roomDataRaw = await dbGet(`SELECT * FROM rooms WHERE id = ?`, [
-          room,
-        ]);
+        const roomResult = await pool
+          .request()
+          .input("id", room)
+          .query(`SELECT * FROM rooms WHERE id = @id`);
 
+        const roomDataRaw = roomResult.recordset[0];
         if (!roomDataRaw) return;
 
         // Parse JSON fields
@@ -72,6 +70,7 @@ module.exports = (io) => {
 
               if (xpOld + XP >= xpNeeded && levels.length > level + 1) {
                 const newInfos = levels[level + 1];
+
                 updatedUser.level = newInfos.level;
                 updatedUser.xp = xpOld + XP - xpNeeded;
                 updatedUser.xpNeeded = newInfos.xpNeeded;
@@ -85,27 +84,28 @@ module.exports = (io) => {
                 updatedUser.xp = xpOld + XP;
               }
 
-              await dbRun(
-                `UPDATE users SET 
-                  online_games_won = ?, 
-                  user_profile = ? 
-                 WHERE id = ?`,
-                [
-                  winner.online_games_won + 1,
-                  JSON.stringify(updatedUser),
-                  winner.id,
-                ],
-              );
+              await pool
+                .request()
+                .input("online_games_won", winner.online_games_won + 1)
+                .input("user_profile", JSON.stringify(updatedUser))
+                .input("id", winner.id).query(`
+                  UPDATE users SET 
+                    online_games_won = @online_games_won,
+                    user_profile = @user_profile
+                  WHERE id = @id
+                `);
             }
           }
 
           if (pair.shiny) {
-            await dbRun(
-              `UPDATE users SET 
-                shiny_pairs_found = ? 
-               WHERE id = ?`,
-              [newPlayer.shiny_pairs_found + 1, newPlayer.id],
-            );
+            await pool
+              .request()
+              .input("shiny_pairs_found", newPlayer.shiny_pairs_found + 1)
+              .input("id", newPlayer.id).query(`
+                UPDATE users SET 
+                  shiny_pairs_found = @shiny_pairs_found
+                WHERE id = @id
+              `);
           }
         } else {
           roomData.playerTurn =
@@ -115,19 +115,18 @@ module.exports = (io) => {
         // Update room
         roomData.cards = cards;
 
-        await dbRun(
-          `UPDATE rooms SET 
-            players = ?, 
-            playerTurn = ?, 
-            cards = ?
-           WHERE id = ?`,
-          [
-            JSON.stringify(roomData.players),
-            roomData.playerTurn,
-            JSON.stringify(roomData.cards),
-            room,
-          ],
-        );
+        await pool
+          .request()
+          .input("players", JSON.stringify(roomData.players))
+          .input("playerTurn", roomData.playerTurn)
+          .input("cards", JSON.stringify(roomData.cards))
+          .input("id", room).query(`
+            UPDATE rooms SET 
+              players = @players,
+              playerTurn = @playerTurn,
+              cards = @cards
+            WHERE id = @id
+          `);
 
         io.emit("refresh-room", roomData);
       } catch (error) {

@@ -3,15 +3,10 @@ const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
-const db = require("../../db");
-const { promisify } = require("util");
-
-// Promisify sqlite
-const dbGet = promisify(db.get.bind(db));
-const dbRun = promisify(db.run.bind(db));
-
 router.post("/", async (req, res) => {
   try {
+    const pool = await require("../../db");
+
     const { name, password } = req.body;
 
     // Vérif inputs
@@ -20,9 +15,16 @@ router.post("/", async (req, res) => {
     }
 
     // Vérifier si username existe déjà
-    const existingUser = await dbGet(`SELECT * FROM users WHERE name = ?`, [
-      name,
-    ]);
+    const checkRequest = `
+      SELECT * FROM users WHERE name = @name
+    `;
+
+    const existingResult = await pool
+      .request()
+      .input("name", name)
+      .query(checkRequest);
+
+    const existingUser = existingResult.recordset[0];
 
     if (existingUser) {
       return res.json({ status: "That username is already used." });
@@ -42,25 +44,36 @@ router.post("/", async (req, res) => {
       ],
     };
 
+    const userId = "USER-" + Date.now().toString();
+
     // Insert user
-    await dbRun(
-      `INSERT INTO users (
+    const insertRequest = `
+      INSERT INTO users (
         id,
         name,
         password,
         online_games_won,
         shiny_pairs_found,
         user_profile
-      ) VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        "USER-" + Date.now().toString(),
-        name,
-        hashedPassword,
-        0,
-        0,
-        JSON.stringify(newUser),
-      ],
-    );
+      ) VALUES (
+        @id,
+        @name,
+        @password,
+        @online_games_won,
+        @shiny_pairs_found,
+        @user_profile
+      )
+    `;
+
+    await pool
+      .request()
+      .input("id", userId)
+      .input("name", name)
+      .input("password", hashedPassword)
+      .input("online_games_won", 0)
+      .input("shiny_pairs_found", 0)
+      .input("user_profile", JSON.stringify(newUser))
+      .query(insertRequest);
 
     return res.json({
       status: "Account created, please Login.",
