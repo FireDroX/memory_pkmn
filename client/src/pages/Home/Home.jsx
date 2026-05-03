@@ -146,7 +146,7 @@ function Home() {
           PokeAPI
         </a>
         <a
-          href="/mentions-legales"
+          href="/api/mentions-legales"
           target="_blank"
           style={{
             position: "absolute",

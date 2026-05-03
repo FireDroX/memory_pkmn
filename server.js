@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use(express.static("client/build"));
 
-app.use("/", routes);
+app.use("/api", routes);
 
 require("./server/socket")(io);
 

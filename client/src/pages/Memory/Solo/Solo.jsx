@@ -102,7 +102,7 @@ const Solo = ({
     // Ensure the final result is within the 1-25 range
     const roundedValue = Math.min(
       Math.max(Math.round(finalValue), minOutput),
-      maxOutput
+      maxOutput,
     );
 
     // Double XP on weekends
@@ -121,7 +121,7 @@ const Solo = ({
           }),
         };
 
-        fetch("/update", requestOptions).then((data) => {
+        fetch("/api/profile/update", requestOptions).then((data) => {
           if (data.status === 200) {
             data.json().then((json) => {
               setTimeout(() => setUserProfile(json.profile), 5000);

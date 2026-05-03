@@ -1,46 +1,21 @@
 import "./App.css";
-import { useState, useLayoutEffect, useContext } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useState, useLayoutEffect, useContext, lazy } from "react";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { UserContext } from "./utils/UserContext";
 
 import Navbar from "./components/Navbar/Navbar";
 
-import Home from "./pages/Home/Home";
-import Login from "./pages/Login/Login";
-import Profile from "./pages/Profile/Profile";
-import Online from "./pages/Memory/Online/Online";
-import Leaderboard from "./pages/Leaderboard/Leaderboard";
-import Colors from "./pages/Colors/Colors";
+const Home = lazy(() => import("./pages/Home/Home"));
+const Login = lazy(() => import("./pages/Login/Login"));
+const Profile = lazy(() => import("./pages/Profile/Profile"));
+const Online = lazy(() => import("./pages/Memory/Online/Online"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard/Leaderboard"));
+const Colors = lazy(() => import("./pages/Colors/Colors"));
 
 function App() {
   const { setName, isLoggedIn, setIsLoggedIn, setUserProfile } =
     useContext(UserContext);
-  function DynamicPage() {
-    const [page, setPage] = useState(null);
-    const [roomID, setRoomID] = useState(null);
-    const location = useLocation();
-
-    useLayoutEffect(() => {
-      const queryParams = new URLSearchParams(location.search);
-      setPage(queryParams.get("query"));
-      setRoomID(queryParams.get("id"));
-    }, [location]);
-
-    switch (page) {
-      case "leaderboard":
-        return <Leaderboard />;
-      case "login":
-        return <Login />;
-      case "online":
-        return <Online id={roomID} />;
-      case "profile":
-        return isLoggedIn ? <Profile /> : <Home />;
-      case "colors":
-        return isLoggedIn ? <Colors /> : <Home />;
-      default:
-        return <Home />;
-    }
-  }
+  const location = useLocation();
 
   useLayoutEffect(() => {
     const logInfos = window.localStorage.getItem("super-secret-login-info");
@@ -70,8 +45,50 @@ function App() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="*" element={<DynamicPage />} />
+      <Routes location={location}>
+        <Route path="/" element={<Navigate to={"/login"} replace />} />
+        <Route
+          path="/login"
+          element={
+            isLoggedIn ? (
+              <Navigate to={"/profile"} replace />
+            ) : (
+              <Login connect={true} />
+            )
+          }
+        />
+        <Route
+          path="/login/register"
+          element={
+            isLoggedIn ? (
+              <Navigate to={"/profile"} replace />
+            ) : (
+              <Login connect={false} />
+            )
+          }
+        />
+        <Route
+          path="/online"
+          element={
+            <Online id={new URLSearchParams(location.search).get("id")} />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            isLoggedIn ? <Profile /> : <Navigate to={"/login"} replace />
+          }
+        />
+        <Route
+          path="/profile/colors"
+          element={isLoggedIn ? <Colors /> : <Navigate to={"/login"} replace />}
+        />
+        <Route
+          path="/profile/leaderboard"
+          element={
+            isLoggedIn ? <Leaderboard /> : <Navigate to={"/login"} replace />
+          }
+        />
       </Routes>
     </>
   );

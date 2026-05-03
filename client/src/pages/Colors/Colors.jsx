@@ -24,7 +24,7 @@ const Colors = () => {
           userProfile: newUserProfile,
         }),
       };
-      const data = await fetch("/update", requestOptions);
+      const data = await fetch("/api/profile/update", requestOptions);
       const json = await data.json();
       if (data.status === 200) {
         setUserProfile(json.profile);

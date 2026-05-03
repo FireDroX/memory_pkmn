@@ -39,13 +39,13 @@ const Navbar = () => {
               <strong
                 className={userProfile.inventory[0].colors[0]}
                 data-name={name}
-                onClick={() => navigate("?query=profile")}
+                onClick={() => navigate("/profile")}
               >
                 {name}
               </strong>
               <img
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                  name
+                  name,
                 )}.png`}
                 style={{ height: "25px", width: "25px" }}
                 alt=""
@@ -55,7 +55,7 @@ const Navbar = () => {
         ) : (
           <p
             style={{ textDecoration: "underline 1px solid var(--text85)" }}
-            onClick={() => navigate("?query=login")}
+            onClick={() => navigate("/login")}
           >
             Login
           </p>

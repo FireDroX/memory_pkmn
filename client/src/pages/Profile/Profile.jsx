@@ -54,7 +54,7 @@ const Profile = () => {
     )
       setStatus("You need to invite at least one player !");
     else {
-      const data = await fetch("/invite", requestOptions);
+      const data = await fetch("/api/invite", requestOptions);
       const json = await data.json();
 
       setStatus(json?.status);
@@ -71,14 +71,14 @@ const Profile = () => {
   };
 
   const getInvitations = async () => {
-    const data = await fetch("/invites");
+    const data = await fetch("/api/invites");
     const json = await data.json();
 
     setGamesArray(json);
   };
 
   const handleNavigate = (id) => {
-    navigate(`?query=online&id=${id}`);
+    navigate(`/online?id=${id}`);
   };
 
   const handleDelete = async (id) => {
@@ -88,7 +88,7 @@ const Profile = () => {
       body: JSON.stringify({ room: id, name: name }),
     };
 
-    const data = await fetch("/rooms/delete", requestOptions);
+    const data = await fetch("/api/rooms/delete", requestOptions);
     const json = await data.json();
 
     setStatus(json?.status);
@@ -120,7 +120,7 @@ const Profile = () => {
             <div className="profile-username">
               <img
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                  name
+                  name,
                 )}.png`}
                 alt="User"
                 draggable={false}
@@ -128,7 +128,7 @@ const Profile = () => {
               <h5
                 className={userProfile.inventory[0].colors[0]}
                 data-name={name}
-                onClick={() => navigate("?query=colors")}
+                onClick={() => navigate("/profile/colors")}
               >
                 {name}
               </h5>
@@ -247,7 +247,7 @@ const Profile = () => {
                 .sort(
                   (a, b) =>
                     new Date(b.created_at).getTime() -
-                    new Date(a.created_at).getTime()
+                    new Date(a.created_at).getTime(),
                 )
                 .map((game, i) => {
                   const parameters = {
@@ -297,7 +297,7 @@ const Profile = () => {
             </div>
             <button
               className="profile-disconnect profile-leaderboard"
-              onClick={() => navigate("?query=leaderboard")}
+              onClick={() => navigate("/profile/leaderboard")}
             >
               Leaderboard
             </button>

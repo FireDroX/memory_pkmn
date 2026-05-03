@@ -12,7 +12,7 @@ const Leaderboard = () => {
   });
 
   useLayoutEffect(() => {
-    fetch("/leaderboard").then(async (data) => {
+    fetch("/api/profile/leaderboard").then(async (data) => {
       const json = await data.json();
       setLeaderboards(json);
     });
@@ -52,7 +52,7 @@ const Leaderboard = () => {
                     {(() => {
                       if (!name) return;
                       const user = leaderboards.levels.filter(
-                        (user) => user.name === name
+                        (user) => user.name === name,
                       )[0];
                       if (!user) return;
                       const index = leaderboards.levels.indexOf(user);
@@ -116,7 +116,7 @@ const Leaderboard = () => {
                     {(() => {
                       if (!name) return;
                       const user = leaderboards.game_wons.filter(
-                        (user) => user.name === name
+                        (user) => user.name === name,
                       )[0];
                       if (!user) return;
                       const index = leaderboards.game_wons.indexOf(user);
@@ -180,7 +180,7 @@ const Leaderboard = () => {
                     {(() => {
                       if (!name) return;
                       const user = leaderboards.shiny_pairs_found.filter(
-                        (user) => user.name === name
+                        (user) => user.name === name,
                       )[0];
                       if (!user) return;
                       const index =

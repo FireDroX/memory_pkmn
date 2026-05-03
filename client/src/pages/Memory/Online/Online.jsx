@@ -36,7 +36,7 @@ const Online = ({ id }) => {
       body: JSON.stringify({ room: id }),
     };
 
-    const data = await fetch("/rooms/get", requestOptions);
+    const data = await fetch("/api/rooms/get", requestOptions);
     if (data.status === 204) return setRoomExists(false);
 
     const json = await data.json();

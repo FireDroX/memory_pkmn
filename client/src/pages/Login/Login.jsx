@@ -3,14 +3,13 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../utils/UserContext";
 
-function Login() {
+function Login({ connect }) {
   const { setName, setIsLoggedIn } = useContext(UserContext);
   const navigate = useNavigate();
   const [inputName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState();
-  const [connect, setConnect] = useState(true);
 
   const handlePost = async (postLink) => {
     const requestOptions = {
@@ -22,7 +21,7 @@ function Login() {
     if (inputName === "" || password === "")
       setStatus("Both inputs are required.");
     else {
-      if (postLink === "/register") {
+      if (postLink === "/api/register") {
         if (password !== confirmPassword)
           return setStatus("Passwords need to be the same.");
       }
@@ -30,12 +29,12 @@ function Login() {
       const json = await data.json();
 
       setStatus(json?.status);
-      if (json?.status === "" && postLink === "/login") {
+      if (json?.status === "" && postLink === "/api/login") {
         setName(inputName);
         setIsLoggedIn(true);
         window.localStorage.setItem(
           "super-secret-login-info",
-          JSON.stringify({ name: inputName, password: password })
+          JSON.stringify({ name: inputName, password: password }),
         );
         navigate("");
       }
@@ -54,7 +53,7 @@ function Login() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
-        handlePost(connect ? "/login" : "/register");
+        handlePost(connect ? "/api/login" : "/api/register");
       }
     };
 
@@ -66,14 +65,6 @@ function Login() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [connect, inputName, password, confirmPassword]);
-
-  const setConnectPage = (connect) => {
-    setConnect(connect);
-    setUsername("");
-    setPassword("");
-    setConfirmPassword("");
-    setStatus("");
-  };
 
   const stringToDecimal = (str) => {
     let decimal = 0;
@@ -88,7 +79,7 @@ function Login() {
           <div className="login-container-data">
             <img
               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                inputName
+                inputName,
               )}.png`}
               alt="User"
               draggable={false}
@@ -120,10 +111,10 @@ function Login() {
                 />
               </div>
               <div className="login-buttons">
-                <button onClick={() => handlePost("/login")}>Login</button>
+                <button onClick={() => handlePost("/api/login")}>Login</button>
                 <small
                   className="login-change-pages"
-                  onClick={() => setConnectPage(false)}
+                  onClick={() => navigate("/login/register")}
                 >
                   Create Your Account
                 </small>
@@ -167,11 +158,11 @@ function Login() {
               <div className="login-buttons">
                 <small
                   className="login-change-pages"
-                  onClick={() => setConnectPage(true)}
+                  onClick={() => navigate("/login")}
                 >
                   Log in Your Account
                 </small>
-                <button onClick={() => handlePost("/register")}>
+                <button onClick={() => handlePost("/api/register")}>
                   Register
                 </button>
               </div>
