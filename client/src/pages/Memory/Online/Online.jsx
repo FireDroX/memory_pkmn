@@ -1,11 +1,12 @@
 import { useState, useLayoutEffect, useContext, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { FaCrown } from "react-icons/fa";
 import { UserContext } from "../../../utils/UserContext";
 import { socket } from "../../../socket";
 import "../../../pages/Memory/Solo/Solo.css";
 import "./Online.css";
 
-import Loading from "../../../components/Loading/Loading";
+import { Loading } from "../../../components/Loading/Loading";
 
 const Online = ({ id }) => {
   const { name, isLoggedIn } = useContext(UserContext);
@@ -93,13 +94,13 @@ const Online = ({ id }) => {
                 }
                 // Otherwise, return the card as it is
                 return card;
-              })
+              }),
             );
             setCards(updatedCards);
             postRoomValues(
               updatedCards,
               true,
-              firstCard.shiny && secondCard.shiny ? true : false
+              firstCard.shiny && secondCard.shiny ? true : false,
             );
           }, 1200);
         } else {
@@ -127,7 +128,7 @@ const Online = ({ id }) => {
                 }
                 // Otherwise, return the card as it is
                 return card;
-              })
+              }),
             );
             setCards(updatedCards);
             postRoomValues(updatedCards, false, false);
@@ -249,7 +250,7 @@ const Online = ({ id }) => {
                   >
                     <img
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                        users[0].name
+                        users[0].name,
                       )}.png`}
                       alt="User"
                       draggable={false}
@@ -282,7 +283,7 @@ const Online = ({ id }) => {
                   >
                     <img
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                        users[3].name
+                        users[3].name,
                       )}.png`}
                       alt="User"
                       draggable={false}
@@ -332,7 +333,7 @@ const Online = ({ id }) => {
                                 index,
                                 i,
                                 i + index * row.length,
-                                card.shiny
+                                card.shiny,
                               );
                           }}
                           style={{
@@ -340,12 +341,12 @@ const Online = ({ id }) => {
                               card.state === 2
                                 ? "2px solid lightblue"
                                 : card.state === 3
-                                ? "2px solid lightcoral"
-                                : card.state === 4
-                                ? "2px solid lightgreen"
-                                : card.state === 5
-                                ? "2px solid burlywood"
-                                : "none",
+                                  ? "2px solid lightcoral"
+                                  : card.state === 4
+                                    ? "2px solid lightgreen"
+                                    : card.state === 5
+                                      ? "2px solid burlywood"
+                                      : "none",
                           }}
                         >
                           <div className="card-front">
@@ -378,7 +379,7 @@ const Online = ({ id }) => {
                   >
                     <img
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                        users[1].name
+                        users[1].name,
                       )}.png`}
                       alt="User"
                       draggable={false}
@@ -411,7 +412,7 @@ const Online = ({ id }) => {
                   >
                     <img
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                        users[2].name
+                        users[2].name,
                       )}.png`}
                       alt="User"
                       draggable={false}
@@ -452,7 +453,7 @@ const Online = ({ id }) => {
                         >
                           <img
                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                              player.name
+                              player.name,
                             )}.png`}
                             alt="User"
                             draggable={false}

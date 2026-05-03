@@ -12,5 +12,5 @@ root.render(
     <UserProvider>
       <App />
     </UserProvider>
-  </Router>
+  </Router>,
 );

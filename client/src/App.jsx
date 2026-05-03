@@ -4,6 +4,7 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { UserContext } from "./utils/UserContext";
 
 import Navbar from "./components/Navbar/Navbar";
+import { Loadable } from "./components/Loading/Loading";
 
 const Home = lazy(() => import("./pages/Home/Home"));
 const Login = lazy(() => import("./pages/Login/Login"));
@@ -29,7 +30,7 @@ function App() {
 
     const { name } = JSON.parse(logInfos);
 
-    fetch("/login", requestOptions).then((data) => {
+    fetch("/api/login", requestOptions).then((data) => {
       if (data.status === 200) {
         data.json().then((json) => {
           if (json?.status === "") {
@@ -53,7 +54,7 @@ function App() {
             isLoggedIn ? (
               <Navigate to={"/profile"} replace />
             ) : (
-              <Login connect={true} />
+              Loadable(Login, { connect: true })
             )
           }
         />
@@ -63,30 +64,36 @@ function App() {
             isLoggedIn ? (
               <Navigate to={"/profile"} replace />
             ) : (
-              <Login connect={false} />
+              Loadable(Login, { connect: false })
             )
           }
         />
         <Route
           path="/online"
-          element={
-            <Online id={new URLSearchParams(location.search).get("id")} />
-          }
+          element={Loadable(Online, {
+            id: new URLSearchParams(location.search).get("id"),
+          })}
         />
         <Route
           path="/profile"
           element={
-            isLoggedIn ? <Profile /> : <Navigate to={"/login"} replace />
+            isLoggedIn ? Loadable(Profile) : <Navigate to={"/login"} replace />
           }
         />
         <Route
           path="/profile/colors"
-          element={isLoggedIn ? <Colors /> : <Navigate to={"/login"} replace />}
+          element={
+            isLoggedIn ? Loadable(Colors) : <Navigate to={"/login"} replace />
+          }
         />
         <Route
           path="/profile/leaderboard"
           element={
-            isLoggedIn ? <Leaderboard /> : <Navigate to={"/login"} replace />
+            isLoggedIn ? (
+              Loadable(Leaderboard)
+            ) : (
+              <Navigate to={"/login"} replace />
+            )
           }
         />
       </Routes>
