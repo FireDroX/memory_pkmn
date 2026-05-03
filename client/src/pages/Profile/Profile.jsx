@@ -1,6 +1,6 @@
 import "./Profile.css";
 import "../../utils/CustomColors.css";
-import { useState, useContext, useLayoutEffect } from "react";
+import { useState, useContext, useLayoutEffect, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosRefresh } from "react-icons/io";
 import { FaTrashAlt } from "react-icons/fa";
@@ -12,6 +12,7 @@ const Profile = () => {
   const [status, setStatus] = useState();
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
+  const [users, setUsers] = useState([]);
   const [players, setPlayers] = useState([
     { name: name, enabled: true },
     { name: "", enabled: true },
@@ -77,6 +78,13 @@ const Profile = () => {
     setGamesArray(json);
   };
 
+  const getUsers = async () => {
+    const data = await fetch("/api/profile/users", { method: "GET" });
+    const json = await data.json();
+
+    setUsers(json.users);
+  };
+
   const handleNavigate = (id) => {
     navigate(`/online?id=${id}`);
   };
@@ -110,6 +118,27 @@ const Profile = () => {
 
   useLayoutEffect(() => {
     getInvitations();
+    getUsers();
+  }, []);
+
+  const delayedLoad = (time, func) => {
+    if (delayed.load) return;
+    func();
+    setDelayed((prev) => ({
+      ...prev,
+      load: !prev.load,
+    }));
+    setTimeout(() => {
+      setDelayed((prev) => ({
+        ...prev,
+        load: !prev.load,
+      }));
+    }, time);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => getInvitations(), 10000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -117,7 +146,8 @@ const Profile = () => {
       <div>
         <div className="profile-container">
           <div className="profile-infos">
-            <div className="profile-username">
+            <h5>CREATE A MATCH</h5>
+            {/* <div className="profile-username">
               <img
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                   name,
@@ -132,7 +162,7 @@ const Profile = () => {
               >
                 {name}
               </h5>
-            </div>
+            </div> */}
             <p style={{ color: "red", fontSize: "10px" }}>{status}</p>
             <div className="profile-invite">
               <div className="profile-inputs">
@@ -158,26 +188,32 @@ const Profile = () => {
                         }}
                       />
                     </div>
-                    <input
-                      type="text"
-                      name="player"
-                      value={player.name}
+                    <select
+                      name="player-name"
                       disabled={index === 0 ? true : !player.enabled}
+                      value={player.name}
                       onChange={(e) => {
                         const updatedPlayers = [...players]; // Create a copy of the array
                         updatedPlayers[index].name = e.target.value; // Update the specific index
                         setPlayers(updatedPlayers); // Set the new array as state
                       }}
-                    />
+                    >
+                      <option value="nobody"></option>
+                      {users.map((u, i) => (
+                        <option key={i} value={u}>
+                          {u}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 ))}
               </div>
               <div className="profile-pairs-buttons">
                 {[
-                  { c: 4, r: 5 },
-                  { c: 4, r: 7 },
-                  { c: 4, r: 9 },
-                  { c: 4, r: 11 },
+                  { col: 4, row: 5 },
+                  { col: 4, row: 7 },
+                  { col: 4, row: 9 },
+                  { col: 4, row: 11 },
                 ].map((pairs, index) => (
                   <button
                     key={index}
@@ -186,12 +222,12 @@ const Profile = () => {
                     style={{
                       backgroundColor:
                         (gamePairs.c * gamePairs.r) / 2 ===
-                        (pairs.c * pairs.r) / 2
+                        (pairs.col * pairs.row) / 2
                           ? "var(--secondary50)"
                           : "var(--primary65)",
                     }}
                   >
-                    {(pairs.c * pairs.r) / 2}
+                    {(pairs.col * pairs.row) / 2}
                   </button>
                 ))}
                 <p>Pairs</p>
@@ -200,19 +236,7 @@ const Profile = () => {
                 <button
                   disabled={delayed.invite}
                   className="profile-disconnect"
-                  onClick={() => {
-                    handleInvite();
-                    setDelayed((prev) => ({
-                      ...prev,
-                      invite: !prev.invite,
-                    }));
-                    setTimeout(() => {
-                      setDelayed((prev) => ({
-                        ...prev,
-                        invite: !prev.invite,
-                      }));
-                    }, 5000);
-                  }}
+                  onClick={() => delayedLoad(5000, handleInvite)}
                 >
                   Invite
                 </button>
@@ -224,23 +248,8 @@ const Profile = () => {
           </div>
           <div className="profile-invites">
             <h5>
-              Invites :{" "}
-              <IoIosRefresh
-                onClick={() => {
-                  if (delayed.load) return;
-                  getInvitations();
-                  setDelayed((prev) => ({
-                    ...prev,
-                    load: !prev.load,
-                  }));
-                  setTimeout(() => {
-                    setDelayed((prev) => ({
-                      ...prev,
-                      load: !prev.load,
-                    }));
-                  }, 5000);
-                }}
-              />
+              JOIN A MATCH{" "}
+              <IoIosRefresh onClick={() => delayedLoad(5000, getInvitations)} />
             </h5>
             <div className="profile-invitesList">
               {gamesArray
@@ -273,20 +282,9 @@ const Profile = () => {
                       : <span {...parameters}>JOIN</span>
                       {game.players[0].name === name ? (
                         <FaTrashAlt
-                          onClick={() => {
-                            if (delayed.delete) return;
-                            handleDelete(game.id);
-                            setDelayed((prev) => ({
-                              ...prev,
-                              delete: !prev.delete,
-                            }));
-                            setTimeout(() => {
-                              setDelayed((prev) => ({
-                                ...prev,
-                                delete: !prev.delete,
-                              }));
-                            }, 5000);
-                          }}
+                          onClick={() =>
+                            delayedLoad(5000, handleDelete(game.id))
+                          }
                         />
                       ) : (
                         false

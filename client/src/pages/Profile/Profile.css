@@ -103,7 +103,7 @@
   color: var(--text65);
 }
 
-.profile-player-input > input {
+.profile-player-input > select {
   border: none;
   background-color: var(--primary65);
   border-radius: 25px;
@@ -111,7 +111,11 @@
   color: var(--text);
   font-weight: 600;
   transition: all 0.5s ease;
-  width: 6rem;
+  width: 7rem;
+}
+
+.profile-player-input > select > option {
+  color: var(--bg);
 }
 
 .profile-player-input > div {
@@ -124,7 +128,8 @@
   line-height: 0rem;
 }
 
-.profile-invites > h5 {
+.profile-invites > h5,
+.profile-infos > h5 {
   color: var(--text65);
   display: flex;
   align-items: center;
