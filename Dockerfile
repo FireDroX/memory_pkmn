@@ -14,11 +14,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY db.js server.js ./
-COPY server/ ./server/
-COPY database/ ./database/
-COPY scripts/ ./scripts/
+COPY . .
 COPY --from=client-build /app/client/dist ./client/dist
 
-EXPOSE 3001
+EXPOSE 3000
 CMD ["node", "server.js"]

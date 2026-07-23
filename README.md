@@ -45,7 +45,7 @@ npm run client
 ```
 
 - Frontend : http://localhost:5173
-- API et Socket.IO : http://localhost:3001
+- API et Socket.IO : http://localhost:3000
 
 Vite relaie automatiquement `/api` et `/socket.io` vers le backend.
 
