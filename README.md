@@ -1,64 +1,59 @@
-# PokeFlip Online Backend
+# PokeFlip
 
-This backend handles user authentication, game room creation, and multiplayer communication using Express, Socket.IO, and Supabase. It supports both solo and multiplayer modes with real-time interactions.
+PokeFlip est un jeu de memory Pokemon jouable en solo ou jusqu'a quatre joueurs.
+Le mode multijoueur synchronise les cartes, les tours et les scores en temps reel
+avec Socket.IO.
 
-## Table of Contents
+## Stack
 
-- [Features](#features)
-- [Technologies](#technologies)
-- [Environment Setup](#environment-setup)
-- [Running the Server](#running-the-server)
+- React 19 et Vite 7
+- Express et Socket.IO
+- MySQL avec `mysql2`
+- PokeAPI pour les sprites
 
----
+## Installation
 
-## Features
-
-- **User Authentication**: Secure login and registration with password hashing.
-- **Game Room Management**: Create, join, and delete game rooms for online multiplayer.
-- **Real-time Communication**: Synchronize game state between players using Socket.IO.
-- **Supabase Integration**: Store user and game data.
-
----
-
-## Technologies
-
-- **Express** for the server framework.
-- **Socket.IO** for real-time bidirectional event-based communication.
-- **Supabase** for database storage.
-- **Bcrypt** for password hashing.
-
----
-
-## Environment Setup
-
-Create a `.env` file in the root directory with the following variables:
-
-```plaintext
-PORT=5000
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-## Running the Server
-
-1. Install dependencies:
+Prérequis : Node.js 20.19+ et MySQL 8+ ou MariaDB.
 
 ```bash
 npm install
+npm --prefix client install
 ```
 
-2. Start the server:
+Copier `.env.example` vers `.env`, puis adapter les identifiants MySQL si besoin.
 
 ```bash
-npm run start
+npm run db:setup
 ```
 
-By default, the server runs on http://localhost:5000 (or your local ip adress).
+Cette commande crée la base configurée par `SQL_DBNAME`, ainsi que les tables
+`users` et `rooms`. Le schéma SQL est aussi disponible dans
+`database/schema.sql`.
 
-## Contributing
+## Développement
 
-1. Fork the repository.
-2. Create a new branch (`feature/YourFeature`).
-3. Commit changes.
-4. Push to the branch.
-5. Create a pull request.
+Lancer le serveur API et Socket.IO :
+
+```bash
+npm run dev
+```
+
+Puis lancer Vite dans un second terminal :
+
+```bash
+npm run client
+```
+
+- Frontend : http://localhost:5173
+- API et Socket.IO : http://localhost:3001
+
+Vite relaie automatiquement `/api` et `/socket.io` vers le backend.
+
+## Production
+
+```bash
+npm run build
+npm start
+```
+
+Express sert alors le build généré dans `client/dist`.

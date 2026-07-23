@@ -8,6 +8,7 @@ router.use("/invite", require("./createRoomRoute"));
 router.use("/rooms", require("./roomsRoute"));
 router.use("/invites", require("./invitesRoute"));
 router.use("/profile/leaderboard", require("./getLeaderboards"));
+router.use("/profile/summary", require("./getProfile"));
 router.use("/profile/update", require("./updateUser"));
 router.use("/profile/users", require("./getUsers"));
 

@@ -1,18 +1,15 @@
 const express = require("express");
+const pool = require("../../db");
+
 const router = express.Router();
 
 router.get("/", async (_, res) => {
   try {
-    const pool = await require("../../db");
-
-    const result = await pool.query(`SELECT name FROM users ORDER BY name`);
-
-    const users = result.recordset;
-
-    res.json({ users: users.map((u) => u.name) });
+    const [users] = await pool.query("SELECT name FROM users ORDER BY name");
+    return res.json({ users: users.map((user) => user.name) });
   } catch (error) {
-    console.log(error);
-    res.json({ error: "Failed to fetch users" });
+    console.error("Users error:", error);
+    return res.status(500).json({ error: "Impossible de charger les joueurs." });
   }
 });
 

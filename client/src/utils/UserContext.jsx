@@ -10,6 +10,12 @@ export const UserProvider = ({ children }) => {
     xp: 0,
     xpNeeded: 100,
     level: 1,
+    achievements: [0],
+  });
+  const [userStats, setUserStats] = useState({
+    onlineGamesWon: 0,
+    shinyPairsFound: 0,
+    createdAt: null,
   });
 
   const value = {
@@ -19,6 +25,8 @@ export const UserProvider = ({ children }) => {
     setIsLoggedIn,
     userProfile,
     setUserProfile,
+    userStats,
+    setUserStats,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -1,76 +1,82 @@
 const express = require("express");
-const router = express.Router();
-
+const pool = require("../../db");
 const levels = require("../utils/Levels");
+const parseJson = require("../utils/parseJson");
+const {
+  prepareProfile,
+  unlockAchievement,
+  isWeekendInParis,
+} = require("../utils/profileProgress");
+
+const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const pool = await require("../../db");
+    const name = String(req.body.name || "").trim();
+    const earnedXp = Math.max(0, Number(req.body.xp) || 0);
 
-    const { name, xp, userProfile = undefined } = req.body;
-
-    // Récupérer le joueur
-    const selectRequest = `
-      SELECT * FROM users WHERE name = @name
-    `;
-
-    const result = await pool
-      .request()
-      .input("name", name)
-      .query(selectRequest);
-
-    const playerRaw = result.recordset[0];
-
-    if (!playerRaw) return res.json({ status: "Player does not exists." });
-
-    // Parser user_profile JSON
-    const player = {
-      ...playerRaw,
-      user_profile: JSON.parse(playerRaw.user_profile || "{}"),
-    };
-
-    const { level, xp: xpOld, xpNeeded } = player.user_profile;
-    const updatedUser = userProfile || player.user_profile;
-
-    // Check level up
-    if (xpOld + xp >= xpNeeded && levels.length > level + 1) {
-      const newInfos = levels[level + 1];
-
-      updatedUser.level = newInfos.level;
-      updatedUser.xp = xpOld + xp - xpNeeded;
-      updatedUser.xpNeeded = newInfos.xpNeeded;
-
-      if (newInfos.rewards.colors.length > 0) {
-        newInfos.rewards.colors.forEach((color) => {
-          if (!updatedUser.inventory[0].colors.includes(color)) {
-            updatedUser.inventory[0].colors.push(color);
-          }
-        });
-      }
-    } else {
-      updatedUser.xp = xpOld + xp;
+    const [players] = await pool.execute(
+      "SELECT user_profile FROM users WHERE name = ? LIMIT 1",
+      [name],
+    );
+    if (!players[0]) {
+      return res.status(404).json({ status: "Joueur introuvable." });
     }
 
-    // Update user in DB
-    const updateRequest = `
-      UPDATE users
-      SET user_profile = @user_profile
-      WHERE name = @name
-    `;
+    const currentProfile = prepareProfile(
+      parseJson(players[0].user_profile, {}),
+    );
+    let updatedUser = prepareProfile(currentProfile);
+    if (req.body.userProfile) {
+      const requestedColors =
+        req.body.userProfile?.inventory?.[0]?.colors || [];
+      const currentColors = currentProfile.inventory[0].colors;
+      const containsSameColors =
+        requestedColors.length === currentColors.length &&
+        new Set(requestedColors).size === new Set(currentColors).size &&
+        requestedColors.every((color) => currentColors.includes(color));
 
-    await pool
-      .request()
-      .input("user_profile", JSON.stringify(updatedUser))
-      .input("name", name)
-      .query(updateRequest);
+      if (!containsSameColors) {
+        return res.status(400).json({
+          status: "Selection de couleur invalide.",
+        });
+      }
+      updatedUser.inventory[0].colors = [...requestedColors];
+    }
+    const currentXp = Number(currentProfile.xp) || 0;
+    const xpNeeded = Number(currentProfile.xpNeeded) || 10;
+    const level = Number(currentProfile.level) || 0;
 
-    return res.json({
-      status: "",
-      profile: updatedUser,
-    });
+    if (currentXp + earnedXp >= xpNeeded && levels[level + 1]) {
+      const nextLevel = levels[level + 1];
+      updatedUser.level = nextLevel.level;
+      updatedUser.xp = currentXp + earnedXp - xpNeeded;
+      updatedUser.xpNeeded = nextLevel.xpNeeded;
+      nextLevel.rewards.colors.forEach((color) => {
+        if (!updatedUser.inventory[0].colors.includes(color)) {
+          updatedUser.inventory[0].colors.push(color);
+        }
+      });
+    } else if (!req.body.userProfile) {
+      updatedUser.xp = currentXp + earnedXp;
+    }
+
+    if (earnedXp > 0 && isWeekendInParis()) {
+      updatedUser = unlockAchievement(updatedUser, 10);
+    }
+    if (updatedUser.level >= 5) {
+      updatedUser = unlockAchievement(updatedUser, 150);
+    }
+
+    await pool.execute(
+      "UPDATE users SET user_profile = ? WHERE name = ?",
+      [JSON.stringify(updatedUser), name],
+    );
+
+    return res.json({ status: "", profile: updatedUser });
   } catch (error) {
-    console.error(error);
-    return res.json({ status: "Error updating user profile." });
+    console.error("Profile update error:", error);
+    return res.status(500).json({ status: "Mise a jour du profil impossible." });
   }
 });
 

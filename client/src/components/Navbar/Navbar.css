@@ -1,49 +1,219 @@
 .navbar-container {
-  position: absolute;
-  top: 0px;
-  width: 100%;
-  height: 3rem;
-  background-color: var(--primary15);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
   z-index: 100;
+  height: 72px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 253, 246, 0.86);
+  backdrop-filter: blur(18px);
 }
 
 .navbar-texts {
-  padding-inline: 2rem;
-  color: var(--text85);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  width: min(1240px, 100%);
   height: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 38px;
 }
 
-.navbar-texts > * {
+.brand,
+.nav-links button,
+.nav-login,
+.user-chip {
+  border: 0;
+  cursor: pointer;
+  background: none;
+}
+
+.brand {
+  padding: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  gap: 10px;
+  color: var(--ink);
+  font-family: "Arial Black", "Trebuchet MS", sans-serif;
+  font-size: 1.08rem;
+  letter-spacing: -0.06em;
 }
 
-.navbar-texts > p:hover {
-  cursor: pointer;
+.brand strong {
+  color: var(--red);
+}
+
+.brand-ball {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: linear-gradient(to bottom, var(--red) 0 44%, var(--ink) 44% 56%, white 56%);
+  transform: rotate(-12deg);
+}
+
+.brand-ball::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  content: "";
+  transform: translate(-50%, -50%);
+  background: white;
+}
+
+.nav-links {
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+  gap: 4px;
+}
+
+.nav-links button {
+  position: relative;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.nav-links button::after {
+  position: absolute;
+  right: 14px;
+  bottom: -1px;
+  left: 14px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  content: "";
+  transform: scaleX(0);
+  background: var(--red);
+  transition: transform 180ms ease;
+}
+
+.nav-links button:hover,
+.nav-links button.active {
+  color: var(--ink);
+}
+
+.nav-links button.active::after {
+  transform: scaleX(1);
+}
+
+.nav-login {
+  padding: 10px 18px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: 150ms ease;
+}
+
+.nav-login:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.user-chip {
+  padding: 4px 6px 4px 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.user-chip > img {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--yellow);
+  image-rendering: pixelated;
+}
+
+.user-chip-copy {
+  min-width: 92px;
+  display: grid;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-soft);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .progress-bar {
-  width: 10rem;
-  height: 10px;
-  background-color: var(--primary25); /* Background color of the progress bar */
-  border-radius: 5px;
+  width: 54px;
+  height: 5px;
   overflow: hidden;
+  border-radius: 99px;
+  background: rgba(19, 35, 63, 0.12);
 }
 
 .progress-fill {
+  display: block;
   height: 100%;
-  border-radius: 5px;
-  background-color: var(--text85); /* Progress bar fill color */
-  transition: width 0.4s ease; /* Smooth animation on level progress */
+  border-radius: inherit;
+  background: var(--blue);
 }
 
-@media (max-width: 580px) {
-  .progress-container {
+@media (max-width: 720px) {
+  .navbar-container {
+    height: 64px;
+  }
+
+  .navbar-texts {
+    padding: 0 14px;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+  }
+
+  .brand > span:last-child {
     display: none;
+  }
+
+  .nav-links {
+    justify-content: center;
+  }
+
+  .nav-links button {
+    padding: 0 9px;
+    font-size: 0.7rem;
+  }
+
+  .nav-links button span {
+    display: none;
+  }
+
+  .user-chip-copy {
+    display: none;
+  }
+
+  .user-chip > img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .nav-login {
+    padding: 8px 10px;
+    font-size: 0.68rem;
   }
 }

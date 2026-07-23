@@ -1,34 +1,24 @@
-# ----------- 1. Build du client React -----------
 FROM node:20-alpine AS client-build
 
 WORKDIR /app/client
-
-# Installer dépendances client
 COPY client/package*.json ./
-RUN npm install
-
-# Copier le code et build
+RUN npm ci
 COPY client/ ./
 RUN npm run build
 
-
-# ----------- 2. Backend + server -----------
 FROM node:20-alpine
 
+ENV NODE_ENV=production
 WORKDIR /app
 
-# Installer dépendances backend
 COPY package*.json ./
-RUN npm install
+RUN npm ci --omit=dev
 
-# Copier tout le projet
-COPY . .
+COPY db.js server.js ./
+COPY server/ ./server/
+COPY database/ ./database/
+COPY scripts/ ./scripts/
+COPY --from=client-build /app/client/dist ./client/dist
 
-# Copier le build React dans un dossier public (à adapter selon ton server.js)
-COPY --from=client-build /app/client/build ./client/build
-
-# Port (à adapter si besoin)
 EXPOSE 3001
-
-# Lancer le serveur
 CMD ["node", "server.js"]

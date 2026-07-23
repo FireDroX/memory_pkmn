@@ -1,64 +1,50 @@
+const pool = require("../../db");
+const parseJson = require("../utils/parseJson");
+
 module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("user-connected", async ({ name, id }) => {
       try {
-        const pool = await require("../../db");
-
-        // Récupérer la room
-        const roomResult = await pool
-          .request()
-          .input("id", id)
-          .query(`SELECT * FROM rooms WHERE id = @id`);
-
-        const roomRaw = roomResult.recordset[0];
-
+        const [rooms] = await pool.execute(
+          "SELECT * FROM rooms WHERE id = ? LIMIT 1",
+          [id],
+        );
+        const roomRaw = rooms[0];
         if (!roomRaw) return;
 
-        // Parser JSON
         const roomData = {
           ...roomRaw,
-          players: JSON.parse(roomRaw.players || "[]"),
-          cards: JSON.parse(roomRaw.cards || "[]"),
+          players: parseJson(roomRaw.players, []),
+          cards: parseJson(roomRaw.cards, []),
         };
-
         const userIndex = roomData.players.findIndex(
           (player) => player.name === name,
         );
-
         if (userIndex === -1) return;
 
-        // Set ready
         roomData.players[userIndex].ready = true;
+        const everyoneIsReady = roomData.players.every((player) => player.ready);
 
-        // Si tous prêts → choisir joueur aléatoire
-        if (
-          roomData.players.filter((p) => p.ready === true).length ===
-          roomData.players.length
-        ) {
-          const randomName =
+        if (everyoneIsReady && !roomData.playerTurn) {
+          roomData.playerTurn =
             roomData.players[
               Math.floor(Math.random() * roomData.players.length)
             ].name;
-
-          roomData.playerTurn = randomName;
         }
 
-        // Update DB
-        await pool
-          .request()
-          .input("players", JSON.stringify(roomData.players))
-          .input("playerTurn", roomData.playerTurn)
-          .input("id", id).query(`
-            UPDATE rooms SET 
-              players = @players,
-              playerTurn = @playerTurn
-            WHERE id = @id
-          `);
+        await pool.execute(
+          "UPDATE rooms SET players = ?, playerTurn = ? WHERE id = ?",
+          [JSON.stringify(roomData.players), roomData.playerTurn, id],
+        );
 
-        io.emit("refresh-room", roomData);
+        io.to(id).emit("refresh-room", roomData);
       } catch (error) {
-        console.error("Error updating room:", error);
+        console.error("Room readiness error:", error);
       }
+    });
+
+    socket.on("join-room", (id) => {
+      if (typeof id === "string" && id.startsWith("ROOM-")) socket.join(id);
     });
   });
 };

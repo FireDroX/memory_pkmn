@@ -1,68 +1,119 @@
 import "./Colors.css";
 import "../../utils/CustomColors.css";
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
+
+const colorNames = {
+  "color-default": "Classique",
+  "color-1": "Rose spectre",
+  "color-2": "Aura menthe",
+  "color-3": "Soleil",
+  "color-4": "Glacier",
+  "color-5": "Nebuleuse",
+  "color-6": "Magma",
+  "color-7": "Eclair",
+  "color-8": "Jungle",
+  "color-9": "Ocean",
+  "color-glitch": "MissingNo.",
+  "color-zekrom": "Zekrom",
+  "color-shiny": "Shiny",
+};
+
 const Colors = () => {
-  const { name, isLoggedIn, userProfile, setUserProfile } =
-    useContext(UserContext);
-  const [usedColor, setUsedColor] = useState(0);
+  const { name, userProfile, setUserProfile } = useContext(UserContext);
   const navigate = useNavigate();
+  const colors = userProfile.inventory?.[0]?.colors || ["color-default"];
+  const [selectedColor, setSelectedColor] = useState(colors[0]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    if (usedColor === 0) return;
-    if (isLoggedIn) {
-      const newUserProfile = userProfile;
-      const [element] = newUserProfile.inventory[0].colors.splice(usedColor, 1);
-      newUserProfile.inventory[0].colors.unshift(element);
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name,
-          xp: 0,
-          userProfile: newUserProfile,
-        }),
-      };
-      const data = await fetch("/api/profile/update", requestOptions);
-      const json = await data.json();
-      if (data.status === 200) {
-        setUserProfile(json.profile);
-        navigate("");
-        window.location.reload();
-      }
+    if (isSaving) return;
+    if (selectedColor === colors[0]) {
+      navigate("/profile");
+      return;
+    }
+
+    setIsSaving(true);
+    const updatedProfile = structuredClone(userProfile);
+    updatedProfile.inventory[0].colors = [
+      selectedColor,
+      ...colors.filter((color) => color !== selectedColor),
+    ];
+
+    const response = await fetch("/api/profile/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        xp: 0,
+        userProfile: updatedProfile,
+      }),
+    });
+    const data = await response.json();
+
+    if (response.ok && data.profile) {
+      setUserProfile(data.profile);
+      navigate("/profile");
+    } else {
+      setIsSaving(false);
     }
   };
 
   return (
-    <section className="App">
+    <section className="App colors-page">
       <div>
         <div className="colors-container">
-          <div>
-            <h5
-              className={userProfile.inventory[0].colors[usedColor]}
-              data-name={name}
-            >
+          <header className="colors-heading">
+            <button onClick={() => navigate("/profile")} aria-label="Retour">
+              <FaArrowLeft />
+            </button>
+            <div>
+              <span className="eyebrow">PERSONNALISATION</span>
+              <h2>Couleur du pseudo</h2>
+              <p>
+                Les nouveaux styles se debloquent en montant de niveau et en
+                terminant certains succes.
+              </p>
+            </div>
+          </header>
+
+          <div className="color-preview">
+            <span>Apercu en jeu</span>
+            <h3 className={selectedColor} data-name={name}>
               {name}
-            </h5>
+            </h3>
+            <small>{colorNames[selectedColor] || "Style special"}</small>
           </div>
+
           <div className="owned-colors">
-            {userProfile.inventory[0].colors.map((color, index) => (
-              <div
-                key={index}
-                style={{
-                  outline:
-                    index === usedColor ? "solid 2px lightgreen" : "unset",
-                }}
-                onClick={() => setUsedColor(index)}
-              >
-                <p className={color} data-name="COLOR">
-                  COLOR
-                </p>
-              </div>
-            ))}
+            {colors.map((color, index) => {
+              const selected = color === selectedColor;
+              return (
+                <button
+                  key={color}
+                  className={selected ? "selected" : ""}
+                  onClick={() => setSelectedColor(color)}
+                >
+                  <span className={color} data-name={name}>
+                    {name}
+                  </span>
+                  <small>{colorNames[color] || `Style ${index + 1}`}</small>
+                  {selected && <FaCheck />}
+                </button>
+              );
+            })}
           </div>
-          <button onClick={() => handleSave()}>SAVE COLOR</button>
+
+          <div className="colors-actions">
+            <button className="secondary" onClick={() => navigate("/profile")}>
+              Annuler
+            </button>
+            <button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? "Enregistrement..." : "Utiliser cette couleur"}
+            </button>
+          </div>
         </div>
       </div>
     </section>

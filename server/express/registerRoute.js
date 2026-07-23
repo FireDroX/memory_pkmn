@@ -1,86 +1,56 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+const pool = require("../../db");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const pool = await require("../../db");
+    const name = String(req.body.name || "").trim();
+    const password = String(req.body.password || "");
 
-    const { name, password } = req.body;
-
-    // Vérif inputs
-    if (!name || !password) {
-      return res.json({ status: "Both inputs are required." });
+    if (!/^[a-zA-Z0-9]{1,25}$/.test(name) || !password) {
+      return res.status(400).json({
+        status: "Choisis un pseudo alphanumerique et un mot de passe.",
+      });
     }
 
-    // Vérifier si username existe déjà
-    const checkRequest = `
-      SELECT * FROM users WHERE name = @name
-    `;
+    const [existingUsers] = await pool.execute(
+      "SELECT id FROM users WHERE name = ? LIMIT 1",
+      [name],
+    );
 
-    const existingResult = await pool
-      .request()
-      .input("name", name)
-      .query(checkRequest);
-
-    const existingUser = existingResult.recordset[0];
-
-    if (existingUser) {
-      return res.json({ status: "That username is already used." });
+    if (existingUsers.length > 0) {
+      return res.status(409).json({ status: "Ce pseudo est deja utilise." });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = {
+    const userProfile = {
       level: 0,
       xp: 0,
       xpNeeded: 10,
-      inventory: [
-        {
-          colors: ["color-default"],
-        },
-      ],
+      inventory: [{ colors: ["color-default"] }],
+      achievements: [0],
     };
 
-    const userId = "USER-" + Date.now().toString();
-
-    // Insert user
-    const insertRequest = `
-      INSERT INTO users (
-        id,
+    await pool.execute(
+      `INSERT INTO users
+        (id, name, password, online_games_won, shiny_pairs_found, user_profile)
+       VALUES (?, ?, ?, 0, 0, ?)`,
+      [
+        `USER-${Date.now()}`,
         name,
-        password,
-        online_games_won,
-        shiny_pairs_found,
-        user_profile
-      ) VALUES (
-        @id,
-        @name,
-        @password,
-        @online_games_won,
-        @shiny_pairs_found,
-        @user_profile
-      )
-    `;
+        hashedPassword,
+        JSON.stringify(userProfile),
+      ],
+    );
 
-    await pool
-      .request()
-      .input("id", userId)
-      .input("name", name)
-      .input("password", hashedPassword)
-      .input("online_games_won", 0)
-      .input("shiny_pairs_found", 0)
-      .input("user_profile", JSON.stringify(newUser))
-      .query(insertRequest);
-
-    return res.json({
-      status: "Account created, please Login.",
-    });
+    return res
+      .status(201)
+      .json({ status: "Compte cree. Tu peux maintenant te connecter." });
   } catch (error) {
-    console.error(error);
-    return res.json({ status: "Error creating account" });
+    console.error("Registration error:", error);
+    return res.status(500).json({ status: "Creation du compte impossible." });
   }
 });
 

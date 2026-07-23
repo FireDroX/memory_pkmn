@@ -1,5 +1,4 @@
 import { useState, useLayoutEffect, useContext, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import { FaCrown } from "react-icons/fa";
 import { UserContext } from "../../../utils/UserContext";
 import { socket } from "../../../socket";
@@ -18,7 +17,12 @@ const Online = ({ id }) => {
   const [endOfGame, setEndOfGame] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
 
-  const postRoomValues = async (updatedCars, isPair, isPairShiny) => {
+  const postRoomValues = async (
+    updatedCars,
+    isPair,
+    isPairShiny,
+    pokemon,
+  ) => {
     socket.emit("update-room", {
       room: id,
       cards: updatedCars,
@@ -26,6 +30,7 @@ const Online = ({ id }) => {
       pair: {
         isPair,
         shiny: isPairShiny,
+        pokemon,
       },
     });
   };
@@ -101,6 +106,7 @@ const Online = ({ id }) => {
               updatedCards,
               true,
               firstCard.shiny && secondCard.shiny ? true : false,
+              firstCard.cardValue,
             );
           }, 1200);
         } else {
@@ -140,20 +146,23 @@ const Online = ({ id }) => {
   };
 
   useEffect(() => {
-    socket.connect();
-    socket.on("connection", getRoomValues());
-    socket.on("refresh-room", (updatedRoomValues) => {
+    const handleConnect = () => socket.emit("join-room", id);
+    const handleRefresh = (updatedRoomValues) => {
       setRoom(updatedRoomValues);
       setCards(updatedRoomValues.cards);
       setFlippedCards([]);
-    });
-
-    return () => {
-      socket.disconnect();
-      socket.off("connection");
-      socket.off("refresh-room");
     };
-  }, []);
+
+    socket.on("connect", handleConnect);
+    socket.on("refresh-room", handleRefresh);
+    socket.connect();
+    getRoomValues();
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("refresh-room", handleRefresh);
+      socket.disconnect();
+    };
+  }, [id]);
 
   useEffect(() => {
     let cardsLeft = cards.flat(1).length || undefined;

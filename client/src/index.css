@@ -1,108 +1,111 @@
-body {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  list-style: none;
-  text-decoration: none;
-  user-select: none;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #13233f;
+  background: #f4f0e6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #13233f;
+  --ink-soft: #53617a;
+  --paper: #fffdf6;
+  --canvas: #f4f0e6;
+  --yellow: #ffd64a;
+  --yellow-deep: #f1bd18;
+  --red: #ef5b5b;
+  --blue: #4d7cff;
+  --mint: #71d4bd;
+  --line: rgba(19, 35, 63, 0.14);
+  --shadow: 0 22px 55px rgba(30, 45, 72, 0.14);
+  --text: #13233f;
+  --bg: #f4f0e6;
+  --primary15: rgba(19, 35, 63, 0.08);
+  --primary25: rgba(19, 35, 63, 0.14);
+  --primary65: #4d7cff;
+  --secondary50: #ef5b5b;
+  --accent: #ffd64a;
+  --accent10: rgba(255, 255, 255, 0.84);
+  --accent20: #fffdf6;
+  --text10: rgba(19, 35, 63, 0.1);
+  --text15: rgba(19, 35, 63, 0.46);
+  --text55: rgba(19, 35, 63, 0.65);
+  --text65: rgba(19, 35, 63, 0.76);
+  --text75: rgba(19, 35, 63, 0.84);
+  --text85: rgba(19, 35, 63, 0.92);
+  --text95: #13233f;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html {
+  min-width: 320px;
+  min-height: 100%;
   scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar {
-  display: none;
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 10% 5%, rgba(255, 214, 74, 0.28), transparent 24rem),
+    radial-gradient(circle at 95% 80%, rgba(77, 124, 255, 0.16), transparent 27rem),
+    var(--canvas);
 }
 
-:root {
-  --text: #eff0f0;
-  --bg: #101314;
-  --primary: #b0c5cc;
-  --secondary: #375c67;
-  --accent: #5da4b9;
-  --textcontrast: #64d97b;
-  --bgcontrast: #64d97b;
-  --primarycontrast: #64d97b;
-  --secondarycontrast: #ffdd00;
-  --accentcontrast: #64d97b;
-  --text5: hsl(180, 3%, 94%, 5%);
-  --text10: hsl(180, 3%, 94%, 10%);
-  --text15: hsl(180, 3%, 94%, 15%);
-  --text20: hsl(180, 3%, 94%, 20%);
-  --text25: hsl(180, 3%, 94%, 25%);
-  --text30: hsl(180, 3%, 94%, 30%);
-  --text35: hsl(180, 3%, 94%, 35%);
-  --text40: hsl(180, 3%, 94%, 40%);
-  --text45: hsl(180, 3%, 94%, 45%);
-  --text50: hsl(180, 3%, 94%, 50%);
-  --text55: hsl(180, 3%, 94%, 55%);
-  --text60: hsl(180, 3%, 94%, 60%);
-  --text65: hsl(180, 3%, 94%, 65%);
-  --text70: hsl(180, 3%, 94%, 70%);
-  --text75: hsl(180, 3%, 94%, 75%);
-  --text80: hsl(180, 3%, 94%, 80%);
-  --text85: hsl(180, 3%, 94%, 85%);
-  --text90: hsl(180, 3%, 94%, 90%);
-  --text95: hsl(180, 3%, 94%, 95%);
-  --primary5: hsl(195, 22%, 75%, 5%);
-  --primary10: hsl(195, 22%, 75%, 10%);
-  --primary15: hsl(195, 22%, 75%, 15%);
-  --primary20: hsl(195, 22%, 75%, 20%);
-  --primary25: hsl(195, 22%, 75%, 25%);
-  --primary30: hsl(195, 22%, 75%, 30%);
-  --primary35: hsl(195, 22%, 75%, 35%);
-  --primary40: hsl(195, 22%, 75%, 40%);
-  --primary45: hsl(195, 22%, 75%, 45%);
-  --primary50: hsl(195, 22%, 75%, 50%);
-  --primary55: hsl(195, 22%, 75%, 55%);
-  --primary60: hsl(195, 22%, 75%, 60%);
-  --primary65: hsl(195, 22%, 75%, 65%);
-  --primary70: hsl(195, 22%, 75%, 70%);
-  --primary75: hsl(195, 22%, 75%, 75%);
-  --primary80: hsl(195, 22%, 75%, 80%);
-  --primary85: hsl(195, 22%, 75%, 85%);
-  --primary90: hsl(195, 22%, 75%, 90%);
-  --primary95: hsl(195, 22%, 75%, 95%);
-  --secondary5: hsl(194, 30%, 31%, 5%);
-  --secondary10: hsl(194, 30%, 31%, 10%);
-  --secondary15: hsl(194, 30%, 31%, 15%);
-  --secondary20: hsl(194, 30%, 31%, 20%);
-  --secondary25: hsl(194, 30%, 31%, 25%);
-  --secondary30: hsl(194, 30%, 31%, 30%);
-  --secondary35: hsl(194, 30%, 31%, 35%);
-  --secondary40: hsl(194, 30%, 31%, 40%);
-  --secondary45: hsl(194, 30%, 31%, 45%);
-  --secondary50: hsl(194, 30%, 31%, 50%);
-  --secondary55: hsl(194, 30%, 31%, 55%);
-  --secondary60: hsl(194, 30%, 31%, 60%);
-  --secondary65: hsl(194, 30%, 31%, 65%);
-  --secondary70: hsl(194, 30%, 31%, 70%);
-  --secondary75: hsl(194, 30%, 31%, 75%);
-  --secondary80: hsl(194, 30%, 31%, 80%);
-  --secondary85: hsl(194, 30%, 31%, 85%);
-  --secondary90: hsl(194, 30%, 31%, 90%);
-  --secondary95: hsl(194, 30%, 31%, 95%);
-  --accent5: hsl(194, 40%, 55%, 5%);
-  --accent10: hsl(194, 40%, 55%, 10%);
-  --accent15: hsl(194, 40%, 55%, 15%);
-  --accent20: hsl(194, 40%, 55%, 20%);
-  --accent25: hsl(194, 40%, 55%, 25%);
-  --accent30: hsl(194, 40%, 55%, 30%);
-  --accent35: hsl(194, 40%, 55%, 35%);
-  --accent40: hsl(194, 40%, 55%, 40%);
-  --accent45: hsl(194, 40%, 55%, 45%);
-  --accent50: hsl(194, 40%, 55%, 50%);
-  --accent55: hsl(194, 40%, 55%, 55%);
-  --accent60: hsl(194, 40%, 55%, 60%);
-  --accent65: hsl(194, 40%, 55%, 65%);
-  --accent70: hsl(194, 40%, 55%, 70%);
-  --accent75: hsl(194, 40%, 55%, 75%);
-  --accent80: hsl(194, 40%, 55%, 80%);
-  --accent85: hsl(194, 40%, 55%, 85%);
-  --accent90: hsl(194, 40%, 55%, 90%);
-  --accent95: hsl(194, 40%, 55%, 95%);
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  opacity: 0.24;
+  background-image: radial-gradient(rgba(19, 35, 63, 0.28) 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  color: var(--ink);
+  background: var(--yellow);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 20px;
+  background: rgba(19, 35, 63, 0.25);
+  background-clip: padding-box;
 }

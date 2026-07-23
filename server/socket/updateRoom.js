@@ -1,136 +1,153 @@
+const pool = require("../../db");
 const levels = require("../utils/Levels");
+const parseJson = require("../utils/parseJson");
+const {
+  prepareProfile,
+  unlockAchievement,
+  unlockStatAchievements,
+  isWeekendInParis,
+} = require("../utils/profileProgress");
+
+const addXp = (profile, amount) => {
+  const updated = prepareProfile(profile);
+  const level = Number(updated.level) || 0;
+  const xp = Number(updated.xp) || 0;
+  const xpNeeded = Number(updated.xpNeeded) || 10;
+
+  if (xp + amount >= xpNeeded && levels[level + 1]) {
+    const nextLevel = levels[level + 1];
+    updated.level = nextLevel.level;
+    updated.xp = xp + amount - xpNeeded;
+    updated.xpNeeded = nextLevel.xpNeeded;
+
+    nextLevel.rewards.colors.forEach((color) => {
+      if (!updated.inventory[0].colors.includes(color)) {
+        updated.inventory[0].colors.push(color);
+      }
+    });
+  } else {
+    updated.xp = xp + amount;
+  }
+
+  return updated;
+};
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
-    socket.on("update-room", async ({ room, cards, player, pair }) => {
+    socket.on("update-room", async ({ room, cards, player, pair = {} }) => {
       try {
-        const pool = await require("../../db");
+        const [rooms] = await pool.execute(
+          "SELECT * FROM rooms WHERE id = ? LIMIT 1",
+          [room],
+        );
+        const roomRaw = rooms[0];
+        if (!roomRaw) return;
 
-        // Get users
-        const usersResult = await pool.query(`SELECT * FROM users`);
-        const users = usersResult.recordset;
-
-        // Get room
-        const roomResult = await pool
-          .request()
-          .input("id", room)
-          .query(`SELECT * FROM rooms WHERE id = @id`);
-
-        const roomDataRaw = roomResult.recordset[0];
-        if (!roomDataRaw) return;
-
-        // Parse JSON fields
         const roomData = {
-          ...roomDataRaw,
-          players: JSON.parse(roomDataRaw.players || "[]"),
-          cards: JSON.parse(roomDataRaw.cards || "[]"),
+          ...roomRaw,
+          players: parseJson(roomRaw.players, []),
+          cards: parseJson(roomRaw.cards, []),
         };
 
-        const parsedUsers = users.map((u) => ({
-          ...u,
-          user_profile: JSON.parse(u.user_profile || "{}"),
+        if (roomData.playerTurn !== player || !Array.isArray(cards)) return;
+
+        const [users] = await pool.query("SELECT * FROM users");
+        const parsedUsers = users.map((user) => ({
+          ...user,
+          user_profile: prepareProfile(parseJson(user.user_profile, {})),
         }));
-
-        const newPlayer = parsedUsers.find((p) => p.name === player);
-        if (!newPlayer) return;
-
-        if (
-          roomData.players.filter((p) => p.name === newPlayer.name).length === 0
-        )
-          return;
-
+        const currentUser = parsedUsers.find((user) => user.name === player);
         const playerIndex = roomData.players.findIndex(
-          (p) => p.name === newPlayer.name,
+          (entry) => entry.name === player,
         );
+        if (!currentUser || playerIndex === -1) return;
 
         if (pair.isPair) {
           roomData.players[playerIndex].score += 1;
+          let currentProfile = currentUser.user_profile;
+          const shinyIncrement = pair.shiny ? 1 : 0;
 
-          let cardsLeft = cards.flat(1).length || 0;
+          if (pair.shiny) {
+            currentProfile = unlockAchievement(currentProfile, 200);
+          }
+          if (Number(pair.pokemon) === 644) {
+            currentProfile = unlockAchievement(currentProfile, 100);
+          }
 
-          cards.forEach((coll) => {
-            coll.forEach((card) => {
-              if ([2, 3, 4, 5].includes(card.state)) {
-                cardsLeft -= 1;
-              }
-            });
-          });
+          if (pair.shiny || Number(pair.pokemon) === 644) {
+            await pool.execute(
+              `UPDATE users
+               SET shiny_pairs_found = shiny_pairs_found + ?, user_profile = ?
+               WHERE id = ?`,
+              [
+                shinyIncrement,
+                JSON.stringify(currentProfile),
+                currentUser.id,
+              ],
+            );
+          }
+
+          const cardsLeft = cards
+            .flat()
+            .filter((card) => ![2, 3, 4, 5].includes(card.state)).length;
 
           if (cardsLeft === 0) {
             const winnerName = [...roomData.players].sort(
               (a, b) => b.score - a.score,
             )[0].name;
-
-            const winner = parsedUsers.find((p) => p.name === winnerName);
+            const winner = parsedUsers.find((user) => user.name === winnerName);
 
             if (winner) {
-              const XP = 15;
-              const { level, xp: xpOld, xpNeeded } = winner.user_profile;
-              const updatedUser = { ...winner.user_profile };
+              const nextWins = winner.online_games_won + 1;
+              const winnerShiny =
+                winner.shiny_pairs_found +
+                (winner.id === currentUser.id ? shinyIncrement : 0);
+              let profile =
+                winner.id === currentUser.id
+                  ? currentProfile
+                  : winner.user_profile;
 
-              if (xpOld + XP >= xpNeeded && levels.length > level + 1) {
-                const newInfos = levels[level + 1];
-
-                updatedUser.level = newInfos.level;
-                updatedUser.xp = xpOld + XP - xpNeeded;
-                updatedUser.xpNeeded = newInfos.xpNeeded;
-
-                newInfos.rewards.colors.forEach((color) => {
-                  if (!updatedUser.inventory[0].colors.includes(color)) {
-                    updatedUser.inventory[0].colors.push(color);
-                  }
-                });
-              } else {
-                updatedUser.xp = xpOld + XP;
+              profile = addXp(profile, 15);
+              profile = unlockStatAchievements(profile, {
+                wins: nextWins,
+                shiny: winnerShiny,
+              });
+              if (isWeekendInParis()) {
+                profile = unlockAchievement(profile, 10);
+              }
+              if (profile.level >= 5) {
+                profile = unlockAchievement(profile, 150);
               }
 
-              await pool
-                .request()
-                .input("online_games_won", winner.online_games_won + 1)
-                .input("user_profile", JSON.stringify(updatedUser))
-                .input("id", winner.id).query(`
-                  UPDATE users SET 
-                    online_games_won = @online_games_won,
-                    user_profile = @user_profile
-                  WHERE id = @id
-                `);
+              await pool.execute(
+                `UPDATE users
+                 SET online_games_won = ?, user_profile = ?
+                 WHERE id = ?`,
+                [nextWins, JSON.stringify(profile), winner.id],
+              );
             }
-          }
-
-          if (pair.shiny) {
-            await pool
-              .request()
-              .input("shiny_pairs_found", newPlayer.shiny_pairs_found + 1)
-              .input("id", newPlayer.id).query(`
-                UPDATE users SET 
-                  shiny_pairs_found = @shiny_pairs_found
-                WHERE id = @id
-              `);
           }
         } else {
           roomData.playerTurn =
             roomData.players[(playerIndex + 1) % roomData.players.length].name;
         }
 
-        // Update room
         roomData.cards = cards;
+        await pool.execute(
+          `UPDATE rooms
+           SET players = ?, playerTurn = ?, cards = ?
+           WHERE id = ?`,
+          [
+            JSON.stringify(roomData.players),
+            roomData.playerTurn,
+            JSON.stringify(roomData.cards),
+            room,
+          ],
+        );
 
-        await pool
-          .request()
-          .input("players", JSON.stringify(roomData.players))
-          .input("playerTurn", roomData.playerTurn)
-          .input("cards", JSON.stringify(roomData.cards))
-          .input("id", room).query(`
-            UPDATE rooms SET 
-              players = @players,
-              playerTurn = @playerTurn,
-              cards = @cards
-            WHERE id = @id
-          `);
-
-        io.emit("refresh-room", roomData);
+        io.to(room).emit("refresh-room", roomData);
       } catch (error) {
-        console.error("Error updating room:", error);
+        console.error("Room update error:", error);
       }
     });
   });

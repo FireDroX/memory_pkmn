@@ -1,66 +1,177 @@
 .colors-container {
-  width: 35rem;
-  height: 20rem;
-  background-color: var(--accent10);
-  border-radius: 50px;
+  width: min(790px, 100%);
+  padding: 34px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  display: grid;
+  gap: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.colors-heading {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 16px;
+  text-align: left;
+}
+
+.colors-heading > button {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  background: #f7f3e9;
+  color: var(--ink);
+}
+
+.colors-heading h2 {
+  margin: 8px 0 7px;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+}
+
+.colors-heading p {
+  max-width: 530px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.color-preview {
+  min-height: 150px;
+  padding: 25px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  background:
+    radial-gradient(circle at 50% 110%, rgba(255, 214, 74, 0.38), transparent 55%),
+    #f7f3e9;
+  text-align: center;
+}
+
+.color-preview > span {
+  color: var(--ink-soft);
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.color-preview h3 {
+  margin: 2px 0;
+  font-size: 2rem;
+}
+
+.color-preview small {
+  color: var(--ink-soft);
+  font-size: 0.62rem;
 }
 
 .owned-colors {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-column-gap: 0.3rem;
-  grid-row-gap: 0.5rem;
-  padding: 0.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
 }
 
-.owned-colors > div {
-  padding: 0.4rem 0.8rem;
-  border-radius: 15px;
-}
-
-.owned-colors > div:hover {
+.owned-colors > button {
+  position: relative;
+  min-width: 0;
+  padding: 15px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   cursor: pointer;
+  display: grid;
+  gap: 4px;
+  background: #f7f3e9;
+  color: var(--ink);
+  text-align: left;
 }
 
-.owned-colors > div > p {
-  margin: 0;
-  font-weight: 700;
+.owned-colors > button:hover,
+.owned-colors > button.selected {
+  border-color: var(--ink);
+  background: white;
 }
 
-@media (max-width: 580px) {
+.owned-colors > button.selected {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.owned-colors > button > span {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.owned-colors > button small {
+  color: var(--ink-soft);
+  font-size: 0.55rem;
+}
+
+.owned-colors > button svg {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px;
+  border-radius: 50%;
+  box-sizing: content-box;
+  background: var(--mint);
+  color: var(--ink);
+  font-size: 0.55rem;
+}
+
+.colors-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.colors-actions button {
+  padding: 11px 15px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 900;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.colors-actions button.secondary {
+  border-color: var(--line);
+  background: white;
+  box-shadow: none;
+}
+
+.colors-actions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+@media (max-width: 620px) {
   .colors-container {
-    width: 17rem;
-    height: 50%;
-    background-color: var(--accent10);
-    border-radius: 50px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 20%;
-    overflow-y: scroll;
+    padding: 24px 18px;
   }
 
   .owned-colors {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.colors-container > button {
-  border: none;
-  background-color: var(--primary65);
-  border-radius: 25px;
-  padding: 0.3rem 0.6rem;
-  color: var(--text);
-  font-weight: 600;
-  transition: all 0.5s ease;
-}
-
-.colors-container > button:hover {
-  cursor: pointer;
-  background-color: var(--secondary50);
+@media (max-width: 400px) {
+  .owned-colors {
+    grid-template-columns: 1fr;
+  }
 }

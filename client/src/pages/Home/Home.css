@@ -1,104 +1,335 @@
+.home-page .page-shell {
+  align-items: center;
+}
+
 .chooseCards {
-  background-color: var(--accent10);
-  padding: 2rem;
-  border-radius: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(330px, 0.75fr);
+  gap: 42px;
+  align-items: center;
 }
 
 .chooseCards-select {
-  display: flex;
+  position: relative;
+  min-height: 510px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
   align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  gap: 2rem;
 }
 
 .chooseCards-title {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  color: var(--text);
+  position: relative;
+  z-index: 2;
+  text-align: left;
 }
 
-.chooseCards-title > img:hover {
+.chooseCards-title h1 {
+  margin: 18px 0 22px;
+  font-size: clamp(3.5rem, 6.3vw, 6.4rem);
+  line-height: 0.82;
+}
+
+.chooseCards-title h1 em {
+  position: relative;
+  color: var(--red);
+  font-style: normal;
+}
+
+.chooseCards-title h1 em::after {
+  position: absolute;
+  right: 0;
+  bottom: -7px;
+  left: 0;
+  height: 8px;
+  border-radius: 50%;
+  content: "";
+  background: var(--yellow);
+  transform: rotate(-2deg);
+}
+
+.chooseCards-title > p {
+  max-width: 520px;
+  margin-bottom: 22px;
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.home-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-badges span {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.74);
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.home-mascot {
+  position: relative;
+  z-index: 1;
+  width: 250px;
+  height: 330px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-ring {
+  position: absolute;
+  width: 235px;
+  aspect-ratio: 1;
+  border: 34px solid var(--yellow);
+  border-radius: 50%;
+  box-shadow: 0 24px 60px rgba(239, 91, 91, 0.18);
+}
+
+.mascot-ring::after {
+  position: absolute;
+  top: 50%;
+  left: -34px;
+  width: calc(100% + 68px);
+  height: 26px;
+  content: "";
+  transform: translateY(-50%) rotate(-8deg);
+  background: var(--canvas);
+  border-block: 10px solid var(--yellow);
+}
+
+.home-mascot img {
+  position: relative;
+  z-index: 2;
+  width: 250px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 22px 13px rgba(19, 35, 63, 0.2));
+  transform: scale(1.35);
   cursor: pointer;
+  transition: transform 200ms ease;
+}
+
+.home-mascot img:hover {
+  transform: scale(1.42) rotate(2deg);
+}
+
+.home-mascot button {
+  position: absolute;
+  z-index: 3;
+  right: 4px;
+  bottom: 18px;
+  padding: 9px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 900;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.game-config-panel {
+  padding: 28px;
+  border: 1px solid rgba(19, 35, 63, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 253, 246, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.config-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.config-heading > div {
+  flex: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.config-heading strong {
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
+.config-heading small {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+.config-step {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.config-heading output {
+  min-width: 52px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--yellow);
+  color: var(--ink);
+  text-align: center;
+  font-family: "Arial Black", sans-serif;
 }
 
 .chooseCards-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 0.5rem;
+  margin: 18px 0 26px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
 }
 
-.chooseCards-buttons > button {
-  border: none;
-  background-color: var(--primary65);
-  border-radius: 25px;
-  padding: 0.3rem 0.6rem;
-  color: var(--text);
-  font-weight: 600;
-  transition: all 0.5s ease;
-}
-
-.chooseCards-buttons > button:hover {
+.chooseCards-buttons button {
+  min-width: 0;
+  padding: 15px 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
   cursor: pointer;
-  background-color: var(--secondary50);
+  display: grid;
+  background: #f7f3e9;
+  color: var(--ink);
+  transition: 160ms ease;
+}
+
+.chooseCards-buttons button:hover {
+  border-color: var(--ink);
+  background: var(--yellow);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 0 rgba(19, 35, 63, 0.1);
+}
+
+.chooseCards-buttons strong {
+  font-family: "Arial Black", sans-serif;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.chooseCards-buttons span {
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.chooseCards-buttons small {
+  margin-top: 6px;
+  color: var(--ink-soft);
+  font-size: 0.56rem;
+  text-transform: uppercase;
 }
 
 .chooseCards-config {
-  display: flex;
-  flex-direction: column;
-  color: var(--text);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
 }
 
 .chooseCards-selector {
-  display: flex;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  height: 1.5rem;
+  gap: 10px;
+  color: var(--ink-soft);
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .chooseCards-slider {
-  -webkit-appearance: none;
-  appearance: none;
   width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: var(--text);
+  height: 7px;
+  appearance: none;
+  border-radius: 10px;
   outline: none;
-  opacity: 0.7;
-  -webkit-transition: 0.2s;
-  transition: opacity 0.2s;
+  background: linear-gradient(to right, var(--red), var(--yellow), var(--mint));
 }
 
 .chooseCards-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  border: 3px solid var(--paper);
   border-radius: 50%;
-  background: var(--accent);
-  cursor: pointer;
-}
-
-.chooseCards-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--accent);
-  cursor: pointer;
+  cursor: grab;
+  background: var(--ink);
+  box-shadow: 0 2px 8px rgba(19, 35, 63, 0.24);
 }
 
 .chooseCards-ending {
-  position: absolute;
+  position: fixed;
+  z-index: 20;
   top: 50%;
   left: 50%;
+  min-width: 280px;
+  padding: 26px;
+  border: 2px solid var(--ink);
+  border-radius: 20px;
   transform: translate(-50%, -50%);
-  background-color: var(--bg);
-  opacity: 0.95;
+  background: var(--paper);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+@media (max-width: 980px) {
+  .chooseCards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .chooseCards-select {
+    min-height: 380px;
+  }
+
+  .game-config-panel {
+    max-width: 620px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .chooseCards-select {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .chooseCards-title h1 {
+    font-size: clamp(3rem, 16vw, 4.8rem);
+  }
+
+  .home-mascot {
+    position: absolute;
+    right: -50px;
+    bottom: 5px;
+    width: 160px;
+    height: 190px;
+    opacity: 0.28;
+  }
+
+  .mascot-ring {
+    width: 150px;
+    border-width: 23px;
+  }
+
+  .home-mascot button {
+    display: none;
+  }
+
+  .game-config-panel {
+    padding: 20px;
+  }
 }

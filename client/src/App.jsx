@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useLayoutEffect, useContext, lazy } from "react";
+import { useContext, lazy } from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { UserContext } from "./utils/UserContext";
 
@@ -14,40 +14,14 @@ const Leaderboard = lazy(() => import("./pages/Leaderboard/Leaderboard"));
 const Colors = lazy(() => import("./pages/Colors/Colors"));
 
 function App() {
-  const { setName, isLoggedIn, setIsLoggedIn, setUserProfile } =
-    useContext(UserContext);
+  const { isLoggedIn } = useContext(UserContext);
   const location = useLocation();
-
-  useLayoutEffect(() => {
-    const logInfos = window.localStorage.getItem("super-secret-login-info");
-    if (!logInfos) return;
-
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: logInfos,
-    };
-
-    const { name } = JSON.parse(logInfos);
-
-    fetch("/api/login", requestOptions).then((data) => {
-      if (data.status === 200) {
-        data.json().then((json) => {
-          if (json?.status === "") {
-            setName(name);
-            setIsLoggedIn(true);
-            setUserProfile(json.profile);
-          }
-        });
-      }
-    });
-  }, []);
 
   return (
     <>
       <Navbar />
       <Routes location={location}>
-        <Route path="/" element={<Navigate to={"/login"} replace />} />
+        <Route path="/" element={Loadable(Home)} />
         <Route
           path="/login"
           element={
@@ -70,9 +44,15 @@ function App() {
         />
         <Route
           path="/online"
-          element={Loadable(Online, {
-            id: new URLSearchParams(location.search).get("id"),
-          })}
+          element={
+            isLoggedIn ? (
+              Loadable(Online, {
+                id: new URLSearchParams(location.search).get("id"),
+              })
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
         />
         <Route
           path="/profile"
@@ -97,6 +77,8 @@ function App() {
           }
         />
       </Routes>
+      <div className="ambient-orb ambient-orb-one" aria-hidden="true" />
+      <div className="ambient-orb ambient-orb-two" aria-hidden="true" />
     </>
   );
 }

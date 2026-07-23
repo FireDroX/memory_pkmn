@@ -1,107 +1,177 @@
 .cards {
-  margin-top: 3.5rem;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  gap: 18px;
 }
 
 .cards > h6 {
-  padding-top: 2vh;
-  color: var(--text);
+  margin: 0;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
 }
 
 .cards-column {
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2vh;
+  gap: clamp(5px, 0.8vw, 11px);
+  perspective: 1000px;
 }
 
 .cards-row {
   display: flex;
-  flex-direction: row;
-  gap: 2vh;
+  justify-content: center;
+  gap: clamp(5px, 0.8vw, 11px);
 }
 
 .card {
-  box-sizing: border-box;
-  border: 2px solid transparent;
   position: relative;
-  height: 18vh;
-  width: 12vh;
-  background-color: var(--accent20);
-  border-radius: 15px;
-  text-align: center;
-  transition: transform 1.2s, border 0.5s ease;
-  -webkit-transform-style: preserve-3d;
+  width: clamp(48px, 7.3vw, 82px);
+  height: clamp(67px, 9.8vw, 110px);
+  flex: 0 0 auto;
+  border: 3px solid var(--ink);
+  border-radius: clamp(8px, 1vw, 14px);
+  cursor: pointer;
+  background: var(--paper);
+  box-shadow: 3px 4px 0 rgba(19, 35, 63, 0.22);
   transform-style: preserve-3d;
+  transition:
+    transform 700ms cubic-bezier(0.2, 0.75, 0.2, 1),
+    border-color 180ms ease,
+    opacity 180ms ease;
 }
 
 .card:hover {
-  cursor: pointer;
+  transform: translateY(-3px);
 }
 
 .card-front,
 .card-back {
   position: absolute;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  display: grid;
+  place-items: center;
   backface-visibility: hidden;
-  border-radius: 1rem;
+}
+
+.card-front {
+  background:
+    radial-gradient(circle at center, var(--paper) 0 13%, var(--ink) 14% 18%, transparent 19%),
+    linear-gradient(to bottom, var(--red) 0 46%, var(--ink) 46% 54%, var(--paper) 54%);
+}
+
+.card-front::after {
+  width: 22%;
+  aspect-ratio: 1;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  content: "";
+  background: var(--paper);
+}
+
+.card-front img {
+  display: none;
 }
 
 .card-back {
-  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
+  background:
+    radial-gradient(circle at 65% 20%, rgba(255, 255, 255, 0.75), transparent 24%),
+    var(--yellow);
+}
+
+.card-back img {
+  width: 98%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 7px 4px rgba(19, 35, 63, 0.14));
 }
 
 .card-flipped {
-  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 
+.card-flipped:hover {
+  transform: rotateY(180deg) translateY(-3px);
+}
+
 .card-found {
-  border: 2px solid var(--accent);
+  border-color: #24a888;
+  box-shadow: 0 0 0 4px rgba(113, 212, 189, 0.3);
 }
 
 .card-not-found {
-  border: 2px solid red;
+  border-color: var(--red);
+  opacity: 0.68;
 }
 
-/* Mobile Portrait Warning Overlay */
 .portrait-warning {
-  display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: var(--text55);
-  font-size: 1.5rem;
+  inset: 0;
+  z-index: 200;
+  padding: 28px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 10;
+  justify-content: center;
+  background: rgba(19, 35, 63, 0.94);
+  color: white;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.5;
   text-align: center;
-  padding: 1rem;
-  box-sizing: border-box;
 }
 
-@media (orientation: portrait) {
-  .portrait-warning {
-    display: flex;
-  }
+.chooseCards-ending {
+  display: block;
+  min-height: 0;
+}
 
-  /* Hide the game area in portrait mode */
-  .cards {
+.chooseCards-ending .chooseCards-select {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.chooseCards-ending .chooseCards-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.chooseCards-ending .chooseCards-title h5 {
+  font-size: 1.7rem;
+}
+
+.chooseCards-ending .chooseCards-title img {
+  width: 100px;
+  image-rendering: pixelated;
+}
+
+.chooseCards-ending .chooseCards-buttons {
+  margin: 0;
+  display: block;
+  color: var(--ink-soft);
+}
+
+@media (orientation: landscape) {
+  .portrait-warning:not(.online-ready) {
     display: none;
+  }
+}
+
+@media (max-height: 720px) and (orientation: landscape) {
+  .card {
+    width: clamp(43px, 6.3vw, 68px);
+    height: clamp(59px, 8.2vw, 89px);
   }
 }

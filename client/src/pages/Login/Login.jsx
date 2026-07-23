@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../utils/UserContext";
 
 function Login({ connect }) {
-  const { setName, setIsLoggedIn } = useContext(UserContext);
+  const { setName, setIsLoggedIn, setUserProfile, setUserStats } =
+    useContext(UserContext);
   const navigate = useNavigate();
   const [inputName, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,11 +20,11 @@ function Login({ connect }) {
     };
 
     if (inputName === "" || password === "")
-      setStatus("Both inputs are required.");
+      setStatus("Tous les champs sont requis.");
     else {
       if (postLink === "/api/register") {
         if (password !== confirmPassword)
-          return setStatus("Passwords need to be the same.");
+          return setStatus("Les mots de passe doivent etre identiques.");
       }
       const data = await fetch(postLink, requestOptions);
       const json = await data.json();
@@ -32,11 +33,13 @@ function Login({ connect }) {
       if (json?.status === "" && postLink === "/api/login") {
         setName(inputName);
         setIsLoggedIn(true);
-        window.localStorage.setItem(
-          "super-secret-login-info",
-          JSON.stringify({ name: inputName, password: password }),
-        );
-        navigate("");
+        setUserProfile(json.profile);
+        setUserStats({
+          onlineGamesWon: json.online_games_won,
+          shinyPairsFound: json.shiny_pairs_found,
+          createdAt: json.created_at,
+        });
+        navigate("/profile");
       }
     }
     setPassword("");
@@ -77,6 +80,13 @@ function Login({ connect }) {
       <div>
         <div className="login-container">
           <div className="login-container-data">
+            <span className="eyebrow">{connect ? "BON RETOUR" : "NOUVEAU DRESSEUR"}</span>
+            <h2>{connect ? "PRET A REJOUER ?" : "REJOINS L'ARENE."}</h2>
+            <p>
+              {connect
+                ? "Connecte-toi pour retrouver ta progression et defier tes amis."
+                : "Cree ton profil, invite tes amis et grimpe dans le classement."}
+            </p>
             <img
               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                 inputName,
@@ -84,13 +94,14 @@ function Login({ connect }) {
               alt="User"
               draggable={false}
             />
-            {status ? <p style={{ color: "red" }}>{status}</p> : false}
+            {status ? <p className="login-status">{status}</p> : false}
           </div>
           {connect ? (
             <div className="login-container-inputs">
               <div className="login-inputs">
-                <p>Your Username</p>
+                <label htmlFor="login-name">Ton pseudo</label>
                 <input
+                  id="login-name"
                   type="text"
                   name="name"
                   value={inputName}
@@ -100,8 +111,9 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-inputs">
-                <p>Put Your Password</p>
+                <label htmlFor="login-password">Ton mot de passe</label>
                 <input
+                  id="login-password"
                   type="password"
                   name="password"
                   value={password}
@@ -111,20 +123,27 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-buttons">
-                <button onClick={() => handlePost("/api/login")}>Login</button>
+                <button onClick={() => handlePost("/api/login")}>Se connecter</button>
                 <small
                   className="login-change-pages"
                   onClick={() => navigate("/login/register")}
                 >
-                  Create Your Account
+                  Creer un compte
                 </small>
               </div>
+              <p className="login-privacy">
+                Tes données de compte sont traitées selon notre{" "}
+                <a href="/api/mentions-legales" target="_blank" rel="noreferrer">
+                  notice de confidentialité
+                </a>.
+              </p>
             </div>
           ) : (
             <div className="login-container-inputs">
               <div className="login-inputs">
-                <p>Your Username</p>
+                <label htmlFor="register-name">Ton pseudo</label>
                 <input
+                  id="register-name"
                   type="text"
                   name="name"
                   value={inputName}
@@ -134,8 +153,9 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-inputs">
-                <p>Put Your Password</p>
+                <label htmlFor="register-password">Ton mot de passe</label>
                 <input
+                  id="register-password"
                   type="password"
                   name="password"
                   value={password}
@@ -145,8 +165,9 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-inputs">
-                <p>Confirm Your Password</p>
+                <label htmlFor="register-confirm">Confirme le mot de passe</label>
                 <input
+                  id="register-confirm"
                   type="password"
                   name="confirm-password"
                   value={confirmPassword}
@@ -160,12 +181,19 @@ function Login({ connect }) {
                   className="login-change-pages"
                   onClick={() => navigate("/login")}
                 >
-                  Log in Your Account
+                  J'ai deja un compte
                 </small>
                 <button onClick={() => handlePost("/api/register")}>
-                  Register
+                  S'inscrire
                 </button>
               </div>
+              <p className="login-privacy">
+                En créant un compte, tu peux consulter les finalités et tes droits
+                dans notre{" "}
+                <a href="/api/mentions-legales" target="_blank" rel="noreferrer">
+                  notice de confidentialité
+                </a>.
+              </p>
             </div>
           )}
         </div>
