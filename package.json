@@ -13,6 +13,9 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=22.22.0"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.5",

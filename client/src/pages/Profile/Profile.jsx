@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { IoIosRefresh } from "react-icons/io";
 import { FaPalette, FaSignOutAlt, FaTrashAlt, FaTrophy } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";

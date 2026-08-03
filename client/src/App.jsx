@@ -1,6 +1,6 @@
 import "./App.css";
 import { useContext, lazy } from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router";
 import { UserContext } from "./utils/UserContext";
 
 import Navbar from "./components/Navbar/Navbar";

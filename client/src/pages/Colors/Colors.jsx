@@ -1,7 +1,7 @@
 import "./Colors.css";
 import "../../utils/CustomColors.css";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
 

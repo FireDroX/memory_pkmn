@@ -13,7 +13,7 @@ avec Socket.IO.
 
 ## Installation
 
-Prérequis : Node.js 20.19+ et MySQL 8+ ou MariaDB.
+Prérequis : Node.js 22.22+ et MySQL 8+ ou MariaDB.
 
 ```bash
 npm install

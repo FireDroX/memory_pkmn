@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { FaTrophy } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
 import "./Navbar.css";
