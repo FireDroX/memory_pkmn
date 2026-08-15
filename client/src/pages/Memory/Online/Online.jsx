@@ -28,7 +28,6 @@ const Online = ({ id }) => {
     socket.emit("update-room", {
       room: id,
       cards: updatedCars,
-      player: name,
       pair: {
         isPair,
         shiny: isPairShiny,
@@ -244,7 +243,7 @@ const Online = ({ id }) => {
                     )
                       return;
 
-                    socket.emit("user-connected", { name, id });
+                    socket.emit("user-connected", { id });
                   }}
                 >
                   {t("online.ready")}

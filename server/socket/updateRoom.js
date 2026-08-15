@@ -11,8 +11,9 @@ const { recordDailyProgress } = require("../utils/dailyChallenges");
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
-    socket.on("update-room", async ({ room, cards, player, pair = {} }) => {
+    socket.on("update-room", async ({ room, cards, pair = {} }) => {
       try {
+        const authenticatedUser = socket.data.user;
         const [rooms] = await pool.execute(
           "SELECT * FROM rooms WHERE id = ? LIMIT 1",
           [room],
@@ -26,16 +27,21 @@ module.exports = (io) => {
           cards: parseJson(roomRaw.cards, []),
         };
 
-        if (roomData.playerTurn !== player || !Array.isArray(cards)) return;
+        if (
+          roomData.playerTurn !== authenticatedUser.name ||
+          !Array.isArray(cards)
+        ) return;
 
         const [users] = await pool.query("SELECT * FROM users");
         const parsedUsers = users.map((user) => ({
           ...user,
           user_profile: prepareProfile(parseJson(user.user_profile, {})),
         }));
-        const currentUser = parsedUsers.find((user) => user.name === player);
+        const currentUser = parsedUsers.find(
+          (user) => user.id === authenticatedUser.id,
+        );
         const playerIndex = roomData.players.findIndex(
-          (entry) => entry.name === player,
+          (entry) => entry.id === authenticatedUser.id,
         );
         if (!currentUser || playerIndex === -1) return;
 

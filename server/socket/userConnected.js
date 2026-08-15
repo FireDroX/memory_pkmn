@@ -3,8 +3,9 @@ const parseJson = require("../utils/parseJson");
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
-    socket.on("user-connected", async ({ name, id }) => {
+    socket.on("user-connected", async ({ id }) => {
       try {
+        const authenticatedUser = socket.data.user;
         const [rooms] = await pool.execute(
           "SELECT * FROM rooms WHERE id = ? LIMIT 1",
           [id],
@@ -18,7 +19,7 @@ module.exports = (io) => {
           cards: parseJson(roomRaw.cards, []),
         };
         const userIndex = roomData.players.findIndex(
-          (player) => player.name === name,
+          (player) => player.id === authenticatedUser.id,
         );
         if (userIndex === -1) return;
 
@@ -43,8 +44,21 @@ module.exports = (io) => {
       }
     });
 
-    socket.on("join-room", (id) => {
-      if (typeof id === "string" && id.startsWith("ROOM-")) socket.join(id);
+    socket.on("join-room", async (id) => {
+      try {
+        if (typeof id !== "string" || !id.startsWith("ROOM-")) return;
+
+        const [rooms] = await pool.execute(
+          "SELECT players FROM rooms WHERE id = ? LIMIT 1",
+          [id],
+        );
+        const players = parseJson(rooms[0]?.players, []);
+        if (players.some((player) => player.id === socket.data.user.id)) {
+          socket.join(id);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     });
   });
 };

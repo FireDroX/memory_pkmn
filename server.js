@@ -6,6 +6,7 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const {
+  assertSessionStoreReady,
   createSessionMiddleware,
   createSessionStore,
 } = require("./server/session");
@@ -25,8 +26,9 @@ const io = new Server(server, {
   cors:
     process.env.NODE_ENV === "production"
       ? undefined
-      : { origin: "http://localhost:5173" },
+      : { origin: "http://localhost:5173", credentials: true },
 });
+app.set("io", io);
 
 // Import Express routes
 const routes = require("./server/express");
@@ -35,7 +37,7 @@ app.use(sessionMiddleware);
 
 app.use("/api", routes);
 
-require("./server/socket")(io);
+require("./server/socket")(io, sessionMiddleware);
 
 const clientDist = path.join(__dirname, "client", "dist");
 if (fs.existsSync(clientDist)) {
@@ -47,6 +49,7 @@ if (fs.existsSync(clientDist)) {
 
 const startServer = async () => {
   await sessionStore.onReady();
+  await assertSessionStoreReady();
   server.listen(PORT, () => {
     console.log(`PokeFlip est disponible sur http://localhost:${PORT}`);
   });

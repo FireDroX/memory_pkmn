@@ -34,6 +34,21 @@ const createSessionStore = (connection = pool) =>
     connection,
   );
 
+const assertSessionStoreReady = async (connection = pool) => {
+  await connection.execute("SELECT 1");
+  const [tables] = await connection.execute(
+    `SELECT COUNT(*) AS total
+     FROM information_schema.tables
+     WHERE table_schema = DATABASE() AND table_name = ?`,
+    ["sessions"],
+  );
+  if (Number(tables[0]?.total) !== 1) {
+    throw new Error(
+      "La table sessions est absente. Execute npm run db:migrate.",
+    );
+  }
+};
+
 const createSessionMiddleware = ({
   store,
   secret = getSessionSecret(),
@@ -55,6 +70,7 @@ const createSessionMiddleware = ({
   });
 
 module.exports = {
+  assertSessionStoreReady,
   createSessionMiddleware,
   createSessionStore,
   getSessionSecret,

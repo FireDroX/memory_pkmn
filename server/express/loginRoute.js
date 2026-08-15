@@ -99,11 +99,13 @@ router.get("/session", async (req, res) => {
 router.delete("/session", (req, res) => {
   if (!req.session) return res.sendStatus(204);
 
+  const sessionId = req.session.id;
   req.session.destroy((error) => {
     if (error) {
       console.error("Session logout error:", error);
       return res.status(500).json({ status: "Deconnexion impossible." });
     }
+    req.app?.get?.("io")?.in(sessionId).disconnectSockets();
     res.clearCookie(sessionCookieName, { path: "/" });
     return res.sendStatus(204);
   });

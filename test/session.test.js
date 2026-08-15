@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const {
+  assertSessionStoreReady,
   createSessionMiddleware,
   getSessionSecret,
   sessionCookieName,
@@ -23,6 +24,36 @@ test("le middleware de session accepte le store MySQL configure", () => {
   assert.equal(typeof middleware, "function");
   assert.equal(sessionCookieName, "pokeflip.sid");
   assert.equal(sessionLifetime, 86_400_000);
+});
+
+test("le demarrage verifie que la table de sessions existe", async () => {
+  const queries = [];
+  const connection = {
+    async execute(sql, parameters) {
+      queries.push({ sql, parameters });
+      if (sql === "SELECT 1") return [[]];
+      return [[{ total: 1 }]];
+    },
+  };
+
+  await assertSessionStoreReady(connection);
+
+  assert.equal(queries.length, 2);
+  assert.deepEqual(queries[1].parameters, ["sessions"]);
+});
+
+test("le demarrage echoue clairement sans table de sessions", async () => {
+  const connection = {
+    async execute(sql) {
+      if (sql === "SELECT 1") return [[]];
+      return [[{ total: 0 }]];
+    },
+  };
+
+  await assert.rejects(
+    assertSessionStoreReady(connection),
+    /npm run db:migrate/,
+  );
 });
 
 test("les routes privees refusent une requete sans session", () => {
