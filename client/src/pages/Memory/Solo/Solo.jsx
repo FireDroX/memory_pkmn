@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import GameResult from "../../../components/GameResult/GameResult";
 import { UserContext } from "../../../utils/UserContext";
 import "./Solo.css";
 
@@ -229,44 +230,24 @@ const Solo = ({
         </div>
         <h6>{t("game.triesLeft", { count: game.tries })}</h6>
         {playerWon ? (
-          <div className="chooseCards chooseCards-ending">
-            <div className="chooseCards-select">
-              <div className="chooseCards-title">
-                <h5>{t("game.won")}</h5>
-                <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png`}
-                  alt={t("game.winMascotAlt")}
-                  draggable={false}
-                />
-              </div>
-              <div className="chooseCards-buttons">
-                <small style={{ color: "var(--text)" }}>
-                  {t("game.winRemaining", { count: game.tries })}
-                </small>
-              </div>
-            </div>
-          </div>
+          <GameResult
+            tone="victory"
+            eyebrow={t("game.victoryEyebrow")}
+            title={t("game.won")}
+            description={t("game.winRemaining", { count: game.tries })}
+            image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png"
+            imageAlt={t("game.winMascotAlt")}
+          />
         ) : playerLost ? (
-          <div className="chooseCards chooseCards-ending">
-            <div className="chooseCards-select">
-              <div className="chooseCards-title">
-                <h5>{t("game.lost")}</h5>
-                <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png`}
-                  alt={t("game.lossMascotAlt")}
-                  draggable={false}
-                />
-              </div>
-              <div className="chooseCards-buttons">
-                <small style={{ color: "var(--text)" }}>
-                  {t("game.pairsRemaining", { count: game.pairs })}
-                </small>
-              </div>
-            </div>
-          </div>
-        ) : (
-          false
-        )}
+          <GameResult
+            tone="defeat"
+            eyebrow={t("game.defeatEyebrow")}
+            title={t("game.lost")}
+            description={t("game.pairsRemaining", { count: game.pairs })}
+            image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png"
+            imageAlt={t("game.lossMascotAlt")}
+          />
+        ) : null}
       </div>
     </>
   );
