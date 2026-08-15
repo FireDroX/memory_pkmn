@@ -80,6 +80,7 @@
 }
 
 .trainer-stats div {
+  min-width: 0;
   padding: 11px 8px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -100,6 +101,8 @@
   font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.05em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
