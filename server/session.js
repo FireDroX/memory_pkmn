@@ -64,7 +64,7 @@ const createSessionMiddleware = ({
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: production,
+      secure: production ? "auto" : false,
       maxAge: sessionLifetime,
     },
   });

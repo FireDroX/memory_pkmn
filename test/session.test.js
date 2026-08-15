@@ -1,6 +1,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
+const express = require("express");
+const session = require("express-session");
 const {
   assertSessionStoreReady,
   createSessionMiddleware,
@@ -24,6 +26,41 @@ test("le middleware de session accepte le store MySQL configure", () => {
   assert.equal(typeof middleware, "function");
   assert.equal(sessionCookieName, "pokeflip.sid");
   assert.equal(sessionLifetime, 86_400_000);
+});
+
+test("la production HTTP directe emet un cookie de session rechargeable", async (t) => {
+  const app = express();
+  app.set("trust proxy", 1);
+  app.use(
+    createSessionMiddleware({
+      store: new session.MemoryStore(),
+      secret: "a".repeat(32),
+      production: true,
+    }),
+  );
+  app.get("/login", (request, response) => {
+    request.session.user = { id: "USER-ADMIN", name: "Admin" };
+    response.sendStatus(204);
+  });
+
+  const server = await new Promise((resolve) => {
+    const listener = app.listen(0, "127.0.0.1", () => resolve(listener));
+  });
+  t.after(() => new Promise((resolve) => server.close(resolve)));
+
+  const { port } = server.address();
+  const response = await fetch(`http://127.0.0.1:${port}/login`);
+  const cookie = response.headers.get("set-cookie");
+
+  assert.match(cookie, /^pokeflip\.sid=/);
+  assert.doesNotMatch(cookie, /;\s*Secure/i);
+
+  const httpsResponse = await fetch(`http://127.0.0.1:${port}/login`, {
+    headers: { "X-Forwarded-Proto": "https" },
+  });
+  const secureCookie = httpsResponse.headers.get("set-cookie");
+  assert.match(secureCookie, /^pokeflip\.sid=/);
+  assert.match(secureCookie, /;\s*Secure/i);
 });
 
 test("le demarrage verifie que la table de sessions existe", async () => {
