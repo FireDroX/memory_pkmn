@@ -80,12 +80,12 @@ module.exports = (io) => {
                 `UPDATE users
                  SET online_games_played = online_games_played + 1,
                      online_games_lost = online_games_lost + ?,
-                     current_win_streak = CASE
-                       WHEN ? = 1 THEN current_win_streak + 1 ELSE 0
-                     END,
                      best_win_streak = CASE
                        WHEN ? = 1 THEN GREATEST(best_win_streak, current_win_streak + 1)
                        ELSE best_win_streak
+                     END,
+                     current_win_streak = CASE
+                       WHEN ? = 1 THEN current_win_streak + 1 ELSE 0
                      END,
                      total_pairs_found = total_pairs_found + ?
                  WHERE id = ?`,
