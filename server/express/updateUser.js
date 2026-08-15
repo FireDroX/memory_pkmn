@@ -89,13 +89,13 @@ router.post("/", async (req, res) => {
                WHEN ? = 1 THEN GREATEST(solo_best_remaining_tries, ?)
                ELSE solo_best_remaining_tries
              END
-         WHERE name = ?`,
+         WHERE id = ?`,
         [
           gameResult.won ? 1 : 0,
           pairsFound,
           gameResult.won ? 1 : 0,
           remainingTries,
-          name,
+          req.auth.id,
         ],
       );
       await recordDailyProgress(pool, players[0].id, {
