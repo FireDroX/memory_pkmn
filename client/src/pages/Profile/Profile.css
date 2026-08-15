@@ -399,6 +399,124 @@
   box-shadow: var(--shadow);
 }
 
+.daily-challenges-panel {
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.daily-challenges-heading {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.daily-challenges-heading h3 {
+  margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.7rem;
+}
+
+.daily-challenges-heading > p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.daily-challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.daily-challenges-grid article {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  display: grid;
+  gap: 13px;
+  background: #f7f3e9;
+}
+
+.daily-challenges-grid article.completed {
+  border-color: #73bda9;
+  background: #effaf6;
+}
+
+.daily-challenge-copy > span {
+  color: #2a997f;
+  font-size: 0.55rem;
+  font-weight: 900;
+}
+
+.daily-challenge-copy h4 {
+  margin: 5px 0;
+  font-size: 0.78rem;
+}
+
+.daily-challenge-copy p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.6rem;
+  line-height: 1.45;
+}
+
+.daily-challenge-progress {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: white;
+}
+
+.daily-challenge-progress span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--blue);
+  transition: width 200ms ease;
+}
+
+.daily-challenges-grid article.completed .daily-challenge-progress span {
+  background: #2a997f;
+}
+
+.daily-challenge-footer {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 0.6rem;
+}
+
+.daily-challenge-footer button {
+  padding: 7px 9px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.58rem;
+  font-weight: 900;
+}
+
+.daily-challenge-footer > span {
+  color: #2a997f;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .detailed-stats-heading {
   margin-bottom: 20px;
   display: flex;
@@ -709,6 +827,10 @@
   .detailed-stats-groups dl {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .daily-challenges-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 800px) {
@@ -764,6 +886,15 @@
 
   .detailed-stats-panel {
     padding: 24px 18px;
+  }
+
+  .daily-challenges-panel {
+    padding: 24px 18px;
+  }
+
+  .daily-challenges-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .detailed-stats-heading {

@@ -7,6 +7,7 @@ const {
   unlockAchievement,
   isWeekendInParis,
 } = require("../utils/profileProgress");
+const { recordDailyProgress } = require("../utils/dailyChallenges");
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.post("/", async (req, res) => {
     const gameResult = req.body.gameResult;
 
     const [players] = await pool.execute(
-      "SELECT user_profile FROM users WHERE name = ? LIMIT 1",
+      "SELECT id, user_profile FROM users WHERE name = ? LIMIT 1",
       [name],
     );
     if (!players[0]) {
@@ -98,6 +99,11 @@ router.post("/", async (req, res) => {
           name,
         ],
       );
+      await recordDailyProgress(pool, players[0].id, {
+        pairsFound,
+        soloGames: 1,
+        soloWins: gameResult.won ? 1 : 0,
+      });
     }
 
     return res.json({ status: "", profile: updatedUser });

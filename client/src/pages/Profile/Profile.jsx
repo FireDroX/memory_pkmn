@@ -12,8 +12,10 @@ import { useNavigate } from "react-router";
 import { IoIosRefresh } from "react-icons/io";
 import {
   FaCheck,
+  FaCalendarCheck,
   FaChartLine,
   FaGamepad,
+  FaGift,
   FaPalette,
   FaSignOutAlt,
   FaTrashAlt,
@@ -56,6 +58,10 @@ const Profile = () => {
     outgoing: [],
   });
   const [selectedFriend, setSelectedFriend] = useState("");
+  const [dailyChallenges, setDailyChallenges] = useState({
+    date: "",
+    challenges: [],
+  });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [players, setPlayers] = useState([
     { name, enabled: true },
@@ -98,6 +104,28 @@ const Profile = () => {
     );
     if (!response.ok) return;
     setFriends(await response.json());
+  };
+
+  const getDailyChallenges = async () => {
+    const response = await fetch(
+      `/api/daily-challenges?name=${encodeURIComponent(name)}`,
+    );
+    if (!response.ok) return;
+    setDailyChallenges(await response.json());
+  };
+
+  const claimChallenge = async (challengeId) => {
+    const response = await fetch("/api/daily-challenges/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, challengeId }),
+    });
+    const data = await response.json();
+    setStatus(data.status || "");
+    if (response.ok) {
+      setUserProfile(data.profile);
+      await getDailyChallenges();
+    }
   };
 
   const updateFriendship = async (path, friendName, method = "POST") => {
@@ -197,6 +225,7 @@ const Profile = () => {
       getUsers(),
       getProfileSummary(),
       getFriends(),
+      getDailyChallenges(),
     ]);
     setTimeout(() => setIsRefreshing(false), 800);
   };
@@ -420,6 +449,52 @@ const Profile = () => {
             </button>
           </div>
         </div>
+
+        <section className="daily-challenges-panel">
+          <div className="daily-challenges-heading">
+            <div>
+              <span className="eyebrow">OBJECTIFS DU JOUR</span>
+              <h3>
+                <FaCalendarCheck /> Defis quotidiens
+              </h3>
+            </div>
+            <p>Renouveles chaque jour a minuit, heure de Paris.</p>
+          </div>
+          <div className="daily-challenges-grid">
+            {dailyChallenges.challenges.map((challenge) => {
+              const percentage = Math.min(
+                100,
+                (challenge.progress / challenge.target) * 100,
+              );
+              return (
+                <article
+                  className={challenge.completed ? "completed" : ""}
+                  key={challenge.id}
+                >
+                  <div className="daily-challenge-copy">
+                    <span>{challenge.rewardXp} XP</span>
+                    <h4>{challenge.title}</h4>
+                    <p>{challenge.description}</p>
+                  </div>
+                  <div className="daily-challenge-progress">
+                    <span style={{ width: `${percentage}%` }} />
+                  </div>
+                  <div className="daily-challenge-footer">
+                    <strong>
+                      {challenge.progress}/{challenge.target}
+                    </strong>
+                    {challenge.completed && !challenge.claimed && (
+                      <button onClick={() => claimChallenge(challenge.id)}>
+                        <FaGift /> Recuperer
+                      </button>
+                    )}
+                    {challenge.claimed && <span>Recupere</span>}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
         <section className="detailed-stats-panel">
           <div className="detailed-stats-heading">

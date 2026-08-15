@@ -1,36 +1,13 @@
 const pool = require("../../db");
-const levels = require("../utils/Levels");
 const parseJson = require("../utils/parseJson");
 const {
   prepareProfile,
+  addXp,
   unlockAchievement,
   unlockStatAchievements,
   isWeekendInParis,
 } = require("../utils/profileProgress");
-
-const addXp = (profile, amount) => {
-  const updated = prepareProfile(profile);
-  const level = Number(updated.level) || 0;
-  const xp = Number(updated.xp) || 0;
-  const xpNeeded = Number(updated.xpNeeded) || 10;
-
-  if (xp + amount >= xpNeeded && levels[level + 1]) {
-    const nextLevel = levels[level + 1];
-    updated.level = nextLevel.level;
-    updated.xp = xp + amount - xpNeeded;
-    updated.xpNeeded = nextLevel.xpNeeded;
-
-    nextLevel.rewards.colors.forEach((color) => {
-      if (!updated.inventory[0].colors.includes(color)) {
-        updated.inventory[0].colors.push(color);
-      }
-    });
-  } else {
-    updated.xp = xp + amount;
-  }
-
-  return updated;
-};
+const { recordDailyProgress } = require("../utils/dailyChallenges");
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
@@ -120,6 +97,11 @@ module.exports = (io) => {
                   roomPlayer.id,
                 ],
               );
+              await recordDailyProgress(pool, roomPlayer.id, {
+                pairsFound: Math.max(0, Number(roomPlayer.score) || 0),
+                onlineGames: 1,
+                onlineWins: isWinner ? 1 : 0,
+              });
             }
 
             if (winner) {
