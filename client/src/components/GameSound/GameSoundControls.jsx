@@ -37,7 +37,6 @@ const GameSoundControls = () => {
       type="button"
       onClick={() => applySettings({ ...settings, enabled: !settings.enabled })}
       aria-label={t(settings.enabled ? "sound.mute" : "sound.enable")}
-      aria-pressed={settings.enabled}
       title={t(settings.enabled ? "sound.mute" : "sound.enable")}
     >
       {settings.enabled ? <FaVolumeUp /> : <FaVolumeMute />}
