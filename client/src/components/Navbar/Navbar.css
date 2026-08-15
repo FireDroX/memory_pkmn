@@ -47,7 +47,15 @@
   display: grid;
   place-items: center;
   background: white;
-  font-size: 1.12rem;
+}
+
+.language-switch img {
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(19, 35, 63, 0.12);
 }
 
 .brand {

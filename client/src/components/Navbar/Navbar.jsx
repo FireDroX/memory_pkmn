@@ -4,8 +4,15 @@ import { FaTrophy } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
 import { getLanguage } from "../../utils/languages";
+import frenchFlag from "../../assets/flags/fr.svg";
+import britishFlag from "../../assets/flags/gb.svg";
 import "./Navbar.css";
 import "../../utils/CustomColors.css";
+
+const languageFlags = Object.freeze({
+  en: britishFlag,
+  fr: frenchFlag,
+});
 
 const Navbar = () => {
   const { name, isLoggedIn, userProfile } = useContext(UserContext);
@@ -71,7 +78,11 @@ const Navbar = () => {
             aria-label={t(language.switchKey)}
             title={t(language.switchKey)}
           >
-            <span aria-hidden="true">{language.alternateFlag}</span>
+            <img
+              src={languageFlags[language.alternate]}
+              alt=""
+              aria-hidden="true"
+            />
           </button>
           {name !== "" && isLoggedIn ? (
             <button className="user-chip" onClick={() => navigate("/profile")}>
