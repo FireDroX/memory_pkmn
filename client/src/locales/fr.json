@@ -78,7 +78,8 @@
     "alreadyAccount": "J'ai déjà un compte",
     "loginPrivacy": "Tes données de compte sont traitées selon notre",
     "registerPrivacy": "En créant un compte, tu peux consulter les finalités et tes droits dans notre",
-    "privacyLink": "notice de confidentialité"
+    "privacyLink": "notice de confidentialité",
+    "userAlt": "Avatar du dresseur"
   },
   "colors": {
     "back": "Retour",
@@ -121,7 +122,10 @@
     "winRemaining_one": "Avec {{count}} essai restant !",
     "winRemaining_other": "Avec {{count}} essais restants !",
     "pairsRemaining_one": "Il reste {{count}} paire...",
-    "pairsRemaining_other": "Il reste {{count}} paires..."
+    "pairsRemaining_other": "Il reste {{count}} paires...",
+    "pokemonAlt": "Pokemon",
+    "winMascotAlt": "Machopeur",
+    "lossMascotAlt": "Kapoera"
   },
   "online": {
     "players": "Joueurs : {{ready}}/{{total}}",

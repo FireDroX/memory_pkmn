@@ -26,7 +26,11 @@ import {
 } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
 import { createFriendDuel } from "../../utils/friendDuelInvite";
-import { translateServerStatus } from "../../utils/serverStatus";
+import {
+  localizedStatus,
+  translateStatus,
+} from "../../utils/serverStatus";
+import { getLanguage } from "../../utils/languages";
 import {
   achievements,
   getUnlockedAchievementIds,
@@ -125,7 +129,7 @@ const Profile = () => {
       body: JSON.stringify({ name, challengeId }),
     });
     const data = await response.json();
-    setStatus(translateServerStatus(data.status, t));
+    setStatus(data.status || "");
     if (response.ok) {
       setUserProfile(data.profile);
       await getDailyChallenges();
@@ -139,7 +143,7 @@ const Profile = () => {
       body: JSON.stringify({ name, friendName }),
     });
     const data = await response.json();
-    setStatus(translateServerStatus(data.status, t));
+    setStatus(data.status || "");
     if (response.ok) {
       setSelectedFriend("");
       await getFriends();
@@ -153,7 +157,7 @@ const Profile = () => {
       pairs: gamePairs,
     });
 
-    setStatus(translateServerStatus(result.status, t));
+    setStatus(result.status || "");
     if (result.ok) {
       setPlayers([
         { name, enabled: true },
@@ -170,13 +174,13 @@ const Profile = () => {
     const selectedNames = activePlayers.map((player) => player.name);
 
     if (activePlayers.some((player) => player.name.trim() === "")) {
-      return setStatus(t("profile.validation.selectPlayers"));
+      return setStatus(localizedStatus("profile.validation.selectPlayers"));
     }
     if (selectedNames.length !== new Set(selectedNames).size) {
-      return setStatus(t("profile.validation.uniquePlayers"));
+      return setStatus(localizedStatus("profile.validation.uniquePlayers"));
     }
     if (activePlayers.length < 2) {
-      return setStatus(t("profile.validation.minimumPlayers"));
+      return setStatus(localizedStatus("profile.validation.minimumPlayers"));
     }
 
     const response = await fetch("/api/invite", {
@@ -185,7 +189,7 @@ const Profile = () => {
       body: JSON.stringify({ players: selectedNames, pairs: gamePairs }),
     });
     const data = await response.json();
-    setStatus(translateServerStatus(data.status, t));
+    setStatus(data.status || "");
     setPlayers([
       { name, enabled: true },
       { name: "", enabled: true },
@@ -202,7 +206,7 @@ const Profile = () => {
       body: JSON.stringify({ room, name }),
     });
     const data = response.status === 204 ? {} : await response.json();
-    setStatus(translateServerStatus(data.status, t));
+    setStatus(data.status || "");
     await getInvitations();
   };
 
@@ -317,7 +321,7 @@ const Profile = () => {
             <span className="eyebrow">{t("profile.onlineEyebrow")}</span>
             <h5>{t("profile.createArena")}</h5>
             <p className="profile-subtitle">{t("profile.createHint")}</p>
-            <p className="profile-status">{status}</p>
+            <p className="profile-status">{translateStatus(status, t)}</p>
 
             <div className="profile-invite">
               <div className="profile-inputs">
@@ -538,7 +542,7 @@ const Profile = () => {
               <p>
                 {t("stats.trainerSince", {
                   date: new Intl.DateTimeFormat(
-                    i18n.resolvedLanguage === "en" ? "en-GB" : "fr-FR",
+                    getLanguage(i18n.resolvedLanguage).dateLocale,
                   ).format(new Date(userStats.createdAt)),
                 })}
               </p>

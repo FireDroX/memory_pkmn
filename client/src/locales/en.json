@@ -78,7 +78,8 @@
     "alreadyAccount": "I already have an account",
     "loginPrivacy": "Your account data is processed according to our",
     "registerPrivacy": "By creating an account, you can review the purposes and your rights in our",
-    "privacyLink": "privacy notice"
+    "privacyLink": "privacy notice",
+    "userAlt": "Trainer avatar"
   },
   "colors": {
     "back": "Back",
@@ -121,7 +122,10 @@
     "winRemaining_one": "With {{count}} try left!",
     "winRemaining_other": "With {{count}} tries left!",
     "pairsRemaining_one": "There is {{count}} pair left...",
-    "pairsRemaining_other": "There are {{count}} pairs left..."
+    "pairsRemaining_other": "There are {{count}} pairs left...",
+    "pokemonAlt": "Pokemon",
+    "winMascotAlt": "Machoke",
+    "lossMascotAlt": "Hitmontop"
   },
   "online": {
     "players": "Players: {{ready}}/{{total}}",

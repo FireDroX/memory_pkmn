@@ -10,20 +10,16 @@ const flattenKeys = (value, prefix = "") =>
       : [path];
   });
 
-test("les catalogues francais et anglais possedent les memes cles", async () => {
-  const [fr, en] = await Promise.all(
-    ["fr", "en"].map(async (language) =>
-      JSON.parse(
-        await readFile(
-          new URL(
-            `../client/src/locales/${language}.json`,
-            import.meta.url,
-          ),
-          "utf8",
-        ),
-      ),
+const readCatalog = async (language) =>
+  JSON.parse(
+    await readFile(
+      new URL(`../client/src/locales/${language}.json`, import.meta.url),
+      "utf8",
     ),
   );
+
+test("les catalogues francais et anglais possedent les memes cles", async () => {
+  const [fr, en] = await Promise.all(["fr", "en"].map(readCatalog));
 
   assert.deepEqual(flattenKeys(fr).sort(), flattenKeys(en).sort());
 });
@@ -42,12 +38,7 @@ const findSourceFiles = async (directory) => {
 };
 
 test("chaque cle i18n statique utilisee par React existe", async () => {
-  const fr = JSON.parse(
-    await readFile(
-      new URL("../client/src/locales/fr.json", import.meta.url),
-      "utf8",
-    ),
-  );
+  const fr = await readCatalog("fr");
   const availableKeys = new Set(flattenKeys(fr));
   const sourceRoot = new URL("../client/src", import.meta.url).pathname.replace(
     /^\/(.:\/)/,

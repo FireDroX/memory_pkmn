@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 import { FaTrophy } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
+import { getLanguage } from "../../utils/languages";
 import "./Navbar.css";
 import "../../utils/CustomColors.css";
 
@@ -11,7 +12,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
-  const isEnglish = i18n.resolvedLanguage === "en";
+  const language = getLanguage(i18n.resolvedLanguage);
 
   const stringToDecimal = (str) => {
     let decimal = 0;
@@ -66,19 +67,11 @@ const Navbar = () => {
           <button
             type="button"
             className="language-switch"
-            onClick={() => i18n.changeLanguage(isEnglish ? "fr" : "en")}
-            aria-label={t(
-              isEnglish
-                ? "language.switchToFrench"
-                : "language.switchToEnglish",
-            )}
-            title={t(
-              isEnglish
-                ? "language.switchToFrench"
-                : "language.switchToEnglish",
-            )}
+            onClick={() => i18n.changeLanguage(language.alternate)}
+            aria-label={t(language.switchKey)}
+            title={t(language.switchKey)}
           >
-            <span aria-hidden="true">{isEnglish ? "🇫🇷" : "🇬🇧"}</span>
+            <span aria-hidden="true">{language.alternateFlag}</span>
           </button>
           {name !== "" && isLoggedIn ? (
             <button className="user-chip" onClick={() => navigate("/profile")}>

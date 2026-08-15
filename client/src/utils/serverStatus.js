@@ -72,3 +72,12 @@ export const translateServerStatus = (status, translate) => {
 
   return status;
 };
+
+export const localizedStatus = (key, values = {}) => ({ key, values });
+
+export const translateStatus = (status, translate) => {
+  if (status && typeof status === "object") {
+    return translate(status.key, status.values);
+  }
+  return translateServerStatus(status, translate);
+};

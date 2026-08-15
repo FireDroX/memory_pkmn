@@ -221,7 +221,7 @@ const Solo = ({
                   <div className="card-front">
                     <img
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png`}
-                      alt="Pokemon"
+                      alt={t("game.pokemonAlt")}
                       draggable={false}
                     />
                   </div>
@@ -230,7 +230,7 @@ const Solo = ({
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                         shinyMode ? "shiny/" : ""
                       }${card || 0}.png`}
-                      alt="Pokemon"
+                      alt={t("game.pokemonAlt")}
                       draggable={false}
                     />
                   </div>
@@ -247,7 +247,7 @@ const Solo = ({
                 <h5>{t("game.won")}</h5>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png`}
-                  alt="Machoke"
+                  alt={t("game.winMascotAlt")}
                   draggable={false}
                 />
               </div>
@@ -265,7 +265,7 @@ const Solo = ({
                 <h5>{t("game.lost")}</h5>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png`}
-                  alt="Kapoera"
+                  alt={t("game.lossMascotAlt")}
                   draggable={false}
                 />
               </div>

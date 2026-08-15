@@ -3,7 +3,10 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
-import { translateServerStatus } from "../../utils/serverStatus";
+import {
+  localizedStatus,
+  translateStatus,
+} from "../../utils/serverStatus";
 
 function Login({ connect }) {
   const { setName, setIsLoggedIn, setUserProfile, setUserStats } =
@@ -23,16 +26,16 @@ function Login({ connect }) {
     };
 
     if (inputName === "" || password === "")
-      setStatus(t("auth.required"));
+      setStatus(localizedStatus("auth.required"));
     else {
       if (postLink === "/api/register") {
         if (password !== confirmPassword)
-          return setStatus(t("auth.passwordMismatch"));
+          return setStatus(localizedStatus("auth.passwordMismatch"));
       }
       const data = await fetch(postLink, requestOptions);
       const json = await data.json();
 
-      setStatus(translateServerStatus(json?.status, t));
+      setStatus(json?.status || "");
       if (json?.status === "" && postLink === "/api/login") {
         setName(json.name);
         setIsLoggedIn(true);
@@ -90,10 +93,14 @@ function Login({ connect }) {
               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                 inputName,
               )}.png`}
-              alt="User"
+              alt={t("auth.userAlt")}
               draggable={false}
             />
-            {status ? <p className="login-status">{status}</p> : false}
+            {status ? (
+              <p className="login-status">{translateStatus(status, t)}</p>
+            ) : (
+              false
+            )}
           </div>
           {connect ? (
             <div className="login-container-inputs">
