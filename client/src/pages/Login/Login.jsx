@@ -3,7 +3,9 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
-import StatusPopup from "../../components/StatusPopup/StatusPopup";
+import StatusPopup, {
+  useStatusPopup,
+} from "../../components/StatusPopup/StatusPopup";
 import { localizedStatus } from "../../utils/serverStatus";
 
 function Login({ connect }) {
@@ -13,7 +15,7 @@ function Login({ connect }) {
   const [inputName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState();
+  const { status, statusId, setStatus, clearStatus } = useStatusPopup();
 
   const handlePost = async (postLink) => {
     const requestOptions = {
@@ -74,7 +76,11 @@ function Login({ connect }) {
 
   return (
     <section className="App">
-      <StatusPopup status={status} clearStatus={setStatus} />
+      <StatusPopup
+        status={status}
+        statusId={statusId}
+        clearStatus={clearStatus}
+      />
       <div>
         <div className="login-container">
           <div className="login-container-data">

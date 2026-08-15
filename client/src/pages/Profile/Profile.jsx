@@ -25,7 +25,9 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
-import StatusPopup from "../../components/StatusPopup/StatusPopup";
+import StatusPopup, {
+  useStatusPopup,
+} from "../../components/StatusPopup/StatusPopup";
 import { createFriendDuel } from "../../utils/friendDuelInvite";
 import { localizedStatus } from "../../utils/serverStatus";
 import { getLanguage } from "../../utils/languages";
@@ -53,7 +55,7 @@ const Profile = () => {
   } = useContext(UserContext);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const [status, setStatus] = useState("");
+  const { status, statusId, setStatus, clearStatus } = useStatusPopup();
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
   const [users, setUsers] = useState([]);
@@ -234,7 +236,11 @@ const Profile = () => {
 
   return (
     <section className="App profile-page">
-      <StatusPopup status={status} clearStatus={setStatus} />
+      <StatusPopup
+        status={status}
+        statusId={statusId}
+        clearStatus={clearStatus}
+      />
       <div className="profile-page-content">
         <section className="trainer-overview">
           <div className="trainer-identity">
