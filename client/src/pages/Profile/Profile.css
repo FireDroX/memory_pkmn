@@ -391,6 +391,85 @@
   box-shadow: var(--shadow);
 }
 
+.detailed-stats-panel {
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.detailed-stats-heading {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.detailed-stats-heading h3 {
+  margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.7rem;
+}
+
+.detailed-stats-heading p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.detailed-stats-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.detailed-stats-groups article {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f7f3e9;
+}
+
+.detailed-stats-groups h4 {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+}
+
+.detailed-stats-groups dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.detailed-stats-groups dl div {
+  min-width: 0;
+  padding: 10px;
+  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  background: white;
+}
+
+.detailed-stats-groups dt {
+  color: var(--ink-soft);
+  font-size: 0.54rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.detailed-stats-groups dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Arial Black", sans-serif;
+  font-size: 0.92rem;
+}
+
 .friends-heading {
   margin-bottom: 20px;
   display: flex;
@@ -626,6 +705,10 @@
   .friends-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .detailed-stats-groups dl {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 800px) {
@@ -677,6 +760,19 @@
 
   .friends-panel {
     padding: 24px 18px;
+  }
+
+  .detailed-stats-panel {
+    padding: 24px 18px;
+  }
+
+  .detailed-stats-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detailed-stats-groups {
+    grid-template-columns: 1fr;
   }
 
   .friends-heading,

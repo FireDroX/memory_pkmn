@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { IoIosRefresh } from "react-icons/io";
 import {
   FaCheck,
+  FaChartLine,
   FaGamepad,
   FaPalette,
   FaSignOutAlt,
@@ -171,8 +172,18 @@ const Profile = () => {
     setName("");
     setIsLoggedIn(false);
     setUserStats({
+      onlineGamesPlayed: 0,
       onlineGamesWon: 0,
+      onlineGamesLost: 0,
+      onlineWinRate: 0,
+      currentWinStreak: 0,
+      bestWinStreak: 0,
+      totalPairsFound: 0,
       shinyPairsFound: 0,
+      soloGamesPlayed: 0,
+      soloGamesWon: 0,
+      soloWinRate: 0,
+      soloBestRemainingTries: 0,
       createdAt: null,
     });
     navigate("/");
@@ -409,6 +420,49 @@ const Profile = () => {
             </button>
           </div>
         </div>
+
+        <section className="detailed-stats-panel">
+          <div className="detailed-stats-heading">
+            <div>
+              <span className="eyebrow">PERFORMANCES</span>
+              <h3>
+                <FaChartLine /> Statistiques detaillees
+              </h3>
+            </div>
+            {userStats.createdAt && (
+              <p>
+                Dresseur depuis le{" "}
+                {new Intl.DateTimeFormat("fr-FR").format(
+                  new Date(userStats.createdAt),
+                )}
+              </p>
+            )}
+          </div>
+          <div className="detailed-stats-groups">
+            <article>
+              <h4>En ligne</h4>
+              <dl>
+                <div><dt>Parties</dt><dd>{userStats.onlineGamesPlayed}</dd></div>
+                <div><dt>Victoires</dt><dd>{userStats.onlineGamesWon}</dd></div>
+                <div><dt>Defaites</dt><dd>{userStats.onlineGamesLost}</dd></div>
+                <div><dt>Taux de victoire</dt><dd>{userStats.onlineWinRate}%</dd></div>
+                <div><dt>Serie actuelle</dt><dd>{userStats.currentWinStreak}</dd></div>
+                <div><dt>Meilleure serie</dt><dd>{userStats.bestWinStreak}</dd></div>
+              </dl>
+            </article>
+            <article>
+              <h4>Solo et collection</h4>
+              <dl>
+                <div><dt>Parties solo</dt><dd>{userStats.soloGamesPlayed}</dd></div>
+                <div><dt>Victoires solo</dt><dd>{userStats.soloGamesWon}</dd></div>
+                <div><dt>Taux solo</dt><dd>{userStats.soloWinRate}%</dd></div>
+                <div><dt>Meilleur restant</dt><dd>{userStats.soloBestRemainingTries} essais</dd></div>
+                <div><dt>Paires trouvees</dt><dd>{userStats.totalPairsFound}</dd></div>
+                <div><dt>Paires shiny</dt><dd>{userStats.shinyPairsFound}</dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
 
         <section className="friends-panel">
           <div className="friends-heading">

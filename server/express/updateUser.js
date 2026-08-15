@@ -14,6 +14,7 @@ router.post("/", async (req, res) => {
   try {
     const name = String(req.body.name || "").trim();
     const earnedXp = Math.max(0, Number(req.body.xp) || 0);
+    const gameResult = req.body.gameResult;
 
     const [players] = await pool.execute(
       "SELECT user_profile FROM users WHERE name = ? LIMIT 1",
@@ -72,6 +73,32 @@ router.post("/", async (req, res) => {
       "UPDATE users SET user_profile = ? WHERE name = ?",
       [JSON.stringify(updatedUser), name],
     );
+
+    if (gameResult && typeof gameResult.won === "boolean") {
+      const pairsFound = Math.max(0, Number(gameResult.pairsFound) || 0);
+      const remainingTries = Math.max(
+        0,
+        Number(gameResult.remainingTries) || 0,
+      );
+      await pool.execute(
+        `UPDATE users
+         SET solo_games_played = solo_games_played + 1,
+             solo_games_won = solo_games_won + ?,
+             total_pairs_found = total_pairs_found + ?,
+             solo_best_remaining_tries = CASE
+               WHEN ? = 1 THEN GREATEST(solo_best_remaining_tries, ?)
+               ELSE solo_best_remaining_tries
+             END
+         WHERE name = ?`,
+        [
+          gameResult.won ? 1 : 0,
+          pairsFound,
+          gameResult.won ? 1 : 0,
+          remainingTries,
+          name,
+        ],
+      );
+    }
 
     return res.json({ status: "", profile: updatedUser });
   } catch (error) {

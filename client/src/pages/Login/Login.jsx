@@ -34,11 +34,7 @@ function Login({ connect }) {
         setName(inputName);
         setIsLoggedIn(true);
         setUserProfile(json.profile);
-        setUserStats({
-          onlineGamesWon: json.online_games_won,
-          shinyPairsFound: json.shiny_pairs_found,
-          createdAt: json.created_at,
-        });
+        setUserStats(json.stats);
         navigate("/profile");
       }
     }

@@ -91,11 +91,36 @@ module.exports = (io) => {
             .flat()
             .filter((card) => ![2, 3, 4, 5].includes(card.state)).length;
 
-          if (cardsLeft === 0) {
+          if (cardsLeft === 0 && !roomData.completed_at) {
             const winnerName = [...roomData.players].sort(
               (a, b) => b.score - a.score,
             )[0].name;
             const winner = parsedUsers.find((user) => user.name === winnerName);
+
+            for (const roomPlayer of roomData.players) {
+              const isWinner = roomPlayer.name === winnerName;
+              await pool.execute(
+                `UPDATE users
+                 SET online_games_played = online_games_played + 1,
+                     online_games_lost = online_games_lost + ?,
+                     current_win_streak = CASE
+                       WHEN ? = 1 THEN current_win_streak + 1 ELSE 0
+                     END,
+                     best_win_streak = CASE
+                       WHEN ? = 1 THEN GREATEST(best_win_streak, current_win_streak + 1)
+                       ELSE best_win_streak
+                     END,
+                     total_pairs_found = total_pairs_found + ?
+                 WHERE id = ?`,
+                [
+                  isWinner ? 0 : 1,
+                  isWinner ? 1 : 0,
+                  isWinner ? 1 : 0,
+                  Math.max(0, Number(roomPlayer.score) || 0),
+                  roomPlayer.id,
+                ],
+              );
+            }
 
             if (winner) {
               const nextWins = winner.online_games_won + 1;
@@ -126,6 +151,7 @@ module.exports = (io) => {
                 [nextWins, JSON.stringify(profile), winner.id],
               );
             }
+            roomData.completed_at = new Date();
           }
         } else {
           roomData.playerTurn =
@@ -135,12 +161,13 @@ module.exports = (io) => {
         roomData.cards = cards;
         await pool.execute(
           `UPDATE rooms
-           SET players = ?, playerTurn = ?, cards = ?
+           SET players = ?, playerTurn = ?, cards = ?, completed_at = ?
            WHERE id = ?`,
           [
             JSON.stringify(roomData.players),
             roomData.playerTurn,
             JSON.stringify(roomData.cards),
+            roomData.completed_at,
             room,
           ],
         );

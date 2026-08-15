@@ -13,8 +13,18 @@ export const UserProvider = ({ children }) => {
     achievements: [0],
   });
   const [userStats, setUserStats] = useState({
+    onlineGamesPlayed: 0,
     onlineGamesWon: 0,
+    onlineGamesLost: 0,
+    onlineWinRate: 0,
+    currentWinStreak: 0,
+    bestWinStreak: 0,
+    totalPairsFound: 0,
     shinyPairsFound: 0,
+    soloGamesPlayed: 0,
+    soloGamesWon: 0,
+    soloWinRate: 0,
+    soloBestRemainingTries: 0,
     createdAt: null,
   });
 

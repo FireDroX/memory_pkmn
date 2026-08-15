@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const pool = require("../../db");
 const parseJson = require("../utils/parseJson");
 const { unlockStatAchievements } = require("../utils/profileProgress");
+const { formatPlayerStats } = require("../utils/playerStats");
 
 const router = express.Router();
 
@@ -37,9 +38,7 @@ router.post("/", async (req, res) => {
 
     return res.json({
       status: "",
-      online_games_won: user.online_games_won,
-      shiny_pairs_found: user.shiny_pairs_found,
-      created_at: user.created_at,
+      stats: formatPlayerStats(user),
       profile,
     });
   } catch (error) {

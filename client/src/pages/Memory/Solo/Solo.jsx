@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "../../../utils/UserContext";
 import "./Solo.css";
 
@@ -17,6 +17,7 @@ const Solo = ({
   const [playerWon, setPlayerWon] = useState(false);
   const [playerLost, setPlayerLost] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
+  const resultRecorded = useRef(false);
 
   const handleFlipCard = (index) => {
     if (
@@ -110,25 +111,37 @@ const Solo = ({
   };
 
   useEffect(() => {
-    if (game.pairs === 0) {
-      if (isLoggedIn) {
-        const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name,
-            xp: calculateXp(tries, cards.flat().length / 2),
-          }),
-        };
+    if (game.started && game.pairs > 0 && game.tries > 0) {
+      resultRecorded.current = false;
+    }
 
-        fetch("/api/profile/update", requestOptions).then((data) => {
-          if (data.status === 200) {
-            data.json().then((json) => {
-              setTimeout(() => setUserProfile(json.profile), 5000);
-            });
-          }
-        });
-      }
+    const gameEnded = game.pairs === 0 || game.tries === 0;
+    if (gameEnded && isLoggedIn && !resultRecorded.current) {
+      resultRecorded.current = true;
+      const won = game.pairs === 0;
+      const totalPairs = cards.flat().length / 2;
+      const pairsFound = won ? totalPairs : totalPairs - game.pairs;
+      fetch("/api/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          xp: won ? calculateXp(tries, totalPairs) : 0,
+          gameResult: {
+            won,
+            pairsFound,
+            remainingTries: game.tries,
+          },
+        }),
+      }).then(async (response) => {
+        if (response.ok) {
+          const data = await response.json();
+          setUserProfile(data.profile);
+        }
+      });
+    }
+
+    if (game.pairs === 0) {
       setPlayerWon(true);
     }
     if (game.tries === 0) {
