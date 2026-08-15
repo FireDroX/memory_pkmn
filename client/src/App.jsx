@@ -4,6 +4,7 @@ import { Routes, Route, useLocation, Navigate } from "react-router";
 import { UserContext } from "./utils/UserContext";
 
 import Navbar from "./components/Navbar/Navbar";
+import AmbientSound from "./components/AmbientSound/AmbientSound";
 import { Loadable } from "./components/Loading/Loading";
 
 const Home = lazy(() => import("./pages/Home/Home"));
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <AmbientSound />
       <Routes location={location}>
         <Route path="/" element={Loadable(Home)} />
         <Route
