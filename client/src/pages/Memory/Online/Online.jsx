@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { FaCrown } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import GameResult from "../../../components/GameResult/GameResult";
 import { UserContext } from "../../../utils/UserContext";
 import { socket } from "../../../socket";
 import "../../../pages/Memory/Solo/Solo.css";
@@ -192,6 +193,11 @@ const Online = ({ id }) => {
       window.removeEventListener("resize", updateOrientation);
     };
   }, []);
+
+  const rankedPlayers = endOfGame && room
+    ? [...room.players].sort((first, second) => second.score - first.score)
+    : [];
+  const currentPlayerWon = rankedPlayers[0]?.name === name;
 
   return (
     <section className="App">
@@ -450,38 +456,59 @@ const Online = ({ id }) => {
                 )}
               </div>
               {endOfGame ? (
-                <div className="online-ending">
-                  {room.players
-                    .sort((a, b) => b.score - a.score)
-                    .map((player, endIndex) => (
-                      <>
-                        <div
+                <GameResult
+                  tone={currentPlayerWon ? "victory" : "defeat"}
+                  eyebrow={t("online.resultEyebrow")}
+                  title={t(currentPlayerWon ? "game.won" : "game.lost")}
+                  description={t("online.resultSubtitle", {
+                    count: rankedPlayers.length,
+                  })}
+                >
+                  <ol
+                    className="online-result-ranking"
+                    data-player-count={rankedPlayers.length}
+                  >
+                    {rankedPlayers.map((player, playerIndex) => (
+                      <li
+                        className={player.name === name ? "current" : ""}
+                        key={player.id || player.name}
+                        aria-current={player.name === name ? "true" : undefined}
+                      >
+                        <span className="online-result-position">
+                          #{playerIndex + 1}
+                        </span>
+                        <img
+                          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                            player.name,
+                          )}.png`}
+                          alt=""
+                          draggable={false}
+                        />
+                        <strong
                           className={
-                            endIndex === 0
-                              ? "online-playerWon"
-                              : "online-playerLost"
+                            users.find((user) => user.name === player.name)
+                              ?.skin || "color-default"
                           }
+                          data-name={player.name}
                         >
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
-                              player.name,
-                            )}.png`}
-                            alt={t("common.user")}
-                            draggable={false}
-                          />
-                          <h5>
-                            {endIndex === 0 ? (
-                              <>
-                                {t("online.won")} <FaCrown />
-                              </>
-                            ) : (
-                              t("online.lost")
-                            )}
-                          </h5>
-                        </div>
-                      </>
+                          {player.name}
+                        </strong>
+                        <small>
+                          {t("online.pairsFound", { count: player.score })}
+                        </small>
+                        <span className="online-result-status">
+                          {playerIndex === 0 ? (
+                            <>
+                              <FaCrown /> {t("online.won")}
+                            </>
+                          ) : (
+                            t("online.lost")
+                          )}
+                        </span>
+                      </li>
                     ))}
-                </div>
+                  </ol>
+                </GameResult>
               ) : (
                 false
               )}

@@ -112,6 +112,8 @@
     "triesLeft_other": "{{count}} TRIES LEFT!",
     "won": "You WON!",
     "lost": "You lost...",
+    "victoryEyebrow": "SOLO VICTORY",
+    "defeatEyebrow": "GAME OVER",
     "winRemaining_one": "With {{count}} try left!",
     "winRemaining_other": "With {{count}} tries left!",
     "pairsRemaining_one": "There is {{count}} pair left...",
@@ -127,6 +129,9 @@
     "pairsFound_other": "{{count}} pairs found",
     "won": "WON",
     "lost": "LOST",
+    "resultEyebrow": "ARENA RESULTS",
+    "resultSubtitle_one": "Final ranking · {{count}} player",
+    "resultSubtitle_other": "Final ranking · {{count}} players",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
     "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}"
   },

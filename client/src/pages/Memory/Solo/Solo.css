@@ -129,40 +129,6 @@
   text-align: center;
 }
 
-.chooseCards-ending {
-  display: block;
-  min-height: 0;
-}
-
-.chooseCards-ending .chooseCards-select {
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.chooseCards-ending .chooseCards-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-}
-
-.chooseCards-ending .chooseCards-title h5 {
-  font-size: 1.7rem;
-}
-
-.chooseCards-ending .chooseCards-title img {
-  width: 100px;
-  image-rendering: pixelated;
-}
-
-.chooseCards-ending .chooseCards-buttons {
-  margin: 0;
-  display: block;
-  color: var(--ink-soft);
-}
-
 @media (orientation: landscape) {
   .portrait-warning:not(.online-ready) {
     display: none;

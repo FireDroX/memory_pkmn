@@ -8,7 +8,7 @@ test("le bouton ami declenche directement la creation du duel", async () => {
     "utf8",
   );
   const inviteHandler = profileSource.match(
-    /const inviteFriend = [\s\S]*?\n  };\n\n  const handleInvite/,
+    /const inviteFriend = [\s\S]*?\r?\n  };\r?\n\r?\n  const handleInvite/,
   )?.[0];
 
   assert.ok(inviteHandler, "Le gestionnaire inviteFriend doit exister.");
