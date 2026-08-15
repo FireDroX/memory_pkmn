@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "../../../utils/UserContext";
+import { playGameSound } from "../../../utils/gameSounds";
 import "./Solo.css";
 
 const Solo = ({
@@ -18,6 +19,7 @@ const Solo = ({
   const [playerLost, setPlayerLost] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
   const resultRecorded = useRef(false);
+  const endingSoundPlayed = useRef(false);
 
   const handleFlipCard = (index) => {
     if (
@@ -28,6 +30,7 @@ const Solo = ({
       return;
     }
 
+    playGameSound("cardFlip");
     const card = document.getElementsByClassName("card")[index];
     card.classList.add("card-flipped");
     const cardValue = Number(card.dataset.pokemon);
@@ -40,6 +43,7 @@ const Solo = ({
         if (firstCard.cardValue === secondCard.cardValue) {
           // It's a match, keep them flipped
           setTimeout(() => {
+            playGameSound("pairFound");
             document
               .getElementsByClassName("card")
               [firstCard.index].classList.add("card-found");
@@ -59,6 +63,7 @@ const Solo = ({
         } else {
           // Not a match, flip them back after a delay
           setTimeout(() => {
+            playGameSound("error");
             document
               .getElementsByClassName("card")
               [firstCard.index].classList.remove("card-flipped");
@@ -113,9 +118,15 @@ const Solo = ({
   useEffect(() => {
     if (game.started && game.pairs > 0 && game.tries > 0) {
       resultRecorded.current = false;
+      endingSoundPlayed.current = false;
     }
 
     const gameEnded = game.pairs === 0 || game.tries === 0;
+    if (gameEnded && !endingSoundPlayed.current) {
+      endingSoundPlayed.current = true;
+      playGameSound(game.pairs === 0 ? "victory" : "error");
+    }
+
     if (gameEnded && isLoggedIn && !resultRecorded.current) {
       resultRecorded.current = true;
       const won = game.pairs === 0;

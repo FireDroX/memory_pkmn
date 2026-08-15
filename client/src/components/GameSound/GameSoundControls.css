@@ -1,0 +1,55 @@
+.game-sound-controls {
+  position: fixed;
+  z-index: 30;
+  right: 18px;
+  bottom: 18px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 253, 247, 0.94);
+  box-shadow: 0 8px 28px rgba(19, 35, 63, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.game-sound-controls button {
+  padding: 7px 9px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  color: var(--ink);
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.game-sound-controls label {
+  display: flex;
+}
+
+.game-sound-controls input {
+  width: 78px;
+  accent-color: var(--blue);
+}
+
+.game-sound-controls input:disabled {
+  opacity: 0.45;
+}
+
+@media (max-width: 620px) {
+  .game-sound-controls {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .game-sound-controls label,
+  .game-sound-controls button span {
+    display: none;
+  }
+}
