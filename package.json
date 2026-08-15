@@ -11,7 +11,8 @@
     "preview": "npm --prefix client run preview",
     "test": "node --test",
     "db:setup": "npm run db:migrate",
-    "db:migrate": "node scripts/migrate-database.js"
+    "db:migrate": "node scripts/migrate-database.js",
+    "admin:bootstrap": "node scripts/bootstrap-admin.js"
   },
   "author": "",
   "license": "ISC",

@@ -37,7 +37,7 @@ Les migrations sont exécutées dans l'ordre de leur nom depuis
 `database/migrations` :
 
 - `001_create_users.sql` crée la table `users` ;
-- `002_create_rooms.sql` crée la table `rooms`.
+- `002_create_rooms.sql` crée la table `rooms` ;
 - `006_create_sessions.sql` crée le stockage persistant des sessions Express ;
 - `007_add_user_roles.sql` ajoute les rôles et attribue le rôle administrateur au compte canonique `Admin` existant.
 
@@ -52,6 +52,16 @@ npm run db:migrate
 Pour faire évoluer le schéma, ajouter un nouveau fichier avec le numéro suivant,
 par exemple `003_add_user_email.sql`, puis relancer `npm run db:migrate`. Une
 migration déjà appliquée ne doit pas être modifiée : il faut en créer une nouvelle.
+
+Sur une base neuve, inscris d'abord le compte qui doit devenir le premier
+administrateur, puis exécute une seule fois :
+
+```bash
+npm run admin:bootstrap -- MonPseudo
+```
+
+La commande est refusée dès qu'un administrateur existe. Les rôles se gèrent
+ensuite exclusivement depuis la page d'administration protégée.
 
 ## Développement
 
