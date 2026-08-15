@@ -133,7 +133,9 @@
   width: min(460px, calc(100vw - 32px));
   min-height: 0;
   display: grid;
+  grid-template-columns: 1fr;
   place-items: center;
+  gap: 0;
 }
 
 .chooseCards-ending .chooseCards-select {
