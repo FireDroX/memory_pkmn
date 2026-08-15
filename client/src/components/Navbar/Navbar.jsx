@@ -1,14 +1,25 @@
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { FaTrophy } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
+import { getLanguage } from "../../utils/languages";
+import frenchFlag from "../../assets/flags/fr.svg";
+import britishFlag from "../../assets/flags/gb.svg";
 import "./Navbar.css";
 import "../../utils/CustomColors.css";
+
+const languageFlags = Object.freeze({
+  en: britishFlag,
+  fr: frenchFlag,
+});
 
 const Navbar = () => {
   const { name, isLoggedIn, userProfile } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+  const language = getLanguage(i18n.resolvedLanguage);
 
   const stringToDecimal = (str) => {
     let decimal = 0;
@@ -24,19 +35,19 @@ const Navbar = () => {
         <button
           className="brand"
           onClick={() => navigate("/")}
-          aria-label="Accueil"
+          aria-label={t("nav.home")}
         >
           <span className="brand-ball" aria-hidden="true" />
           <span>
             <strong>POKE</strong>FLIP
           </span>
         </button>
-        <nav className="nav-links" aria-label="Navigation principale">
+        <nav className="nav-links" aria-label={t("nav.main")}>
           <button
             className={location.pathname === "/" ? "active" : ""}
             onClick={() => navigate("/")}
           >
-            Solo
+            {t("nav.solo")}
           </button>
           {isLoggedIn && (
             <>
@@ -44,23 +55,37 @@ const Navbar = () => {
                 className={location.pathname === "/profile" ? "active" : ""}
                 onClick={() => navigate("/profile")}
               >
-                Salons
+                {t("nav.rooms")}
               </button>
               <button
-                aria-label="Classement"
+                aria-label={t("nav.leaderboard")}
                 className={
                   location.pathname === "/profile/leaderboard" ? "active" : ""
                 }
                 onClick={() => navigate("/profile/leaderboard")}
               >
                 <FaTrophy />
-                <span>Classement</span>
+                <span>{t("nav.leaderboard")}</span>
               </button>
             </>
           )}
         </nav>
-        {name !== "" && isLoggedIn ? (
-          <button className="user-chip" onClick={() => navigate("/profile")}>
+        <div className="navbar-actions">
+          <button
+            type="button"
+            className="language-switch"
+            onClick={() => i18n.changeLanguage(language.alternate)}
+            aria-label={t(language.switchKey)}
+            title={t(language.switchKey)}
+          >
+            <img
+              src={languageFlags[language.alternate]}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+          {name !== "" && isLoggedIn ? (
+            <button className="user-chip" onClick={() => navigate("/profile")}>
             <img
               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                 name,
@@ -75,7 +100,7 @@ const Navbar = () => {
                 {name}
               </span>
               <span className="progress-container">
-                Niv. {userProfile.level}
+                {t("nav.level", { level: userProfile.level })}
                 <span className="progress-bar">
                   <span
                     className="progress-fill"
@@ -86,12 +111,13 @@ const Navbar = () => {
                 </span>
               </span>
             </span>
-          </button>
-        ) : (
-          <button className="nav-login" onClick={() => navigate("/login")}>
-            Connexion
-          </button>
-        )}
+            </button>
+          ) : (
+            <button className="nav-login" onClick={() => navigate("/login")}>
+              {t("nav.login")}
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );

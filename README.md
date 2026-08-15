@@ -8,7 +8,7 @@ avec Socket.IO.
 
 - React 19 et Vite 7
 - Express et Socket.IO
-- MySQL avec `mysql2`
+- MySQL avec `mysql2` et sessions Express persistantes
 - PokeAPI pour les sprites
 
 ## Installation
@@ -20,7 +20,8 @@ npm install
 npm --prefix client install
 ```
 
-Copier `.env.example` vers `.env`, puis adapter les identifiants MySQL si besoin.
+Copier `.env.example` vers `.env`, puis adapter les identifiants MySQL et définir
+un `SESSION_SECRET` aléatoire d'au moins 32 caractères.
 
 ```bash
 npm run db:setup
@@ -37,6 +38,7 @@ Les migrations sont exécutées dans l'ordre de leur nom depuis
 
 - `001_create_users.sql` crée la table `users` ;
 - `002_create_rooms.sql` crée la table `rooms`.
+- `006_create_sessions.sql` crée le stockage persistant des sessions Express.
 
 La table `schema_migrations` enregistre automatiquement les fichiers déjà
 appliqués et leur empreinte. La commande peut donc être relancée sans recréer
@@ -77,3 +79,8 @@ npm start
 ```
 
 Express sert alors le build généré dans `client/dist`.
+
+Le cookie de connexion est `HttpOnly` et ne contient que l'identifiant de
+session. L'utilisateur authentifié est stocké côté serveur dans la table
+MySQL `sessions`. `SESSION_SECRET` doit être injecté au déploiement et ne doit
+jamais être ajouté à l'image Docker ou au dépôt Git.

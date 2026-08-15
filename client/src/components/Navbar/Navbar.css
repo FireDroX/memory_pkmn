@@ -24,10 +24,38 @@
 .brand,
 .nav-links button,
 .nav-login,
-.user-chip {
+.user-chip,
+.language-switch {
   border: 0;
   cursor: pointer;
   background: none;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-switch {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  background: white;
+}
+
+.language-switch img {
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(19, 35, 63, 0.12);
 }
 
 .brand {

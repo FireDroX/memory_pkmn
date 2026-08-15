@@ -7,17 +7,18 @@ const {
   unlockAchievement,
   isWeekendInParis,
 } = require("../utils/profileProgress");
+const { recordDailyProgress } = require("../utils/dailyChallenges");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const name = String(req.body.name || "").trim();
     const earnedXp = Math.max(0, Number(req.body.xp) || 0);
+    const gameResult = req.body.gameResult;
 
     const [players] = await pool.execute(
-      "SELECT user_profile FROM users WHERE name = ? LIMIT 1",
-      [name],
+      "SELECT id, user_profile FROM users WHERE id = ? LIMIT 1",
+      [req.auth.id],
     );
     if (!players[0]) {
       return res.status(404).json({ status: "Joueur introuvable." });
@@ -69,9 +70,40 @@ router.post("/", async (req, res) => {
     }
 
     await pool.execute(
-      "UPDATE users SET user_profile = ? WHERE name = ?",
-      [JSON.stringify(updatedUser), name],
+      "UPDATE users SET user_profile = ? WHERE id = ?",
+      [JSON.stringify(updatedUser), req.auth.id],
     );
+
+    if (gameResult && typeof gameResult.won === "boolean") {
+      const pairsFound = Math.max(0, Number(gameResult.pairsFound) || 0);
+      const remainingTries = Math.max(
+        0,
+        Number(gameResult.remainingTries) || 0,
+      );
+      await pool.execute(
+        `UPDATE users
+         SET solo_games_played = solo_games_played + 1,
+             solo_games_won = solo_games_won + ?,
+             total_pairs_found = total_pairs_found + ?,
+             solo_best_remaining_tries = CASE
+               WHEN ? = 1 THEN GREATEST(solo_best_remaining_tries, ?)
+               ELSE solo_best_remaining_tries
+             END
+         WHERE name = ?`,
+        [
+          gameResult.won ? 1 : 0,
+          pairsFound,
+          gameResult.won ? 1 : 0,
+          remainingTries,
+          name,
+        ],
+      );
+      await recordDailyProgress(pool, players[0].id, {
+        pairsFound,
+        soloGames: 1,
+        soloWins: gameResult.won ? 1 : 0,
+      });
+    }
 
     return res.json({ status: "", profile: updatedUser });
   } catch (error) {

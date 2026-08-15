@@ -1,4 +1,5 @@
 const achievements = require("./Achievements");
+const levels = require("./Levels");
 
 const prepareProfile = (profile) => {
   const prepared = structuredClone(profile || {});
@@ -37,6 +38,34 @@ const unlockStatAchievements = (profile, { wins = 0, shiny = 0 } = {}) => {
   return prepared;
 };
 
+const addXp = (profile, amount) => {
+  const prepared = prepareProfile(profile);
+  let remainingXp = Math.max(0, Number(amount) || 0);
+
+  while (remainingXp > 0) {
+    const xpNeeded = Number(prepared.xpNeeded) || 10;
+    const xpToLevel = Math.max(0, xpNeeded - prepared.xp);
+    const nextLevel = levels[prepared.level + 1];
+
+    if (!nextLevel || remainingXp < xpToLevel) {
+      prepared.xp += remainingXp;
+      break;
+    }
+
+    remainingXp -= xpToLevel;
+    prepared.level = nextLevel.level;
+    prepared.xp = 0;
+    prepared.xpNeeded = nextLevel.xpNeeded;
+    for (const color of nextLevel.rewards.colors) {
+      if (!prepared.inventory[0].colors.includes(color)) {
+        prepared.inventory[0].colors.push(color);
+      }
+    }
+  }
+
+  return prepared;
+};
+
 const isWeekendInParis = () => {
   const parisDate = new Date(
     new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }),
@@ -45,6 +74,7 @@ const isWeekendInParis = () => {
 };
 
 module.exports = {
+  addXp,
   prepareProfile,
   unlockAchievement,
   unlockStatAchievements,

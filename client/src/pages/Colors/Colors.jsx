@@ -3,27 +3,13 @@ import "../../utils/CustomColors.css";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
-
-const colorNames = {
-  "color-default": "Classique",
-  "color-1": "Rose spectre",
-  "color-2": "Aura menthe",
-  "color-3": "Soleil",
-  "color-4": "Glacier",
-  "color-5": "Nebuleuse",
-  "color-6": "Magma",
-  "color-7": "Eclair",
-  "color-8": "Jungle",
-  "color-9": "Ocean",
-  "color-glitch": "MissingNo.",
-  "color-zekrom": "Zekrom",
-  "color-shiny": "Shiny",
-};
 
 const Colors = () => {
   const { name, userProfile, setUserProfile } = useContext(UserContext);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const colors = userProfile.inventory?.[0]?.colors || ["color-default"];
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,7 +32,6 @@ const Colors = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name,
         xp: 0,
         userProfile: updatedProfile,
       }),
@@ -66,25 +51,29 @@ const Colors = () => {
       <div>
         <div className="colors-container">
           <header className="colors-heading">
-            <button onClick={() => navigate("/profile")} aria-label="Retour">
+            <button
+              onClick={() => navigate("/profile")}
+              aria-label={t("colors.back")}
+            >
               <FaArrowLeft />
             </button>
             <div>
-              <span className="eyebrow">PERSONNALISATION</span>
-              <h2>Couleur du pseudo</h2>
-              <p>
-                Les nouveaux styles se debloquent en montant de niveau et en
-                terminant certains succes.
-              </p>
+              <span className="eyebrow">{t("colors.eyebrow")}</span>
+              <h2>{t("colors.title")}</h2>
+              <p>{t("colors.description")}</p>
             </div>
           </header>
 
           <div className="color-preview">
-            <span>Apercu en jeu</span>
+            <span>{t("colors.preview")}</span>
             <h3 className={selectedColor} data-name={name}>
               {name}
             </h3>
-            <small>{colorNames[selectedColor] || "Style special"}</small>
+            <small>
+              {i18n.exists(`colors.names.${selectedColor}`)
+                ? t(`colors.names.${selectedColor}`)
+                : t("colors.special")}
+            </small>
           </div>
 
           <div className="owned-colors">
@@ -99,7 +88,11 @@ const Colors = () => {
                   <span className={color} data-name={name}>
                     {name}
                   </span>
-                  <small>{colorNames[color] || `Style ${index + 1}`}</small>
+                  <small>
+                    {i18n.exists(`colors.names.${color}`)
+                      ? t(`colors.names.${color}`)
+                      : t("colors.style", { number: index + 1 })}
+                  </small>
                   {selected && <FaCheck />}
                 </button>
               );
@@ -108,10 +101,10 @@ const Colors = () => {
 
           <div className="colors-actions">
             <button className="secondary" onClick={() => navigate("/profile")}>
-              Annuler
+              {t("common.cancel")}
             </button>
             <button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Enregistrement..." : "Utiliser cette couleur"}
+              {t(isSaving ? "colors.saving" : "colors.use")}
             </button>
           </div>
         </div>

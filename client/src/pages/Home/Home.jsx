@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Solo from "../Memory/Solo/Solo";
 import "./Home.css";
 
 function Home() {
+  const { t } = useTranslation();
   const [cards, setCards] = useState([]);
   const [tries, setTries] = useState(20);
   const [game, setGame] = useState({ pairs: -1, tries: -1, started: false });
@@ -75,22 +77,19 @@ function Home() {
           <div className="chooseCards">
             <div className="chooseCards-select">
               <div className="chooseCards-title">
-                <span className="eyebrow">MEMORY BATTLE</span>
+                <span className="eyebrow">{t("home.eyebrow")}</span>
                 <h1>
-                  RETOURNE.
+                  {t("home.titleFlip")}
                   <br />
-                  MEMORISE.
+                  {t("home.titleRemember")}
                   <br />
-                  <em>GAGNE.</em>
+                  <em>{t("home.titleWin")}</em>
                 </h1>
-                <p>
-                  Retrouve les paires de Pokemon avant la fin de tes essais.
-                  Chaque partie genere une nouvelle arene.
-                </p>
+                <p>{t("home.description")}</p>
                 <div className="home-badges">
-                  <span>1025 Pokemon</span>
-                  <span>Mode shiny</span>
-                  <span>Temps reel</span>
+                  <span>{t("home.pokemonCount")}</span>
+                  <span>{t("home.shinyMode")}</span>
+                  <span>{t("home.realtime")}</span>
                 </div>
               </div>
 
@@ -100,12 +99,12 @@ function Home() {
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                     shinyMode ? "shiny/" : ""
                   }6.png`}
-                  alt="Dracaufeu"
+                  alt={t("home.mascotAlt")}
                   onClick={() => setShinyMode((previous) => !previous)}
                   draggable={false}
                 />
                 <button onClick={() => setShinyMode((previous) => !previous)}>
-                  {shinyMode ? "Shiny active" : "Mode shiny"}
+                  {t(shinyMode ? "home.shinyActive" : "home.shinyMode")}
                 </button>
               </div>
             </div>
@@ -114,23 +113,23 @@ function Home() {
               <div className="config-heading">
                 <span className="config-step">01</span>
                 <div>
-                  <strong>Choisis ton arene</strong>
-                  <small>Plus la grille est grande, plus le defi monte.</small>
+                  <strong>{t("home.arenaTitle")}</strong>
+                  <small>{t("home.arenaHint")}</small>
                 </div>
               </div>
               <div className="chooseCards-buttons">
                 {[
-                  { pairs: 14, rows: 7, label: "Debutant" },
-                  { pairs: 18, rows: 9, label: "Confirme" },
-                  { pairs: 22, rows: 11, label: "Expert" },
+                  { pairs: 14, rows: 7, label: "home.difficulty.beginner" },
+                  { pairs: 18, rows: 9, label: "home.difficulty.advanced" },
+                  { pairs: 22, rows: 11, label: "home.difficulty.expert" },
                 ].map((option) => (
                   <button
                     key={option.pairs}
                     onClick={() => setDefaultCards(4, option.rows)}
                   >
                     <strong>{option.pairs}</strong>
-                    <span>paires</span>
-                    <small>{option.label}</small>
+                    <span>{t("home.pairs")}</span>
+                    <small>{t(option.label)}</small>
                   </button>
                 ))}
               </div>
@@ -139,13 +138,13 @@ function Home() {
                 <div className="config-heading">
                   <span className="config-step">02</span>
                   <div>
-                    <strong>Regle tes essais</strong>
-                    <small>Moins d'essais, plus de tension.</small>
+                    <strong>{t("home.triesTitle")}</strong>
+                    <small>{t("home.triesHint")}</small>
                   </div>
                   <output>{tries}</output>
                 </div>
                 <div className="chooseCards-selector">
-                  <span>Hard</span>
+                  <span>{t("home.difficulty.hard")}</span>
                   <input
                     type="range"
                     name="Tries"
@@ -155,7 +154,7 @@ function Home() {
                     onChange={(event) => setTries(Number(event.target.value))}
                     className="chooseCards-slider"
                   />
-                  <span>Easy</span>
+                  <span>{t("home.difficulty.easy")}</span>
                 </div>
               </div>
             </div>
@@ -179,13 +178,13 @@ function Home() {
             PokeAPI
           </a>
           <a href="/api/mentions-legales" target="_blank" rel="noreferrer">
-            Mentions legales
+            {t("home.legal")}
           </a>
         </span>
         <span>
           {isWeekend
-            ? "Double XP ce week-end !"
-            : "Attrape-les tous, deux par deux."}
+            ? t("home.weekendXp")
+            : t("home.tagline")}
         </span>
       </footer>
     </section>

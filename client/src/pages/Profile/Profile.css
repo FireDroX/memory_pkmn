@@ -80,6 +80,7 @@
 }
 
 .trainer-stats div {
+  min-width: 0;
   padding: 11px 8px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -100,6 +101,8 @@
   font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.05em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
@@ -167,14 +170,6 @@
   color: var(--ink-soft);
   font-size: 0.78rem;
   line-height: 1.55;
-}
-
-.profile-status {
-  min-height: 30px;
-  margin: 0;
-  color: var(--red);
-  font-size: 0.68rem;
-  font-weight: 800;
 }
 
 .profile-invite {
@@ -330,11 +325,10 @@
   gap: 8px;
 }
 
-.profile-invitesList:empty::after {
+.profile-invites-empty {
   padding: 70px 20px;
   border: 1px dashed var(--line);
   border-radius: 15px;
-  content: "Aucun salon pour le moment";
   color: var(--ink-soft);
   font-size: 0.75rem;
   text-align: center;
@@ -381,6 +375,333 @@
   border-radius: 26px;
   background: var(--paper);
   box-shadow: var(--shadow);
+}
+
+.friends-panel {
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.detailed-stats-panel {
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.daily-challenges-panel {
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.daily-challenges-heading {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.daily-challenges-heading h3 {
+  margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.7rem;
+}
+
+.daily-challenges-heading > p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.daily-challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.daily-challenges-grid article {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  display: grid;
+  gap: 13px;
+  background: #f7f3e9;
+}
+
+.daily-challenges-grid article.completed {
+  border-color: #73bda9;
+  background: #effaf6;
+}
+
+.daily-challenge-copy > span {
+  color: #2a997f;
+  font-size: 0.55rem;
+  font-weight: 900;
+}
+
+.daily-challenge-copy h4 {
+  margin: 5px 0;
+  font-size: 0.78rem;
+}
+
+.daily-challenge-copy p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.6rem;
+  line-height: 1.45;
+}
+
+.daily-challenge-progress {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: white;
+}
+
+.daily-challenge-progress span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--blue);
+  transition: width 200ms ease;
+}
+
+.daily-challenges-grid article.completed .daily-challenge-progress span {
+  background: #2a997f;
+}
+
+.daily-challenge-footer {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 0.6rem;
+}
+
+.daily-challenge-footer button {
+  padding: 7px 9px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.58rem;
+  font-weight: 900;
+}
+
+.daily-challenge-footer > span {
+  color: #2a997f;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.detailed-stats-heading {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.detailed-stats-heading h3 {
+  margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.7rem;
+}
+
+.detailed-stats-heading p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.detailed-stats-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.detailed-stats-groups article {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f7f3e9;
+}
+
+.detailed-stats-groups h4 {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+}
+
+.detailed-stats-groups dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.detailed-stats-groups dl div {
+  min-width: 0;
+  padding: 10px;
+  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  background: white;
+}
+
+.detailed-stats-groups dt {
+  color: var(--ink-soft);
+  font-size: 0.54rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.detailed-stats-groups dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Arial Black", sans-serif;
+  font-size: 0.92rem;
+}
+
+.friends-heading {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.friends-heading h3 {
+  margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.7rem;
+}
+
+.friend-request-form {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-request-form select {
+  min-width: 190px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.friend-request-form button,
+.friend-requests button,
+.friends-grid button {
+  padding: 8px 11px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.friend-request-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.friend-requests {
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f7f3e9;
+  font-size: 0.68rem;
+}
+
+.friend-requests > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+}
+
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.friends-grid article {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+}
+
+.friends-grid img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #f7f3e9;
+  image-rendering: pixelated;
+}
+
+.friends-grid strong {
+  min-width: 0;
+  overflow: hidden;
+  margin-right: auto;
+  text-overflow: ellipsis;
+}
+
+.friends-grid button.friend-remove,
+.friend-requests button.friend-remove {
+  padding: 8px;
+  border-color: var(--line);
+  background: white;
+  color: var(--red);
+}
+
+.friends-empty,
+.friend-outgoing {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+}
+
+.friend-outgoing {
+  margin-top: 14px;
 }
 
 .achievements-heading {
@@ -492,6 +813,18 @@
   .achievements-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .friends-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detailed-stats-groups dl {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .daily-challenges-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 800px) {
@@ -538,6 +871,47 @@
   }
 
   .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .friends-panel {
+    padding: 24px 18px;
+  }
+
+  .detailed-stats-panel {
+    padding: 24px 18px;
+  }
+
+  .daily-challenges-panel {
+    padding: 24px 18px;
+  }
+
+  .daily-challenges-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detailed-stats-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detailed-stats-groups {
+    grid-template-columns: 1fr;
+  }
+
+  .friends-heading,
+  .friend-requests {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .friend-request-form select {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .friends-grid {
     grid-template-columns: 1fr;
   }
 }

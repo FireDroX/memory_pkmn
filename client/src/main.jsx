@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import App from "./App";
 import { UserProvider } from "./utils/UserContext";
+import "./i18n";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

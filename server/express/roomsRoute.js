@@ -19,6 +19,9 @@ router.post("/get", async (req, res) => {
       players: parseJson(roomRaw.players, []),
       cards: parseJson(roomRaw.cards, []),
     };
+    if (!room.players.some((player) => player.id === req.auth.id)) {
+      return res.status(403).json({ status: "Acces au salon refuse." });
+    }
     const playerIds = room.players.map((player) => player.id);
 
     if (playerIds.length === 0) return res.json({ users: [], room });
@@ -55,7 +58,7 @@ router.post("/delete", async (req, res) => {
     if (!room) return res.sendStatus(204);
 
     const players = parseJson(room.players, []);
-    if (players[0]?.name !== req.body.name) {
+    if (players[0]?.id !== req.auth.id) {
       return res.status(403).json({ status: "Seul l'hote peut supprimer ce salon." });
     }
 

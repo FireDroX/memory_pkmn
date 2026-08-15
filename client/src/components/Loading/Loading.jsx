@@ -1,27 +1,31 @@
 import "./Loading.css";
 import { Suspense } from "react";
+import { useTranslation } from "react-i18next";
 
-export const Loading = () => (
-  <div className="loading-div">
-    <div>
-      <div className="spinner">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+export const Loading = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="loading-div">
+      <div>
+        <div className="spinner">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
       </div>
+      <h5>{t("loading.room")}</h5>
     </div>
-    <h5>The room is loading or does not exists !</h5>
-  </div>
-);
+  );
+};
 
-const Loader = () => (
+export const Loader = () => (
   <section id="Loader">
     <div className="loader-spinner-container">
       <div className="loader-spinner" />

@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../../utils/UserContext";
 import "./Solo.css";
 
@@ -11,12 +12,14 @@ const Solo = ({
   setGame,
   shinyMode,
 }) => {
-  const { name, isLoggedIn, setUserProfile } = useContext(UserContext);
+  const { isLoggedIn, setUserProfile } = useContext(UserContext);
+  const { t } = useTranslation();
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [playerWon, setPlayerWon] = useState(false);
   const [playerLost, setPlayerLost] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
+  const resultRecorded = useRef(false);
 
   const handleFlipCard = (index) => {
     if (
@@ -110,25 +113,36 @@ const Solo = ({
   };
 
   useEffect(() => {
-    if (game.pairs === 0) {
-      if (isLoggedIn) {
-        const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name,
-            xp: calculateXp(tries, cards.flat().length / 2),
-          }),
-        };
+    if (game.started && game.pairs > 0 && game.tries > 0) {
+      resultRecorded.current = false;
+    }
 
-        fetch("/api/profile/update", requestOptions).then((data) => {
-          if (data.status === 200) {
-            data.json().then((json) => {
-              setTimeout(() => setUserProfile(json.profile), 5000);
-            });
-          }
-        });
-      }
+    const gameEnded = game.pairs === 0 || game.tries === 0;
+    if (gameEnded && isLoggedIn && !resultRecorded.current) {
+      resultRecorded.current = true;
+      const won = game.pairs === 0;
+      const totalPairs = cards.flat().length / 2;
+      const pairsFound = won ? totalPairs : totalPairs - game.pairs;
+      fetch("/api/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          xp: won ? calculateXp(tries, totalPairs) : 0,
+          gameResult: {
+            won,
+            pairsFound,
+            remainingTries: game.tries,
+          },
+        }),
+      }).then(async (response) => {
+        if (response.ok) {
+          const data = await response.json();
+          setUserProfile(data.profile);
+        }
+      });
+    }
+
+    if (game.pairs === 0) {
       setPlayerWon(true);
     }
     if (game.tries === 0) {
@@ -169,9 +183,7 @@ const Solo = ({
       {isLandscape ? (
         false
       ) : (
-        <div className="portrait-warning">
-          Please rotate your device to landscape mode for a better experience.
-        </div>
+        <div className="portrait-warning">{t("game.rotate")}</div>
       )}
 
       {/* Game Content */}
@@ -197,7 +209,7 @@ const Solo = ({
                   <div className="card-front">
                     <img
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png`}
-                      alt="Pokemon"
+                      alt={t("game.pokemonAlt")}
                       draggable={false}
                     />
                   </div>
@@ -206,7 +218,7 @@ const Solo = ({
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                         shinyMode ? "shiny/" : ""
                       }${card || 0}.png`}
-                      alt="Pokemon"
+                      alt={t("game.pokemonAlt")}
                       draggable={false}
                     />
                   </div>
@@ -215,23 +227,21 @@ const Solo = ({
             </div>
           ))}
         </div>
-        <h6>
-          {game.tries} TR{game.tries > 1 ? "IES" : "Y"} LEFT !
-        </h6>
+        <h6>{t("game.triesLeft", { count: game.tries })}</h6>
         {playerWon ? (
           <div className="chooseCards chooseCards-ending">
             <div className="chooseCards-select">
               <div className="chooseCards-title">
-                <h5>You WON !</h5>
+                <h5>{t("game.won")}</h5>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png`}
-                  alt="Machoke"
+                  alt={t("game.winMascotAlt")}
                   draggable={false}
                 />
               </div>
               <div className="chooseCards-buttons">
                 <small style={{ color: "var(--text)" }}>
-                  With {game.tries} tr{game.tries > 1 ? "ies" : "y"} left !
+                  {t("game.winRemaining", { count: game.tries })}
                 </small>
               </div>
             </div>
@@ -240,16 +250,16 @@ const Solo = ({
           <div className="chooseCards chooseCards-ending">
             <div className="chooseCards-select">
               <div className="chooseCards-title">
-                <h5>You lost...</h5>
+                <h5>{t("game.lost")}</h5>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png`}
-                  alt="Kapoera"
+                  alt={t("game.lossMascotAlt")}
                   draggable={false}
                 />
               </div>
               <div className="chooseCards-buttons">
                 <small style={{ color: "var(--text)" }}>
-                  There is {game.pairs} pair{game.pairs > 1 ? "s" : ""} left...
+                  {t("game.pairsRemaining", { count: game.pairs })}
                 </small>
               </div>
             </div>

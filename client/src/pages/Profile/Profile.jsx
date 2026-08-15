@@ -9,9 +9,28 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { IoIosRefresh } from "react-icons/io";
-import { FaPalette, FaSignOutAlt, FaTrashAlt, FaTrophy } from "react-icons/fa";
+import {
+  FaCheck,
+  FaCalendarCheck,
+  FaChartLine,
+  FaGamepad,
+  FaGift,
+  FaPalette,
+  FaSignOutAlt,
+  FaTrashAlt,
+  FaTrophy,
+  FaUserPlus,
+  FaUsers,
+} from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
+import StatusPopup, {
+  useStatusPopup,
+} from "../../components/StatusPopup/StatusPopup";
+import { createFriendDuel } from "../../utils/friendDuelInvite";
+import { localizedStatus } from "../../utils/serverStatus";
+import { getLanguage } from "../../utils/languages";
 import {
   achievements,
   getUnlockedAchievementIds,
@@ -28,18 +47,28 @@ const pokemonForName = (name) => {
 const Profile = () => {
   const {
     name,
-    setName,
-    setIsLoggedIn,
+    clearAuthentication,
     userProfile,
     setUserProfile,
     userStats,
     setUserStats,
   } = useContext(UserContext);
   const navigate = useNavigate();
-  const [status, setStatus] = useState("");
+  const { t, i18n } = useTranslation();
+  const { status, statusId, setStatus, clearStatus } = useStatusPopup();
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
   const [users, setUsers] = useState([]);
+  const [friends, setFriends] = useState({
+    friends: [],
+    incoming: [],
+    outgoing: [],
+  });
+  const [selectedFriend, setSelectedFriend] = useState("");
+  const [dailyChallenges, setDailyChallenges] = useState({
+    date: "",
+    challenges: [],
+  });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [players, setPlayers] = useState([
     { name, enabled: true },
@@ -66,9 +95,7 @@ const Profile = () => {
   };
 
   const getProfileSummary = async () => {
-    const response = await fetch(
-      `/api/profile/summary?name=${encodeURIComponent(name)}`,
-    );
+    const response = await fetch("/api/profile/summary");
     if (!response.ok) return;
 
     const data = await response.json();
@@ -76,18 +103,76 @@ const Profile = () => {
     setUserStats(data.stats);
   };
 
+  const getFriends = async () => {
+    const response = await fetch("/api/friends");
+    if (!response.ok) return;
+    setFriends(await response.json());
+  };
+
+  const getDailyChallenges = async () => {
+    const response = await fetch("/api/daily-challenges");
+    if (!response.ok) return;
+    setDailyChallenges(await response.json());
+  };
+
+  const claimChallenge = async (challengeId) => {
+    const response = await fetch("/api/daily-challenges/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ challengeId }),
+    });
+    const data = await response.json();
+    setStatus(data.status || "");
+    if (response.ok) {
+      setUserProfile(data.profile);
+      await getDailyChallenges();
+    }
+  };
+
+  const updateFriendship = async (path, friendName, method = "POST") => {
+    const response = await fetch(`/api/friends${path}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ friendName }),
+    });
+    const data = await response.json();
+    setStatus(data.status || "");
+    if (response.ok) {
+      setSelectedFriend("");
+      await getFriends();
+    }
+  };
+
+  const inviteFriend = async (friendName) => {
+    const result = await createFriendDuel({
+      friendName,
+      pairs: gamePairs,
+    });
+
+    setStatus(result.status || "");
+    if (result.ok) {
+      setPlayers([
+        { name, enabled: true },
+        { name: "", enabled: true },
+        { name: "", enabled: false },
+        { name: "", enabled: false },
+      ]);
+      await getInvitations();
+    }
+  };
+
   const handleInvite = async () => {
     const activePlayers = players.filter((player) => player.enabled);
     const selectedNames = activePlayers.map((player) => player.name);
 
     if (activePlayers.some((player) => player.name.trim() === "")) {
-      return setStatus("Selectionne un joueur pour chaque place active.");
+      return setStatus(localizedStatus("profile.validation.selectPlayers"));
     }
     if (selectedNames.length !== new Set(selectedNames).size) {
-      return setStatus("Chaque place doit contenir un joueur different.");
+      return setStatus(localizedStatus("profile.validation.uniquePlayers"));
     }
     if (activePlayers.length < 2) {
-      return setStatus("Invite au moins un autre joueur.");
+      return setStatus(localizedStatus("profile.validation.minimumPlayers"));
     }
 
     const response = await fetch("/api/invite", {
@@ -110,28 +195,33 @@ const Profile = () => {
     const response = await fetch("/api/rooms/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ room, name }),
+      body: JSON.stringify({ room }),
     });
     const data = response.status === 204 ? {} : await response.json();
     setStatus(data.status || "");
     await getInvitations();
   };
 
-  const handleDisconnect = () => {
-    setName("");
-    setIsLoggedIn(false);
-    setUserStats({
-      onlineGamesWon: 0,
-      shinyPairsFound: 0,
-      createdAt: null,
-    });
+  const handleDisconnect = async () => {
+    const response = await fetch("/api/login/session", { method: "DELETE" });
+    if (!response.ok) {
+      setStatus(localizedStatus("status.logoutError"));
+      return;
+    }
+    clearAuthentication();
     navigate("/");
   };
 
   const refresh = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
-    await Promise.all([getInvitations(), getUsers(), getProfileSummary()]);
+    await Promise.all([
+      getInvitations(),
+      getUsers(),
+      getProfileSummary(),
+      getFriends(),
+      getDailyChallenges(),
+    ]);
     setTimeout(() => setIsRefreshing(false), 800);
   };
 
@@ -146,6 +236,11 @@ const Profile = () => {
 
   return (
     <section className="App profile-page">
+      <StatusPopup
+        status={status}
+        statusId={statusId}
+        clearStatus={clearStatus}
+      />
       <div className="profile-page-content">
         <section className="trainer-overview">
           <div className="trainer-identity">
@@ -159,7 +254,7 @@ const Profile = () => {
               />
             </div>
             <div>
-              <span className="eyebrow">PROFIL DRESSEUR</span>
+              <span className="eyebrow">{t("profile.eyebrow")}</span>
               <h2
                 className={
                   userProfile.inventory?.[0]?.colors?.[0] || "color-default"
@@ -169,8 +264,11 @@ const Profile = () => {
                 {name}
               </h2>
               <p>
-                Niveau {userProfile.level} ·{" "}
-                {userProfile.xp}/{userProfile.xpNeeded} XP
+                {t("profile.levelXp", {
+                  level: userProfile.level,
+                  xp: userProfile.xp,
+                  needed: userProfile.xpNeeded,
+                })}
               </p>
             </div>
           </div>
@@ -178,52 +276,54 @@ const Profile = () => {
           <div className="trainer-stats">
             <div>
               <strong>{userStats.onlineGamesWon || 0}</strong>
-              <span>Victoires</span>
+              <span>{t("profile.wins")}</span>
             </div>
             <div>
               <strong>{userStats.shinyPairsFound || 0}</strong>
-              <span>Shiny</span>
+              <span>{t("profile.shiny")}</span>
             </div>
             <div>
               <strong>
                 {unlockedAchievements.size}/{achievements.length}
               </strong>
-              <span>Succes</span>
+              <span>{t("profile.achievements")}</span>
             </div>
           </div>
 
           <div className="trainer-actions">
             <button onClick={() => navigate("/profile/colors")}>
               <FaPalette />
-              Modifier la couleur
+              {t("profile.editColor")}
             </button>
             <button className="secondary" onClick={handleDisconnect}>
               <FaSignOutAlt />
-              Deconnexion
+              {t("profile.logout")}
             </button>
           </div>
         </section>
 
         <div className="profile-container">
           <div className="profile-infos">
-            <span className="eyebrow">MODE EN LIGNE</span>
-            <h5>Creer une arene</h5>
-            <p className="profile-subtitle">
-              Compose ton equipe, choisis la grille et lance l'invitation.
-            </p>
-            <p className="profile-status">{status}</p>
-
+            <span className="eyebrow">{t("profile.onlineEyebrow")}</span>
+            <h5>{t("profile.createArena")}</h5>
+            <p className="profile-subtitle">{t("profile.createHint")}</p>
             <div className="profile-invite">
               <div className="profile-inputs">
                 {players.map((player, index) => (
                   <div className="profile-player-input" key={index}>
                     <div>
-                      <p>{index === 0 ? "Toi" : `Joueur ${index + 1}`}</p>
+                      <p>
+                        {index === 0
+                          ? t("profile.you")
+                          : t("profile.player", { number: index + 1 })}
+                      </p>
                       <input
                         type="checkbox"
                         checked={player.enabled}
                         disabled={index === 0}
-                        aria-label={`Activer le joueur ${index + 1}`}
+                        aria-label={t("profile.enablePlayer", {
+                          number: index + 1,
+                        })}
                         onChange={() => {
                           const updatedPlayers = structuredClone(players);
                           updatedPlayers[index].enabled =
@@ -244,7 +344,7 @@ const Profile = () => {
                         setPlayers(updatedPlayers);
                       }}
                     >
-                      <option value="">Choisir...</option>
+                      <option value="">{t("common.choose")}</option>
                       {users
                         .filter(
                           (user) =>
@@ -283,12 +383,12 @@ const Profile = () => {
                     {(pairs.columns * pairs.rows) / 2}
                   </button>
                 ))}
-                <p>paires</p>
+                <p>{t("profile.pairs")}</p>
               </div>
 
               <div className="profile-buttons-joining">
                 <button className="profile-disconnect" onClick={handleInvite}>
-                  Creer le salon
+                  {t("profile.createRoom")}
                 </button>
               </div>
             </div>
@@ -297,17 +397,17 @@ const Profile = () => {
               className="profile-disconnect secondary"
               onClick={() => navigate("/")}
             >
-              Jouer en solo
+              {t("profile.playSolo")}
             </button>
           </div>
 
           <div className="profile-invites">
             <h5>
-              Rejoindre une arene
+              {t("profile.joinArena")}
               <button
                 className={isRefreshing ? "refreshing" : ""}
                 onClick={refresh}
-                aria-label="Actualiser les salons"
+                aria-label={t("profile.refreshRooms")}
               >
                 <IoIosRefresh />
               </button>
@@ -331,18 +431,23 @@ const Profile = () => {
                           {player.name}
                         </strong>
                         {playerIndex < game.players.length - 1 && (
-                          <small>vs</small>
+                          <small>{t("common.versus")}</small>
                         )}
                       </Fragment>
                     ))}
                     <span onClick={() => navigate(`/online?id=${game.id}`)}>
-                      REJOINDRE
+                      {t("profile.join")}
                     </span>
                     {game.players[0]?.name === name && (
                       <FaTrashAlt onClick={() => handleDelete(game.id)} />
                     )}
                   </p>
                 ))}
+              {gamesArray.length === 0 && (
+                <p className="profile-invites-empty">
+                  {t("profile.noRooms")}
+                </p>
+              )}
             </div>
 
             <button
@@ -350,21 +455,206 @@ const Profile = () => {
               onClick={() => navigate("/profile/leaderboard")}
             >
               <FaTrophy />
-              Voir le classement
+              {t("profile.viewLeaderboard")}
             </button>
           </div>
         </div>
 
+        <section className="daily-challenges-panel">
+          <div className="daily-challenges-heading">
+            <div>
+              <span className="eyebrow">{t("daily.eyebrow")}</span>
+              <h3>
+                <FaCalendarCheck /> {t("daily.title")}
+              </h3>
+            </div>
+            <p>{t("daily.refresh")}</p>
+          </div>
+          <div className="daily-challenges-grid">
+            {dailyChallenges.challenges.map((challenge) => {
+              const percentage = Math.min(
+                100,
+                (challenge.progress / challenge.target) * 100,
+              );
+              return (
+                <article
+                  className={challenge.completed ? "completed" : ""}
+                  key={challenge.id}
+                >
+                  <div className="daily-challenge-copy">
+                    <span>{challenge.rewardXp} XP</span>
+                    <h4>
+                      {t(`daily.challenges.${challenge.id}.title`, {
+                        defaultValue: challenge.title,
+                      })}
+                    </h4>
+                    <p>
+                      {t(`daily.challenges.${challenge.id}.description`, {
+                        defaultValue: challenge.description,
+                      })}
+                    </p>
+                  </div>
+                  <div className="daily-challenge-progress">
+                    <span style={{ width: `${percentage}%` }} />
+                  </div>
+                  <div className="daily-challenge-footer">
+                    <strong>
+                      {challenge.progress}/{challenge.target}
+                    </strong>
+                    {challenge.completed && !challenge.claimed && (
+                      <button onClick={() => claimChallenge(challenge.id)}>
+                        <FaGift /> {t("daily.claim")}
+                      </button>
+                    )}
+                    {challenge.claimed && <span>{t("daily.claimed")}</span>}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="detailed-stats-panel">
+          <div className="detailed-stats-heading">
+            <div>
+              <span className="eyebrow">{t("stats.eyebrow")}</span>
+              <h3>
+                <FaChartLine /> {t("stats.title")}
+              </h3>
+            </div>
+            {userStats.createdAt && (
+              <p>
+                {t("stats.trainerSince", {
+                  date: new Intl.DateTimeFormat(
+                    getLanguage(i18n.resolvedLanguage).dateLocale,
+                  ).format(new Date(userStats.createdAt)),
+                })}
+              </p>
+            )}
+          </div>
+          <div className="detailed-stats-groups">
+            <article>
+              <h4>{t("stats.online")}</h4>
+              <dl>
+                <div><dt>{t("stats.games")}</dt><dd>{userStats.onlineGamesPlayed}</dd></div>
+                <div><dt>{t("stats.wins")}</dt><dd>{userStats.onlineGamesWon}</dd></div>
+                <div><dt>{t("stats.losses")}</dt><dd>{userStats.onlineGamesLost}</dd></div>
+                <div><dt>{t("stats.winRate")}</dt><dd>{userStats.onlineWinRate}%</dd></div>
+                <div><dt>{t("stats.currentStreak")}</dt><dd>{userStats.currentWinStreak}</dd></div>
+                <div><dt>{t("stats.bestStreak")}</dt><dd>{userStats.bestWinStreak}</dd></div>
+              </dl>
+            </article>
+            <article>
+              <h4>{t("stats.soloCollection")}</h4>
+              <dl>
+                <div><dt>{t("stats.soloGames")}</dt><dd>{userStats.soloGamesPlayed}</dd></div>
+                <div><dt>{t("stats.soloWins")}</dt><dd>{userStats.soloGamesWon}</dd></div>
+                <div><dt>{t("stats.soloRate")}</dt><dd>{userStats.soloWinRate}%</dd></div>
+                <div><dt>{t("stats.bestRemaining")}</dt><dd>{t("stats.tries", { count: userStats.soloBestRemainingTries })}</dd></div>
+                <div><dt>{t("stats.pairsFound")}</dt><dd>{userStats.totalPairsFound}</dd></div>
+                <div><dt>{t("stats.shinyPairs")}</dt><dd>{userStats.shinyPairsFound}</dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+        <section className="friends-panel">
+          <div className="friends-heading">
+            <div>
+              <span className="eyebrow">{t("friends.eyebrow")}</span>
+              <h3><FaUsers /> {t("friends.title")}</h3>
+            </div>
+            <div className="friend-request-form">
+              <select
+                value={selectedFriend}
+                onChange={(event) => setSelectedFriend(event.target.value)}
+                aria-label={t("friends.playerToAdd")}
+              >
+                <option value="">{t("friends.choosePlayer")}</option>
+                {users
+                  .filter(
+                    (user) =>
+                      user !== name &&
+                      !friends.friends.includes(user) &&
+                      !friends.incoming.includes(user) &&
+                      !friends.outgoing.includes(user),
+                  )
+                  .map((user) => <option key={user}>{user}</option>)}
+              </select>
+              <button
+                disabled={!selectedFriend}
+                onClick={() => updateFriendship("/request", selectedFriend)}
+              >
+                <FaUserPlus /> {t("friends.add")}
+              </button>
+            </div>
+          </div>
+
+          {friends.incoming.length > 0 && (
+            <div className="friend-requests">
+              <strong>{t("friends.requests")}</strong>
+              {friends.incoming.map((friend) => (
+                <span key={friend}>
+                  {friend}
+                  <button onClick={() => updateFriendship("/accept", friend)}>
+                    <FaCheck /> {t("friends.accept")}
+                  </button>
+                  <button
+                    className="friend-remove"
+                    aria-label={t("friends.reject", { name: friend })}
+                    onClick={() => updateFriendship("", friend, "DELETE")}
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="friends-grid">
+            {friends.friends.map((friend) => (
+              <article key={friend}>
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonForName(friend)}.png`}
+                  alt=""
+                  draggable={false}
+                />
+                <strong>{friend}</strong>
+                <button onClick={() => inviteFriend(friend)}>
+                  <FaGamepad /> {t("friends.invite")}
+                </button>
+                <button
+                  className="friend-remove"
+                  aria-label={t("friends.remove", { name: friend })}
+                  onClick={() => updateFriendship("", friend, "DELETE")}
+                >
+                  <FaTrashAlt />
+                </button>
+              </article>
+            ))}
+            {friends.friends.length === 0 && (
+              <p className="friends-empty">{t("friends.empty")}</p>
+            )}
+          </div>
+
+          {friends.outgoing.length > 0 && (
+            <p className="friend-outgoing">
+              {t("friends.pending", { names: friends.outgoing.join(", ") })}
+            </p>
+          )}
+        </section>
+
         <section className="achievements-panel">
           <div className="achievements-heading">
             <div>
-              <span className="eyebrow">COLLECTION</span>
-              <h3>Succes</h3>
+              <span className="eyebrow">{t("achievements.eyebrow")}</span>
+              <h3>{t("achievements.title")}</h3>
             </div>
             <p>
-              {unlockedAchievements.size} debloque
-              {unlockedAchievements.size > 1 ? "s" : ""} sur{" "}
-              {achievements.length}
+              {t("achievements.unlockedCount", {
+                count: unlockedAchievements.size,
+                total: achievements.length,
+              })}
             </p>
           </div>
 
@@ -384,9 +674,23 @@ const Profile = () => {
                     )}
                   </span>
                   <div>
-                    <span>{unlocked ? "DEBLOQUE" : "VERROUILLE"}</span>
-                    <h4>{achievement.name}</h4>
-                    <p>{achievement.description}</p>
+                    <span>
+                      {t(
+                        unlocked
+                          ? "achievements.unlocked"
+                          : "achievements.locked",
+                      )}
+                    </span>
+                    <h4>
+                      {t(`achievements.items.${achievement.id}.name`, {
+                        defaultValue: achievement.name,
+                      })}
+                    </h4>
+                    <p>
+                      {t(`achievements.items.${achievement.id}.description`, {
+                        defaultValue: achievement.description,
+                      })}
+                    </p>
                   </div>
                 </article>
               );

@@ -1,10 +1,12 @@
 import { useLayoutEffect, useState, useContext } from "react";
 import { FaTrophy } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
 import "./Leaderboard.css";
 
 const Leaderboard = () => {
   const { name } = useContext(UserContext);
+  const { t } = useTranslation();
   const [leaderboards, setLeaderboards] = useState({
     levels: [],
     game_wons: [],
@@ -21,10 +23,10 @@ const Leaderboard = () => {
     <section className="App">
       <div>
         <div className="leaderboard-container">
-          <h4>LEADERBOARDS</h4>
+          <h4>{t("leaderboard.title")}</h4>
           <div className="leaderboards">
             <div>
-              <h5>LEVELS</h5>
+              <h5>{t("leaderboard.levels")}</h5>
               <br />
               <div>
                 {[...leaderboards.levels].splice(0, 5).map((levels, index) => (
@@ -83,7 +85,7 @@ const Leaderboard = () => {
               </div>
             </div>
             <div>
-              <h5>GAMES WON</h5>
+              <h5>{t("leaderboard.wins")}</h5>
               <br />
               <div>
                 {[...leaderboards.game_wons]
@@ -147,7 +149,7 @@ const Leaderboard = () => {
               </div>
             </div>
             <div>
-              <h5>SHINY FOUND</h5>
+              <h5>{t("leaderboard.shiny")}</h5>
               <br />
               <div>
                 {[...leaderboards.shiny_pairs_found]
