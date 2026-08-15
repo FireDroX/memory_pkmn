@@ -28,6 +28,7 @@ const emptyStats = () => ({
 
 export const UserProvider = ({ children }) => {
   const [name, setName] = useState("");
+  const [role, setRole] = useState("user");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSessionReady, setIsSessionReady] = useState(false);
   const [userProfile, setUserProfile] = useState(emptyProfile);
@@ -35,6 +36,7 @@ export const UserProvider = ({ children }) => {
 
   const authenticate = (user) => {
     setName(user.name);
+    setRole(user.role === "admin" ? "admin" : "user");
     setUserProfile(user.profile);
     setUserStats(user.stats);
     setIsLoggedIn(true);
@@ -42,6 +44,7 @@ export const UserProvider = ({ children }) => {
 
   const clearAuthentication = () => {
     setName("");
+    setRole("user");
     setIsLoggedIn(false);
     setUserProfile(emptyProfile());
     setUserStats(emptyStats());
@@ -68,6 +71,8 @@ export const UserProvider = ({ children }) => {
 
   const value = {
     name,
+    role,
+    setRole,
     authenticate,
     clearAuthentication,
     isLoggedIn,

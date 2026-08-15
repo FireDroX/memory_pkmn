@@ -20,6 +20,7 @@ const buildAuthenticatedUser = (user) => {
   return {
     status: "",
     name: user.name,
+    role: user.role === "admin" ? "admin" : "user",
     stats: formatPlayerStats(user),
     profile,
   };

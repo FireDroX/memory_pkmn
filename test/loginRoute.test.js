@@ -6,6 +6,7 @@ const { invokeRoute, loadRouterWithPool } = require("./routeTestUtils");
 const user = (password = "") => ({
   id: "USER-ADMIN",
   name: "Admin",
+  role: "admin",
   password,
   online_games_won: 0,
   online_games_played: 0,
@@ -56,6 +57,7 @@ test("POST /login renvoie le pseudo canonique stocke en base", async () => {
 
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.name, "Admin");
+  assert.equal(response.body.role, "admin");
   assert.deepEqual(session.user, { id: "USER-ADMIN", name: "Admin" });
   assert.equal(session.regenerated, true);
   assert.equal(session.saved, true);
@@ -70,6 +72,7 @@ test("GET /login/session restaure l'utilisateur depuis la session", async () => 
 
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.name, "Admin");
+  assert.equal(response.body.role, "admin");
 });
 
 test("DELETE /login/session detruit la session et son cookie", async () => {
