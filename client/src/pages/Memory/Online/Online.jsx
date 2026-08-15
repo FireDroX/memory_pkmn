@@ -485,7 +485,10 @@ const Online = ({ id }) => {
                           draggable={false}
                         />
                         <strong
-                          className={player.skin}
+                          className={
+                            users.find((user) => user.name === player.name)
+                              ?.skin || "color-default"
+                          }
                           data-name={player.name}
                         >
                           {player.name}
