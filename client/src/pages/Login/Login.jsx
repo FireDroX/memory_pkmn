@@ -31,7 +31,7 @@ function Login({ connect }) {
 
       setStatus(json?.status);
       if (json?.status === "" && postLink === "/api/login") {
-        setName(inputName);
+        setName(json.name);
         setIsLoggedIn(true);
         setUserProfile(json.profile);
         setUserStats(json.stats);

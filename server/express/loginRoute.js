@@ -38,6 +38,7 @@ router.post("/", async (req, res) => {
 
     return res.json({
       status: "",
+      name: user.name,
       stats: formatPlayerStats(user),
       profile,
     });
