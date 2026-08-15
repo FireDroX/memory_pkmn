@@ -20,6 +20,7 @@
     "solo": "Solo",
     "rooms": "Salons",
     "leaderboard": "Classement",
+    "admin": "Administration",
     "login": "Connexion",
     "level": "Niv. {{level}}"
   },
@@ -105,6 +106,37 @@
     "levels": "NIVEAUX",
     "wins": "VICTOIRES",
     "shiny": "SHINY TROUVÉS"
+  },
+  "admin": {
+    "eyebrow": "CENTRE DE CONTRÔLE",
+    "title": "Administration",
+    "description": "Consulte l'activité globale de PokeFlip et gère les droits des dresseurs depuis un espace sécurisé.",
+    "globalStats": "Statistiques globales",
+    "usersEyebrow": "COMMUNAUTÉ",
+    "usersTitle": "Gestion des utilisateurs",
+    "search": "Rechercher un dresseur",
+    "loading": "Chargement des données administrateur...",
+    "noUsers": "Aucun utilisateur ne correspond à cette recherche.",
+    "currentUser": "Ton compte",
+    "memberSince": "Inscrit le {{date}}",
+    "level": "Niveau",
+    "onlineRecord": "Online",
+    "soloRecord": "Solo",
+    "pairs": "Paires",
+    "role": "Rôle du compte",
+    "changeRole": "Modifier le rôle de {{name}}",
+    "roles": {
+      "user": "Utilisateur",
+      "admin": "Admin"
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs",
+      "totalAdmins": "Administrateurs",
+      "onlineGamesPlayed": "Participations online",
+      "soloGamesPlayed": "Parties solo",
+      "totalPairsFound": "Paires trouvées",
+      "shinyPairsFound": "Paires shiny"
+    }
   },
   "game": {
     "rotate": "Tourne ton appareil en mode paysage pour une meilleure expérience.",
@@ -268,6 +300,13 @@
     "hostOnlyDelete": "Seul l'hôte peut supprimer ce salon.",
     "roomDeleted": "Salon {{roomID}} supprimé.",
     "invalidColor": "Sélection de couleur invalide.",
-    "profileUpdate": "Mise à jour du profil impossible."
+    "profileUpdate": "Mise à jour du profil impossible.",
+    "adminRequired": "Accès administrateur requis.",
+    "adminRoleCheck": "Vérification du rôle impossible.",
+    "adminLoad": "Chargement de l'administration impossible.",
+    "adminInvalidRole": "Rôle utilisateur invalide.",
+    "adminLastRole": "Le dernier administrateur doit conserver son rôle.",
+    "adminRoleUpdate": "Mise à jour du rôle impossible.",
+    "adminRoleUpdated": "Rôle de {{name}} mis à jour."
   }
 }

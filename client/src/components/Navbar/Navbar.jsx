@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { FaTrophy } from "react-icons/fa";
+import { FaShieldAlt, FaTrophy } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
 import { getLanguage } from "../../utils/languages";
@@ -15,7 +15,7 @@ const languageFlags = Object.freeze({
 });
 
 const Navbar = () => {
-  const { name, isLoggedIn, userProfile } = useContext(UserContext);
+  const { name, isLoggedIn, role, userProfile } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -67,6 +67,16 @@ const Navbar = () => {
                 <FaTrophy />
                 <span>{t("nav.leaderboard")}</span>
               </button>
+              {role === "admin" && (
+                <button
+                  aria-label={t("nav.admin")}
+                  className={location.pathname === "/admin" ? "active" : ""}
+                  onClick={() => navigate("/admin")}
+                >
+                  <FaShieldAlt />
+                  <span>{t("nav.admin")}</span>
+                </button>
+              )}
             </>
           )}
         </nav>

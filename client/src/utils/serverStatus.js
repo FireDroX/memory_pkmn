@@ -30,6 +30,12 @@ const statusKeys = new Map([
   ["Seul l'hote peut supprimer ce salon.", "status.hostOnlyDelete"],
   ["Selection de couleur invalide.", "status.invalidColor"],
   ["Mise a jour du profil impossible.", "status.profileUpdate"],
+  ["Acces administrateur requis.", "status.adminRequired"],
+  ["Verification du role impossible.", "status.adminRoleCheck"],
+  ["Chargement de l'administration impossible.", "status.adminLoad"],
+  ["Role utilisateur invalide.", "status.adminInvalidRole"],
+  ["Le dernier administrateur doit conserver son role.", "status.adminLastRole"],
+  ["Mise a jour du role impossible.", "status.adminRoleUpdate"],
 ]);
 
 const statusPatterns = [
