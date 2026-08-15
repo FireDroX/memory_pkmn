@@ -122,9 +122,9 @@ const Solo = ({
     }
 
     const gameEnded = game.pairs === 0 || game.tries === 0;
-    if (gameEnded && !endingSoundPlayed.current) {
+    if (game.pairs === 0 && !endingSoundPlayed.current) {
       endingSoundPlayed.current = true;
-      playGameSound(game.pairs === 0 ? "victory" : "error");
+      playGameSound("victory");
     }
 
     if (gameEnded && isLoggedIn && !resultRecorded.current) {

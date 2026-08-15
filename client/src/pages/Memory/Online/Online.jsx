@@ -2,6 +2,7 @@ import { useState, useContext, useEffect, useRef } from "react";
 import { FaCrown } from "react-icons/fa";
 import { UserContext } from "../../../utils/UserContext";
 import { playGameSound } from "../../../utils/gameSounds";
+import { findOnlineWinner } from "../../../utils/onlineGameResult";
 import { socket } from "../../../socket";
 import "../../../pages/Memory/Solo/Solo.css";
 import "./Online.css";
@@ -18,6 +19,7 @@ const Online = ({ id }) => {
   const [endOfGame, setEndOfGame] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
   const endingSoundPlayed = useRef(false);
+  const pendingPairPlayer = useRef(null);
 
   const postRoomValues = async (
     updatedCars,
@@ -105,6 +107,7 @@ const Online = ({ id }) => {
                 return card;
               }),
             );
+            pendingPairPlayer.current = name;
             setCards(updatedCards);
             postRoomValues(
               updatedCards,
@@ -192,18 +195,16 @@ const Online = ({ id }) => {
       setEndOfGame(true);
       if (!endingSoundPlayed.current) {
         endingSoundPlayed.current = true;
-        const winner = room?.players?.reduce(
-          (leadingPlayer, player) =>
-            !leadingPlayer || player.score > leadingPlayer.score
-              ? player
-              : leadingPlayer,
-          undefined,
+        const winner = findOnlineWinner(
+          room?.players,
+          pendingPairPlayer.current,
         );
         playGameSound(winner?.name === name ? "victory" : "error");
       }
     } else {
       setEndOfGame(false);
       endingSoundPlayed.current = false;
+      pendingPairPlayer.current = null;
     }
   }, [cards, name, room]);
 
