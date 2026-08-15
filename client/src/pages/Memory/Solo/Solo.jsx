@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../../utils/UserContext";
 import { playGameSound } from "../../../utils/gameSounds";
 import "./Solo.css";
@@ -13,6 +14,7 @@ const Solo = ({
   shinyMode,
 }) => {
   const { name, isLoggedIn, setUserProfile } = useContext(UserContext);
+  const { t } = useTranslation();
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [playerWon, setPlayerWon] = useState(false);
@@ -193,9 +195,7 @@ const Solo = ({
       {isLandscape ? (
         false
       ) : (
-        <div className="portrait-warning">
-          Please rotate your device to landscape mode for a better experience.
-        </div>
+        <div className="portrait-warning">{t("game.rotate")}</div>
       )}
 
       {/* Game Content */}
@@ -239,14 +239,12 @@ const Solo = ({
             </div>
           ))}
         </div>
-        <h6>
-          {game.tries} TR{game.tries > 1 ? "IES" : "Y"} LEFT !
-        </h6>
+        <h6>{t("game.triesLeft", { count: game.tries })}</h6>
         {playerWon ? (
           <div className="chooseCards chooseCards-ending">
             <div className="chooseCards-select">
               <div className="chooseCards-title">
-                <h5>You WON !</h5>
+                <h5>{t("game.won")}</h5>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png`}
                   alt="Machoke"
@@ -255,7 +253,7 @@ const Solo = ({
               </div>
               <div className="chooseCards-buttons">
                 <small style={{ color: "var(--text)" }}>
-                  With {game.tries} tr{game.tries > 1 ? "ies" : "y"} left !
+                  {t("game.winRemaining", { count: game.tries })}
                 </small>
               </div>
             </div>
@@ -264,7 +262,7 @@ const Solo = ({
           <div className="chooseCards chooseCards-ending">
             <div className="chooseCards-select">
               <div className="chooseCards-title">
-                <h5>You lost...</h5>
+                <h5>{t("game.lost")}</h5>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png`}
                   alt="Kapoera"
@@ -273,7 +271,7 @@ const Solo = ({
               </div>
               <div className="chooseCards-buttons">
                 <small style={{ color: "var(--text)" }}>
-                  There is {game.pairs} pair{game.pairs > 1 ? "s" : ""} left...
+                  {t("game.pairsRemaining", { count: game.pairs })}
                 </small>
               </div>
             </div>

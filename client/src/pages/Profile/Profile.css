@@ -330,11 +330,10 @@
   gap: 8px;
 }
 
-.profile-invitesList:empty::after {
+.profile-invites-empty {
   padding: 70px 20px;
   border: 1px dashed var(--line);
   border-radius: 15px;
-  content: "Aucun salon pour le moment";
   color: var(--ink-soft);
   font-size: 0.75rem;
   text-align: center;

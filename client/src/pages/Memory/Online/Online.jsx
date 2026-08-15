@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { FaCrown } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../../utils/UserContext";
 import { playGameSound } from "../../../utils/gameSounds";
 import { findOnlineWinner } from "../../../utils/onlineGameResult";
@@ -11,6 +12,7 @@ import { Loading } from "../../../components/Loading/Loading";
 
 const Online = ({ id }) => {
   const { name, isLoggedIn } = useContext(UserContext);
+  const { t } = useTranslation();
   const [roomExists, setRoomExists] = useState(true);
   const [users, setUsers] = useState([]);
   const [cards, setCards] = useState([]);
@@ -236,10 +238,7 @@ const Online = ({ id }) => {
             {isLandscape ? (
               false
             ) : (
-              <div className="portrait-warning">
-                Please rotate your device to landscape mode for a better
-                experience.
-              </div>
+              <div className="portrait-warning">{t("game.rotate")}</div>
             )}
 
             {/* Ready button */}
@@ -249,9 +248,11 @@ const Online = ({ id }) => {
               room.players.length ? (
               <div className="portrait-warning online-ready">
                 <p>
-                  Players :{" "}
-                  {room.players.filter((user) => user.ready === true).length}/
-                  {room.players.length}
+                  {t("online.players", {
+                    ready: room.players.filter((user) => user.ready === true)
+                      .length,
+                    total: room.players.length,
+                  })}
                 </p>
                 <button
                   onClick={() => {
@@ -264,7 +265,7 @@ const Online = ({ id }) => {
                     socket.emit("user-connected", { name, id });
                   }}
                 >
-                  READY
+                  {t("online.ready")}
                 </button>
               </div>
             ) : (
@@ -283,7 +284,7 @@ const Online = ({ id }) => {
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                         users[0].name,
                       )}.png`}
-                      alt="User"
+                      alt={t("common.user")}
                       draggable={false}
                       style={{
                         outline:
@@ -300,7 +301,9 @@ const Online = ({ id }) => {
                         color: room.players[0].ready ? "lightgreen" : "unset",
                       }}
                     >
-                      {room.players[0].score} pairs found
+                      {t("online.pairsFound", {
+                        count: room.players[0].score,
+                      })}
                     </small>
                   </div>
                 ) : (
@@ -316,7 +319,7 @@ const Online = ({ id }) => {
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                         users[3].name,
                       )}.png`}
-                      alt="User"
+                      alt={t("common.user")}
                       draggable={false}
                       style={{
                         outline:
@@ -333,7 +336,9 @@ const Online = ({ id }) => {
                         color: room.players[3].ready ? "lightgreen" : "unset",
                       }}
                     >
-                      {room.players[3].score} pairs found
+                      {t("online.pairsFound", {
+                        count: room.players[3].score,
+                      })}
                     </small>
                   </div>
                 ) : (
@@ -383,7 +388,10 @@ const Online = ({ id }) => {
                           <div className="card-front">
                             <img
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png`}
-                              alt={"Pokemon - " + index + "-" + i}
+                              alt={t("online.cardAlt", {
+                                column: index,
+                                row: i,
+                              })}
                               draggable={false}
                             />
                           </div>
@@ -392,7 +400,10 @@ const Online = ({ id }) => {
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                                 card.shiny ? "shiny/" : ""
                               }${card.id || 0}.png`}
-                              alt={"Pokemon Default - " + index + "-" + i}
+                              alt={t("online.cardBackAlt", {
+                                column: index,
+                                row: i,
+                              })}
                               draggable={false}
                             />
                           </div>
@@ -412,7 +423,7 @@ const Online = ({ id }) => {
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                         users[1].name,
                       )}.png`}
-                      alt="User"
+                      alt={t("common.user")}
                       draggable={false}
                       style={{
                         outline:
@@ -429,7 +440,9 @@ const Online = ({ id }) => {
                         color: room.players[1].ready ? "lightgreen" : "unset",
                       }}
                     >
-                      {room.players[1].score} pairs found
+                      {t("online.pairsFound", {
+                        count: room.players[1].score,
+                      })}
                     </small>
                   </div>
                 ) : (
@@ -445,7 +458,7 @@ const Online = ({ id }) => {
                       src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                         users[2].name,
                       )}.png`}
-                      alt="User"
+                      alt={t("common.user")}
                       draggable={false}
                       style={{
                         outline:
@@ -462,7 +475,9 @@ const Online = ({ id }) => {
                         color: room.players[2].ready ? "lightgreen" : "unset",
                       }}
                     >
-                      {room.players[2].score} pairs found
+                      {t("online.pairsFound", {
+                        count: room.players[2].score,
+                      })}
                     </small>
                   </div>
                 ) : (
@@ -486,16 +501,16 @@ const Online = ({ id }) => {
                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
                               player.name,
                             )}.png`}
-                            alt="User"
+                            alt={t("common.user")}
                             draggable={false}
                           />
                           <h5>
                             {endIndex === 0 ? (
                               <>
-                                WON <FaCrown />
+                                {t("online.won")} <FaCrown />
                               </>
                             ) : (
-                              "LOST"
+                              t("online.lost")
                             )}
                           </h5>
                         </div>

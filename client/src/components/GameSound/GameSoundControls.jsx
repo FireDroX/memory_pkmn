@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import {
   loadGameSoundSettings,
   playGameSound,
@@ -10,6 +11,7 @@ import "./GameSoundControls.css";
 const interactiveSelector = "button, a, [role='button']";
 
 const GameSoundControls = () => {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState(loadGameSoundSettings);
 
   const applySettings = (nextSettings) => {
@@ -30,18 +32,18 @@ const GameSoundControls = () => {
   }, []);
 
   return (
-    <aside className="game-sound-controls" aria-label="Effets sonores du jeu">
+    <aside className="game-sound-controls" aria-label={t("sound.label")}>
       <button
         type="button"
         onClick={() => applySettings({ ...settings, enabled: !settings.enabled })}
         aria-pressed={settings.enabled}
-        title={settings.enabled ? "Couper les sons" : "Activer les sons"}
+        title={t(settings.enabled ? "sound.mute" : "sound.enable")}
       >
         {settings.enabled ? <FaVolumeUp /> : <FaVolumeMute />}
-        <span>Sons</span>
+        <span>{t("sound.short")}</span>
       </button>
       <label>
-        <span className="sr-only">Volume des effets sonores</span>
+        <span className="sr-only">{t("sound.volume")}</span>
         <input
           type="range"
           min="0"

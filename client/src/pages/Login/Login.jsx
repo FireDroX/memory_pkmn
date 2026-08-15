@@ -1,12 +1,15 @@
 import "./Login.css";
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
+import { translateServerStatus } from "../../utils/serverStatus";
 
 function Login({ connect }) {
   const { setName, setIsLoggedIn, setUserProfile, setUserStats } =
     useContext(UserContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [inputName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,16 +23,16 @@ function Login({ connect }) {
     };
 
     if (inputName === "" || password === "")
-      setStatus("Tous les champs sont requis.");
+      setStatus(t("auth.required"));
     else {
       if (postLink === "/api/register") {
         if (password !== confirmPassword)
-          return setStatus("Les mots de passe doivent etre identiques.");
+          return setStatus(t("auth.passwordMismatch"));
       }
       const data = await fetch(postLink, requestOptions);
       const json = await data.json();
 
-      setStatus(json?.status);
+      setStatus(translateServerStatus(json?.status, t));
       if (json?.status === "" && postLink === "/api/login") {
         setName(json.name);
         setIsLoggedIn(true);
@@ -63,7 +66,7 @@ function Login({ connect }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [connect, inputName, password, confirmPassword]);
+  }, [connect, inputName, password, confirmPassword, t]);
 
   const stringToDecimal = (str) => {
     let decimal = 0;
@@ -76,12 +79,12 @@ function Login({ connect }) {
       <div>
         <div className="login-container">
           <div className="login-container-data">
-            <span className="eyebrow">{connect ? "BON RETOUR" : "NOUVEAU DRESSEUR"}</span>
-            <h2>{connect ? "PRET A REJOUER ?" : "REJOINS L'ARENE."}</h2>
+            <span className="eyebrow">
+              {t(connect ? "auth.welcomeBack" : "auth.newTrainer")}
+            </span>
+            <h2>{t(connect ? "auth.loginTitle" : "auth.registerTitle")}</h2>
             <p>
-              {connect
-                ? "Connecte-toi pour retrouver ta progression et defier tes amis."
-                : "Cree ton profil, invite tes amis et grimpe dans le classement."}
+              {t(connect ? "auth.loginIntro" : "auth.registerIntro")}
             </p>
             <img
               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
@@ -95,7 +98,7 @@ function Login({ connect }) {
           {connect ? (
             <div className="login-container-inputs">
               <div className="login-inputs">
-                <label htmlFor="login-name">Ton pseudo</label>
+                <label htmlFor="login-name">{t("auth.username")}</label>
                 <input
                   id="login-name"
                   type="text"
@@ -107,7 +110,7 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-inputs">
-                <label htmlFor="login-password">Ton mot de passe</label>
+                <label htmlFor="login-password">{t("auth.password")}</label>
                 <input
                   id="login-password"
                   type="password"
@@ -119,25 +122,27 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-buttons">
-                <button onClick={() => handlePost("/api/login")}>Se connecter</button>
+                <button onClick={() => handlePost("/api/login")}>
+                  {t("auth.login")}
+                </button>
                 <small
                   className="login-change-pages"
                   onClick={() => navigate("/login/register")}
                 >
-                  Creer un compte
+                  {t("auth.createAccount")}
                 </small>
               </div>
               <p className="login-privacy">
-                Tes données de compte sont traitées selon notre{" "}
+                {t("auth.loginPrivacy")}{" "}
                 <a href="/api/mentions-legales" target="_blank" rel="noreferrer">
-                  notice de confidentialité
+                  {t("auth.privacyLink")}
                 </a>.
               </p>
             </div>
           ) : (
             <div className="login-container-inputs">
               <div className="login-inputs">
-                <label htmlFor="register-name">Ton pseudo</label>
+                <label htmlFor="register-name">{t("auth.username")}</label>
                 <input
                   id="register-name"
                   type="text"
@@ -149,7 +154,7 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-inputs">
-                <label htmlFor="register-password">Ton mot de passe</label>
+                <label htmlFor="register-password">{t("auth.password")}</label>
                 <input
                   id="register-password"
                   type="password"
@@ -161,7 +166,9 @@ function Login({ connect }) {
                 />
               </div>
               <div className="login-inputs">
-                <label htmlFor="register-confirm">Confirme le mot de passe</label>
+                <label htmlFor="register-confirm">
+                  {t("auth.confirmPassword")}
+                </label>
                 <input
                   id="register-confirm"
                   type="password"
@@ -177,17 +184,16 @@ function Login({ connect }) {
                   className="login-change-pages"
                   onClick={() => navigate("/login")}
                 >
-                  J'ai deja un compte
+                  {t("auth.alreadyAccount")}
                 </small>
                 <button onClick={() => handlePost("/api/register")}>
-                  S'inscrire
+                  {t("auth.register")}
                 </button>
               </div>
               <p className="login-privacy">
-                En créant un compte, tu peux consulter les finalités et tes droits
-                dans notre{" "}
+                {t("auth.registerPrivacy")}{" "}
                 <a href="/api/mentions-legales" target="_blank" rel="noreferrer">
-                  notice de confidentialité
+                  {t("auth.privacyLink")}
                 </a>.
               </p>
             </div>

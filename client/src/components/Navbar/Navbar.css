@@ -24,10 +24,30 @@
 .brand,
 .nav-links button,
 .nav-login,
-.user-chip {
+.user-chip,
+.language-switch {
   border: 0;
   cursor: pointer;
   background: none;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-switch {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  background: white;
+  font-size: 1.12rem;
 }
 
 .brand {

@@ -1,0 +1,19 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { translateServerStatus } from "../client/src/utils/serverStatus.js";
+
+const translate = (key, values = {}) => `${key}:${JSON.stringify(values)}`;
+
+test("translateServerStatus traduit les statuts fixes et dynamiques", () => {
+  assert.equal(
+    translateServerStatus("Identifiant ou mot de passe incorrect.", translate),
+    "status.invalidCredentials:{}",
+  );
+  assert.equal(
+    translateServerStatus(
+      "Salon ROOM-123 cree. Les invitations sont pretes !",
+      translate,
+    ),
+    'status.roomCreated:{"roomID":"ROOM-123"}',
+  );
+});
