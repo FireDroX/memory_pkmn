@@ -2,9 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   localizedStatus,
+  statusDisplayDuration,
   translateServerStatus,
   translateStatus,
 } from "../client/src/utils/serverStatus.js";
+
+test("les statuts restent visibles deux secondes", () => {
+  assert.equal(statusDisplayDuration, 2000);
+});
 
 const translate = (key, values = {}) => `${key}:${JSON.stringify(values)}`;
 

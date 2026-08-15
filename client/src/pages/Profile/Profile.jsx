@@ -25,11 +25,9 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
+import StatusPopup from "../../components/StatusPopup/StatusPopup";
 import { createFriendDuel } from "../../utils/friendDuelInvite";
-import {
-  localizedStatus,
-  translateStatus,
-} from "../../utils/serverStatus";
+import { localizedStatus } from "../../utils/serverStatus";
 import { getLanguage } from "../../utils/languages";
 import {
   achievements,
@@ -236,6 +234,7 @@ const Profile = () => {
 
   return (
     <section className="App profile-page">
+      <StatusPopup status={status} clearStatus={setStatus} />
       <div className="profile-page-content">
         <section className="trainer-overview">
           <div className="trainer-identity">
@@ -302,8 +301,6 @@ const Profile = () => {
             <span className="eyebrow">{t("profile.onlineEyebrow")}</span>
             <h5>{t("profile.createArena")}</h5>
             <p className="profile-subtitle">{t("profile.createHint")}</p>
-            <p className="profile-status">{translateStatus(status, t)}</p>
-
             <div className="profile-invite">
               <div className="profile-inputs">
                 {players.map((player, index) => (

@@ -1,0 +1,52 @@
+.status-popup-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.status-popup {
+  position: absolute;
+  top: 88px;
+  right: 24px;
+  width: max-content;
+  max-width: min(360px, calc(100vw - 48px));
+  margin: 0;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: var(--ink);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  box-shadow: 0 14px 35px rgba(19, 35, 63, 0.24);
+  animation: status-popup-enter 180ms ease-out;
+}
+
+@keyframes status-popup-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .status-popup {
+    top: 82px;
+    right: 16px;
+    max-width: calc(100vw - 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-popup {
+    animation: none;
+  }
+}

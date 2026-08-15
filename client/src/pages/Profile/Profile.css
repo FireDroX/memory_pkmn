@@ -172,14 +172,6 @@
   line-height: 1.55;
 }
 
-.profile-status {
-  min-height: 30px;
-  margin: 0;
-  color: var(--red);
-  font-size: 0.68rem;
-  font-weight: 800;
-}
-
 .profile-invite {
   flex: 1;
   display: flex;

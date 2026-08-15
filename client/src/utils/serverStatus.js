@@ -32,6 +32,8 @@ const statusKeys = new Map([
   ["Mise a jour du profil impossible.", "status.profileUpdate"],
 ]);
 
+export const statusDisplayDuration = 2000;
+
 const statusPatterns = [
   {
     pattern: /^Recompense recuperee : \+(\d+) XP\.$/,

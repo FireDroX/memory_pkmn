@@ -3,10 +3,8 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
-import {
-  localizedStatus,
-  translateStatus,
-} from "../../utils/serverStatus";
+import StatusPopup from "../../components/StatusPopup/StatusPopup";
+import { localizedStatus } from "../../utils/serverStatus";
 
 function Login({ connect }) {
   const { authenticate } = useContext(UserContext);
@@ -76,6 +74,7 @@ function Login({ connect }) {
 
   return (
     <section className="App">
+      <StatusPopup status={status} clearStatus={setStatus} />
       <div>
         <div className="login-container">
           <div className="login-container-data">
@@ -93,11 +92,6 @@ function Login({ connect }) {
               alt={t("auth.userAlt")}
               draggable={false}
             />
-            {status ? (
-              <p className="login-status">{translateStatus(status, t)}</p>
-            ) : (
-              false
-            )}
           </div>
           {connect ? (
             <div className="login-container-inputs">
