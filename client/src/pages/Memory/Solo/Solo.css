@@ -130,15 +130,21 @@
 }
 
 .chooseCards-ending {
-  display: block;
+  width: min(460px, calc(100vw - 32px));
   min-height: 0;
+  display: grid;
+  place-items: center;
 }
 
 .chooseCards-ending .chooseCards-select {
+  width: 100%;
   min-height: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 18px;
+  text-align: center;
 }
 
 .chooseCards-ending .chooseCards-title {
@@ -149,6 +155,7 @@
 }
 
 .chooseCards-ending .chooseCards-title h5 {
+  margin: 0;
   font-size: 1.7rem;
 }
 
