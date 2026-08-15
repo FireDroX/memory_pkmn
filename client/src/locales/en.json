@@ -23,10 +23,6 @@
     "login": "Log in",
     "level": "Lvl. {{level}}"
   },
-  "sound": {
-    "mute": "Mute sounds",
-    "enable": "Enable sounds"
-  },
   "loading": {
     "room": "The room is loading or does not exist."
   },

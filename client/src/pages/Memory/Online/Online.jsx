@@ -1,9 +1,7 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import { FaCrown } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../../utils/UserContext";
-import { playGameSound } from "../../../utils/gameSounds";
-import { findOnlineWinner } from "../../../utils/onlineGameResult";
 import { socket } from "../../../socket";
 import "../../../pages/Memory/Solo/Solo.css";
 import "./Online.css";
@@ -20,8 +18,6 @@ const Online = ({ id }) => {
   const [room, setRoom] = useState();
   const [endOfGame, setEndOfGame] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
-  const endingSoundPlayed = useRef(false);
-  const pendingPairPlayer = useRef(null);
 
   const postRoomValues = async (
     updatedCars,
@@ -72,7 +68,6 @@ const Online = ({ id }) => {
       return;
     }
 
-    playGameSound("cardFlip");
     const card = document.getElementsByClassName("card")[index];
     card.classList.add("card-flipped");
     const cardValue = Number(card.dataset.pokemon);
@@ -88,7 +83,6 @@ const Online = ({ id }) => {
         if (firstCard.cardValue === secondCard.cardValue) {
           // It's a match, keep them flipped
           setTimeout(() => {
-            playGameSound("pairFound");
             const updatedCards = cards.map((coll, collIndex) =>
               coll.map((card, rowIndex) => {
                 // Check if the current card matches the first or second card
@@ -109,7 +103,6 @@ const Online = ({ id }) => {
                 return card;
               }),
             );
-            pendingPairPlayer.current = name;
             setCards(updatedCards);
             postRoomValues(
               updatedCards,
@@ -121,7 +114,6 @@ const Online = ({ id }) => {
         } else {
           // Not a match, flip them back after a delay
           setTimeout(() => {
-            playGameSound("error");
             document
               .getElementsByClassName("card")
               [firstCard.index].classList.remove("card-flipped");
@@ -195,20 +187,10 @@ const Online = ({ id }) => {
 
     if (cardsLeft === 0) {
       setEndOfGame(true);
-      if (!endingSoundPlayed.current) {
-        endingSoundPlayed.current = true;
-        const winner = findOnlineWinner(
-          room?.players,
-          pendingPairPlayer.current,
-        );
-        playGameSound(winner?.name === name ? "victory" : "error");
-      }
     } else {
       setEndOfGame(false);
-      endingSoundPlayed.current = false;
-      pendingPairPlayer.current = null;
     }
-  }, [cards, name, room]);
+  }, [cards]);
 
   const updateOrientation = () => {
     // Checks if width is greater than height (landscape mode)

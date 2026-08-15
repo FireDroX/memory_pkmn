@@ -9,8 +9,7 @@
 ## Customization
 
 - **Custom Decks:** Allow players to use cards with custom images from themed packs.
-- **Background:** Add sounds and background music to the game.
-- **Themes:** Add unlockable game themes (e.g., seasonal, retro, futuristic) that change visuals and sounds.
+- **Themes:** Add unlockable game themes (e.g., seasonal, retro, futuristic) that change visuals.
 
 ## Rewards and Progression
 
@@ -34,8 +33,7 @@
 ## Personnalisation
 
 - **Packs de cartes personnalisés :** Permettre aux joueurs de choisir parmi des packs à thème.
-- **Ambiances :** Ajouter des sons / musiques d'ambiances.
-- **Thèmes :** Ajouter des thèmes de jeu déblocables (par exemple, saisonnier, rétro, futuriste) qui modifient les visuels et les sons.
+- **Thèmes :** Ajouter des thèmes de jeu déblocables (par exemple, saisonnier, rétro, futuriste) qui modifient les visuels.
 
 ## Récompenses et progression
 

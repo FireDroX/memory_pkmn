@@ -23,10 +23,6 @@
     "login": "Connexion",
     "level": "Niv. {{level}}"
   },
-  "sound": {
-    "mute": "Couper les sons",
-    "enable": "Activer les sons"
-  },
   "loading": {
     "room": "Le salon est en cours de chargement ou n'existe pas."
   },
