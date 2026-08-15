@@ -9,7 +9,8 @@
     "client": "npm --prefix client run dev",
     "build": "npm --prefix client run build",
     "preview": "npm --prefix client run preview",
-    "db:setup": "node scripts/setup-database.js"
+    "db:setup": "npm run db:migrate",
+    "db:migrate": "node scripts/migrate-database.js"
   },
   "author": "",
   "license": "ISC",

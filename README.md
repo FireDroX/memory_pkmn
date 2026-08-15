@@ -26,9 +26,29 @@ Copier `.env.example` vers `.env`, puis adapter les identifiants MySQL si besoin
 npm run db:setup
 ```
 
-Cette commande crée la base configurée par `SQL_DBNAME`, ainsi que les tables
-`users` et `rooms`. Le schéma SQL est aussi disponible dans
-`database/schema.sql`.
+Cette commande crée la base configurée par `SQL_DBNAME`, puis applique toutes
+les migrations SQL qui ne l'ont pas encore été. L'utilisateur MySQL configuré
+doit avoir le droit de créer la base et ses tables.
+
+## Migrations de la base de données
+
+Les migrations sont exécutées dans l'ordre de leur nom depuis
+`database/migrations` :
+
+- `001_create_users.sql` crée la table `users` ;
+- `002_create_rooms.sql` crée la table `rooms`.
+
+La table `schema_migrations` enregistre automatiquement les fichiers déjà
+appliqués et leur empreinte. La commande peut donc être relancée sans recréer
+les tables ni perdre leurs données :
+
+```bash
+npm run db:migrate
+```
+
+Pour faire évoluer le schéma, ajouter un nouveau fichier avec le numéro suivant,
+par exemple `003_add_user_email.sql`, puis relancer `npm run db:migrate`. Une
+migration déjà appliquée ne doit pas être modifiée : il faut en créer une nouvelle.
 
 ## Développement
 
