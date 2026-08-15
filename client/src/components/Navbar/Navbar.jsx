@@ -4,6 +4,7 @@ import { FaShieldAlt, FaTrophy } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
 import { getLanguage } from "../../utils/languages";
+import { pokemonIdFromName } from "../../utils/pokemon";
 import frenchFlag from "../../assets/flags/fr.svg";
 import britishFlag from "../../assets/flags/gb.svg";
 import "./Navbar.css";
@@ -20,12 +21,6 @@ const Navbar = () => {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const language = getLanguage(i18n.resolvedLanguage);
-
-  const stringToDecimal = (str) => {
-    let decimal = 0;
-    str.split("").map((char) => (decimal += char.charCodeAt(0)));
-    return ((decimal - 1) % 1025) + 1;
-  };
 
   const xpPercentage = (userProfile.xp / userProfile.xpNeeded) * 100;
 
@@ -97,7 +92,7 @@ const Navbar = () => {
           {name !== "" && isLoggedIn ? (
             <button className="user-chip" onClick={() => navigate("/profile")}>
             <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                 name,
               )}.png`}
               alt=""

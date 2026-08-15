@@ -31,18 +31,11 @@ import StatusPopup, {
 import { createFriendDuel } from "../../utils/friendDuelInvite";
 import { localizedStatus } from "../../utils/serverStatus";
 import { getLanguage } from "../../utils/languages";
+import { pokemonIdFromName } from "../../utils/pokemon";
 import {
   achievements,
   getUnlockedAchievementIds,
 } from "../../utils/achievements";
-
-const pokemonForName = (name) => {
-  const total = [...name].reduce(
-    (value, character) => value + character.charCodeAt(0),
-    0,
-  );
-  return ((total - 1) % 1025) + 1;
-};
 
 const Profile = () => {
   const {
@@ -246,7 +239,7 @@ const Profile = () => {
           <div className="trainer-identity">
             <div className="trainer-avatar">
               <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonForName(
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                   name,
                 )}.png`}
                 alt=""
@@ -615,7 +608,7 @@ const Profile = () => {
             {friends.friends.map((friend) => (
               <article key={friend}>
                 <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonForName(friend)}.png`}
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(friend)}.png`}
                   alt=""
                   draggable={false}
                 />

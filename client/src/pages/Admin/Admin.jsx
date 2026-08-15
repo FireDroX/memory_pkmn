@@ -14,6 +14,7 @@ import StatusPopup, {
 } from "../../components/StatusPopup/StatusPopup";
 import { UserContext } from "../../utils/UserContext";
 import { localizedStatus } from "../../utils/serverStatus";
+import { pokemonIdFromName } from "../../utils/pokemon";
 import "./Admin.css";
 
 const emptyDashboard = {
@@ -28,14 +29,6 @@ const emptyDashboard = {
     shinyPairsFound: 0,
   },
   users: [],
-};
-
-const pokemonFromName = (name) => {
-  const total = [...name].reduce(
-    (value, character) => value + character.charCodeAt(0),
-    0,
-  );
-  return ((total - 1) % 1025) + 1;
 };
 
 const Admin = () => {
@@ -211,7 +204,7 @@ const Admin = () => {
                   >
                     <header>
                       <img
-                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonFromName(
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                           user.name,
                         )}.png`}
                         alt=""
