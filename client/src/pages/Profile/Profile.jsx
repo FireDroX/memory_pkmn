@@ -24,6 +24,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
+import { createFriendDuel } from "../../utils/friendDuelInvite";
 import {
   achievements,
   getUnlockedAchievementIds,
@@ -142,17 +143,23 @@ const Profile = () => {
     }
   };
 
-  const inviteFriend = (friendName) => {
-    const freeIndex = players.findIndex(
-      (player, index) => index > 0 && (!player.enabled || !player.name),
-    );
-    if (freeIndex === -1) {
-      return setStatus("Les quatre places de l'arene sont deja occupees.");
+  const inviteFriend = async (friendName) => {
+    const result = await createFriendDuel({
+      ownerName: name,
+      friendName,
+      pairs: gamePairs,
+    });
+
+    setStatus(result.status);
+    if (result.ok) {
+      setPlayers([
+        { name, enabled: true },
+        { name: "", enabled: true },
+        { name: "", enabled: false },
+        { name: "", enabled: false },
+      ]);
+      await getInvitations();
     }
-    const updatedPlayers = structuredClone(players);
-    updatedPlayers[freeIndex] = { name: friendName, enabled: true };
-    setPlayers(updatedPlayers);
-    setStatus(`${friendName} a ete ajoute a l'invitation.`);
   };
 
   const handleInvite = async () => {
