@@ -1,6 +1,11 @@
+const {
+  isValidUsername,
+  normalizeUsername,
+} = require("../server/utils/username");
+
 const bootstrapAdmin = async (database, name) => {
-  const canonicalName = String(name || "").trim();
-  if (!/^[a-zA-Z0-9]{1,25}$/.test(canonicalName)) {
+  const canonicalName = normalizeUsername(name);
+  if (!isValidUsername(canonicalName)) {
     throw new Error("Le pseudo administrateur est invalide.");
   }
 
