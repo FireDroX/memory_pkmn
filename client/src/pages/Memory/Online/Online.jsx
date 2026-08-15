@@ -19,20 +19,10 @@ const Online = ({ id }) => {
   const [endOfGame, setEndOfGame] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
 
-  const postRoomValues = async (
-    updatedCars,
-    isPair,
-    isPairShiny,
-    pokemon,
-  ) => {
+  const postRoomValues = (updatedCards) => {
     socket.emit("update-room", {
       room: id,
-      cards: updatedCars,
-      pair: {
-        isPair,
-        shiny: isPairShiny,
-        pokemon,
-      },
+      cards: updatedCards,
     });
   };
 
@@ -58,7 +48,7 @@ const Online = ({ id }) => {
     return ((decimal - 1) % 1025) + 1;
   };
 
-  const handleFlipCard = (coll, row, index, isShiny) => {
+  const handleFlipCard = (coll, row, index) => {
     if (
       [2, 3, 4, 5].includes(cards[coll][row].state) ||
       flippedCards.some((c) => c.index === index)
@@ -73,7 +63,7 @@ const Online = ({ id }) => {
 
     const newFlippedCards = [
       ...flippedCards,
-      { index, cardValue, coll, row, shiny: isShiny },
+      { index, cardValue, coll, row },
     ];
     setFlippedCards(() => {
       if (newFlippedCards.length === 2) {
@@ -103,12 +93,7 @@ const Online = ({ id }) => {
               }),
             );
             setCards(updatedCards);
-            postRoomValues(
-              updatedCards,
-              true,
-              firstCard.shiny && secondCard.shiny ? true : false,
-              firstCard.cardValue,
-            );
+            postRoomValues(updatedCards);
           }, 1200);
         } else {
           // Not a match, flip them back after a delay
@@ -138,7 +123,7 @@ const Online = ({ id }) => {
               }),
             );
             setCards(updatedCards);
-            postRoomValues(updatedCards, false, false);
+            postRoomValues(updatedCards);
           }, 1200);
         }
       }
@@ -350,7 +335,6 @@ const Online = ({ id }) => {
                                 index,
                                 i,
                                 i + index * row.length,
-                                card.shiny,
                               );
                           }}
                           style={{

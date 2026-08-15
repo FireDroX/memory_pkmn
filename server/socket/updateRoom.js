@@ -8,10 +8,11 @@ const {
   isWeekendInParis,
 } = require("../utils/profileProgress");
 const { recordDailyProgress } = require("../utils/dailyChallenges");
+const validateCardUpdate = require("./validateCardUpdate");
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
-    socket.on("update-room", async ({ room, cards, pair = {} }) => {
+    socket.on("update-room", async ({ room, cards }) => {
       try {
         const authenticatedUser = socket.data.user;
         const [rooms] = await pool.execute(
@@ -44,6 +45,13 @@ module.exports = (io) => {
           (entry) => entry.id === authenticatedUser.id,
         );
         if (!currentUser || playerIndex === -1) return;
+
+        const pair = validateCardUpdate(
+          roomData.cards,
+          cards,
+          playerIndex + 2,
+        );
+        if (!pair) return;
 
         if (pair.isPair) {
           roomData.players[playerIndex].score += 1;
