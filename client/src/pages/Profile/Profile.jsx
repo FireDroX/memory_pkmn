@@ -10,7 +10,16 @@ import {
 } from "react";
 import { useNavigate } from "react-router";
 import { IoIosRefresh } from "react-icons/io";
-import { FaPalette, FaSignOutAlt, FaTrashAlt, FaTrophy } from "react-icons/fa";
+import {
+  FaCheck,
+  FaGamepad,
+  FaPalette,
+  FaSignOutAlt,
+  FaTrashAlt,
+  FaTrophy,
+  FaUserPlus,
+  FaUsers,
+} from "react-icons/fa";
 import { UserContext } from "../../utils/UserContext";
 import {
   achievements,
@@ -40,6 +49,12 @@ const Profile = () => {
   const [gamesArray, setGamesArray] = useState([]);
   const [gamePairs, setGamePairs] = useState({ c: 4, r: 7 });
   const [users, setUsers] = useState([]);
+  const [friends, setFriends] = useState({
+    friends: [],
+    incoming: [],
+    outgoing: [],
+  });
+  const [selectedFriend, setSelectedFriend] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [players, setPlayers] = useState([
     { name, enabled: true },
@@ -74,6 +89,41 @@ const Profile = () => {
     const data = await response.json();
     setUserProfile(data.profile);
     setUserStats(data.stats);
+  };
+
+  const getFriends = async () => {
+    const response = await fetch(
+      `/api/friends?name=${encodeURIComponent(name)}`,
+    );
+    if (!response.ok) return;
+    setFriends(await response.json());
+  };
+
+  const updateFriendship = async (path, friendName, method = "POST") => {
+    const response = await fetch(`/api/friends${path}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, friendName }),
+    });
+    const data = await response.json();
+    setStatus(data.status || "");
+    if (response.ok) {
+      setSelectedFriend("");
+      await getFriends();
+    }
+  };
+
+  const inviteFriend = (friendName) => {
+    const freeIndex = players.findIndex(
+      (player, index) => index > 0 && (!player.enabled || !player.name),
+    );
+    if (freeIndex === -1) {
+      return setStatus("Les quatre places de l'arene sont deja occupees.");
+    }
+    const updatedPlayers = structuredClone(players);
+    updatedPlayers[freeIndex] = { name: friendName, enabled: true };
+    setPlayers(updatedPlayers);
+    setStatus(`${friendName} a ete ajoute a l'invitation.`);
   };
 
   const handleInvite = async () => {
@@ -131,7 +181,12 @@ const Profile = () => {
   const refresh = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
-    await Promise.all([getInvitations(), getUsers(), getProfileSummary()]);
+    await Promise.all([
+      getInvitations(),
+      getUsers(),
+      getProfileSummary(),
+      getFriends(),
+    ]);
     setTimeout(() => setIsRefreshing(false), 800);
   };
 
@@ -354,6 +409,92 @@ const Profile = () => {
             </button>
           </div>
         </div>
+
+        <section className="friends-panel">
+          <div className="friends-heading">
+            <div>
+              <span className="eyebrow">SOCIAL</span>
+              <h3><FaUsers /> Liste d'amis</h3>
+            </div>
+            <div className="friend-request-form">
+              <select
+                value={selectedFriend}
+                onChange={(event) => setSelectedFriend(event.target.value)}
+                aria-label="Joueur a ajouter"
+              >
+                <option value="">Choisir un joueur...</option>
+                {users
+                  .filter(
+                    (user) =>
+                      user !== name &&
+                      !friends.friends.includes(user) &&
+                      !friends.incoming.includes(user) &&
+                      !friends.outgoing.includes(user),
+                  )
+                  .map((user) => <option key={user}>{user}</option>)}
+              </select>
+              <button
+                disabled={!selectedFriend}
+                onClick={() => updateFriendship("/request", selectedFriend)}
+              >
+                <FaUserPlus /> Ajouter
+              </button>
+            </div>
+          </div>
+
+          {friends.incoming.length > 0 && (
+            <div className="friend-requests">
+              <strong>Demandes recues</strong>
+              {friends.incoming.map((friend) => (
+                <span key={friend}>
+                  {friend}
+                  <button onClick={() => updateFriendship("/accept", friend)}>
+                    <FaCheck /> Accepter
+                  </button>
+                  <button
+                    className="friend-remove"
+                    aria-label={`Refuser ${friend}`}
+                    onClick={() => updateFriendship("", friend, "DELETE")}
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="friends-grid">
+            {friends.friends.map((friend) => (
+              <article key={friend}>
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonForName(friend)}.png`}
+                  alt=""
+                  draggable={false}
+                />
+                <strong>{friend}</strong>
+                <button onClick={() => inviteFriend(friend)}>
+                  <FaGamepad /> Inviter
+                </button>
+                <button
+                  className="friend-remove"
+                  aria-label={`Supprimer ${friend} de la liste d'amis`}
+                  onClick={() => updateFriendship("", friend, "DELETE")}
+                >
+                  <FaTrashAlt />
+                </button>
+              </article>
+            ))}
+            {friends.friends.length === 0 && (
+              <p className="friends-empty">Ajoute un joueur pour le retrouver ici et l'inviter rapidement.</p>
+            )}
+          </div>
+
+          {friends.outgoing.length > 0 && (
+            <p className="friend-outgoing">
+              En attente : {friends.outgoing.join(", ")}
+            </p>
+          )}
+        </section>
 
         <section className="achievements-panel">
           <div className="achievements-heading">

@@ -11,6 +11,7 @@ router.use("/profile/leaderboard", require("./getLeaderboards"));
 router.use("/profile/summary", require("./getProfile"));
 router.use("/profile/update", require("./updateUser"));
 router.use("/profile/users", require("./getUsers"));
+router.use("/friends", require("./friendsRoute"));
 
 router.use("/mentions-legales", require("./mentionsLegales"));
 

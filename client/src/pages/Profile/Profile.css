@@ -383,6 +383,136 @@
   box-shadow: var(--shadow);
 }
 
+.friends-panel {
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.friends-heading {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.friends-heading h3 {
+  margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.7rem;
+}
+
+.friend-request-form {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-request-form select {
+  min-width: 190px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.friend-request-form button,
+.friend-requests button,
+.friends-grid button {
+  padding: 8px 11px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.friend-request-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.friend-requests {
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f7f3e9;
+  font-size: 0.68rem;
+}
+
+.friend-requests > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+}
+
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.friends-grid article {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+}
+
+.friends-grid img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #f7f3e9;
+  image-rendering: pixelated;
+}
+
+.friends-grid strong {
+  min-width: 0;
+  overflow: hidden;
+  margin-right: auto;
+  text-overflow: ellipsis;
+}
+
+.friends-grid button.friend-remove,
+.friend-requests button.friend-remove {
+  padding: 8px;
+  border-color: var(--line);
+  background: white;
+  color: var(--red);
+}
+
+.friends-empty,
+.friend-outgoing {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+}
+
+.friend-outgoing {
+  margin-top: 14px;
+}
+
 .achievements-heading {
   margin-bottom: 22px;
   display: flex;
@@ -492,6 +622,10 @@
   .achievements-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .friends-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 800px) {
@@ -538,6 +672,25 @@
   }
 
   .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .friends-panel {
+    padding: 24px 18px;
+  }
+
+  .friends-heading,
+  .friend-requests {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .friend-request-form select {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .friends-grid {
     grid-template-columns: 1fr;
   }
 }

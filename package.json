@@ -9,6 +9,7 @@
     "client": "npm --prefix client run dev",
     "build": "npm --prefix client run build",
     "preview": "npm --prefix client run preview",
+    "test": "node --test",
     "db:setup": "npm run db:migrate",
     "db:migrate": "node scripts/migrate-database.js"
   },
