@@ -24,11 +24,8 @@
     "level": "Lvl. {{level}}"
   },
   "sound": {
-    "label": "Game sound effects",
     "mute": "Mute sounds",
-    "enable": "Enable sounds",
-    "short": "Sounds",
-    "volume": "Sound effects volume"
+    "enable": "Enable sounds"
   },
   "loading": {
     "room": "The room is loading or does not exist."

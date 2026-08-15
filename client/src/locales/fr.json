@@ -24,11 +24,8 @@
     "level": "Niv. {{level}}"
   },
   "sound": {
-    "label": "Effets sonores du jeu",
     "mute": "Couper les sons",
-    "enable": "Activer les sons",
-    "short": "Sons",
-    "volume": "Volume des effets sonores"
+    "enable": "Activer les sons"
   },
   "loading": {
     "room": "Le salon est en cours de chargement ou n'existe pas."

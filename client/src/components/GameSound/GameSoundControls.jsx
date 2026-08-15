@@ -32,31 +32,16 @@ const GameSoundControls = () => {
   }, []);
 
   return (
-    <aside className="game-sound-controls" aria-label={t("sound.label")}>
-      <button
-        type="button"
-        onClick={() => applySettings({ ...settings, enabled: !settings.enabled })}
-        aria-pressed={settings.enabled}
-        title={t(settings.enabled ? "sound.mute" : "sound.enable")}
-      >
-        {settings.enabled ? <FaVolumeUp /> : <FaVolumeMute />}
-        <span>{t("sound.short")}</span>
-      </button>
-      <label>
-        <span className="sr-only">{t("sound.volume")}</span>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          value={settings.volume}
-          disabled={!settings.enabled}
-          onChange={(event) =>
-            applySettings({ ...settings, volume: Number(event.target.value) })
-          }
-        />
-      </label>
-    </aside>
+    <button
+      className="game-sound-controls"
+      type="button"
+      onClick={() => applySettings({ ...settings, enabled: !settings.enabled })}
+      aria-label={t(settings.enabled ? "sound.mute" : "sound.enable")}
+      aria-pressed={settings.enabled}
+      title={t(settings.enabled ? "sound.mute" : "sound.enable")}
+    >
+      {settings.enabled ? <FaVolumeUp /> : <FaVolumeMute />}
+    </button>
   );
 };
 
