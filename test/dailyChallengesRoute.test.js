@@ -40,7 +40,8 @@ test("POST /daily-challenges/claim attribue l'XP une seule fois", async () => {
     { getConnection: async () => connection },
   );
   const response = await invokeRoute(router, "POST", "/claim", {
-    body: { name: "Ash", challengeId: challenge.id },
+    auth: { id: "USER-A", name: "Ash" },
+    body: { challengeId: challenge.id },
   });
 
   assert.equal(response.statusCode, 200);

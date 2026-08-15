@@ -12,7 +12,7 @@ const Solo = ({
   setGame,
   shinyMode,
 }) => {
-  const { name, isLoggedIn, setUserProfile } = useContext(UserContext);
+  const { isLoggedIn, setUserProfile } = useContext(UserContext);
   const { t } = useTranslation();
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
@@ -127,7 +127,6 @@ const Solo = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
           xp: won ? calculateXp(tries, totalPairs) : 0,
           gameResult: {
             won,

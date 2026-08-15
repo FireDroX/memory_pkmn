@@ -32,7 +32,6 @@ const Colors = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name,
         xp: 0,
         userProfile: updatedProfile,
       }),

@@ -1,0 +1,45 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const { EventEmitter } = require("node:events");
+const {
+  createSessionMiddleware,
+  getSessionSecret,
+  sessionCookieName,
+  sessionLifetime,
+} = require("../server/session");
+const requireAuthentication = require("../server/express/requireAuthentication");
+
+test("la configuration de session exige un secret robuste", () => {
+  assert.throws(() => getSessionSecret({}), /32 caracteres/);
+  assert.equal(getSessionSecret({ SESSION_SECRET: "a".repeat(32) }).length, 32);
+});
+
+test("le middleware de session accepte le store MySQL configure", () => {
+  const middleware = createSessionMiddleware({
+    store: new EventEmitter(),
+    secret: "a".repeat(32),
+    production: false,
+  });
+  assert.equal(typeof middleware, "function");
+  assert.equal(sessionCookieName, "pokeflip.sid");
+  assert.equal(sessionLifetime, 86_400_000);
+});
+
+test("les routes privees refusent une requete sans session", () => {
+  const response = {
+    statusCode: 200,
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    },
+  };
+  let nextCalled = false;
+  requireAuthentication({}, response, () => { nextCalled = true; });
+
+  assert.equal(response.statusCode, 401);
+  assert.equal(nextCalled, false);
+});

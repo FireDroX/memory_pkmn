@@ -25,7 +25,7 @@ export const Loading = () => {
   );
 };
 
-const Loader = () => (
+export const Loader = () => (
   <section id="Loader">
     <div className="loader-spinner-container">
       <div className="loader-spinner" />

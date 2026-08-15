@@ -255,6 +255,7 @@
     "profileLoad": "Chargement du profil impossible.",
     "invalidCredentials": "Identifiant ou mot de passe incorrect.",
     "loginError": "Connexion impossible.",
+    "logoutError": "Déconnexion impossible.",
     "registerInvalid": "Choisis un pseudo alphanumérique et un mot de passe.",
     "usernameTaken": "Ce pseudo est déjà utilisé.",
     "accountCreated": "Compte créé. Tu peux maintenant te connecter.",

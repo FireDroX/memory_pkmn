@@ -1,5 +1,4 @@
 export const createFriendDuel = async ({
-  ownerName,
   friendName,
   pairs,
   request = fetch,
@@ -8,7 +7,7 @@ export const createFriendDuel = async ({
     const response = await request("/api/invite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ players: [ownerName, friendName], pairs }),
+      body: JSON.stringify({ players: [friendName], pairs }),
     });
     const data = await response.json();
 

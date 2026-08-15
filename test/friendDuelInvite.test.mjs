@@ -19,13 +19,12 @@ test("le bouton ami declenche directement la creation du duel", async () => {
   );
 });
 
-test("createFriendDuel envoie uniquement le joueur connecte et son ami", async () => {
+test("createFriendDuel laisse le serveur identifier le joueur connecte", async () => {
   const { createFriendDuel } = await import(
     "../client/src/utils/friendDuelInvite.js"
   );
   const requests = [];
   const result = await createFriendDuel({
-    ownerName: "Ash",
     friendName: "Misty",
     pairs: { c: 4, r: 7 },
     request: async (url, options) => {
@@ -41,7 +40,7 @@ test("createFriendDuel envoie uniquement le joueur connecte et son ami", async (
   assert.equal(requests[0].url, "/api/invite");
   assert.equal(requests[0].options.method, "POST");
   assert.deepEqual(JSON.parse(requests[0].options.body), {
-    players: ["Ash", "Misty"],
+    players: ["Misty"],
     pairs: { c: 4, r: 7 },
   });
   assert.deepEqual(result, {

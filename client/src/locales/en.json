@@ -255,6 +255,7 @@
     "profileLoad": "Unable to load the profile.",
     "invalidCredentials": "Incorrect username or password.",
     "loginError": "Unable to log in.",
+    "logoutError": "Unable to log out.",
     "registerInvalid": "Choose an alphanumeric username and a password.",
     "usernameTaken": "This username is already in use.",
     "accountCreated": "Account created. You can now log in.",

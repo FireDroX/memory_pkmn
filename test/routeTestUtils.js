@@ -19,6 +19,10 @@ const invokeRoute = async (router, method, path, request = {}) => {
       result.statusCode = code;
       return response;
     },
+    clearCookie(name, options) {
+      result.clearedCookie = { name, options };
+      return response;
+    },
   };
 
   await layer.route.stack[0].handle(

@@ -37,7 +37,14 @@ const createCards = (columns, rows) => {
 
 router.post("/", async (req, res) => {
   try {
-    const requestedPlayers = [...new Set(req.body.players || [])];
+    const authenticatedName = req.auth.name;
+    const invitedPlayers = [...new Set(req.body.players || [])]
+      .map((name) => String(name || "").trim())
+      .filter(
+        (name) =>
+          name && name.toLowerCase() !== authenticatedName.toLowerCase(),
+      );
+    const requestedPlayers = [authenticatedName, ...invitedPlayers];
     const columns = Number(req.body.pairs?.c);
     const rows = Number(req.body.pairs?.r);
 

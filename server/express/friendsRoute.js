@@ -18,7 +18,7 @@ const orderedIds = (firstId, secondId) =>
 
 router.get("/", async (req, res) => {
   try {
-    const user = await getUser(req.query.name);
+    const user = req.auth;
     if (!user) {
       return res.status(404).json({ status: "Joueur introuvable." });
     }
@@ -59,7 +59,7 @@ router.get("/", async (req, res) => {
 
 router.post("/request", async (req, res) => {
   try {
-    const requester = await getUser(req.body.name);
+    const requester = req.auth;
     const target = await getUser(req.body.friendName);
 
     if (!requester || !target) {
@@ -105,7 +105,7 @@ router.post("/request", async (req, res) => {
 
 router.post("/accept", async (req, res) => {
   try {
-    const user = await getUser(req.body.name);
+    const user = req.auth;
     const requester = await getUser(req.body.friendName);
     if (!user || !requester) {
       return res.status(404).json({ status: "Joueur introuvable." });
@@ -131,7 +131,7 @@ router.post("/accept", async (req, res) => {
 
 router.delete("/", async (req, res) => {
   try {
-    const user = await getUser(req.body.name);
+    const user = req.auth;
     const friend = await getUser(req.body.friendName);
     if (!user || !friend) {
       return res.status(404).json({ status: "Joueur introuvable." });

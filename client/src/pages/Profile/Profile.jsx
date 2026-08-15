@@ -47,8 +47,7 @@ const pokemonForName = (name) => {
 const Profile = () => {
   const {
     name,
-    setName,
-    setIsLoggedIn,
+    clearAuthentication,
     userProfile,
     setUserProfile,
     userStats,
@@ -96,9 +95,7 @@ const Profile = () => {
   };
 
   const getProfileSummary = async () => {
-    const response = await fetch(
-      `/api/profile/summary?name=${encodeURIComponent(name)}`,
-    );
+    const response = await fetch("/api/profile/summary");
     if (!response.ok) return;
 
     const data = await response.json();
@@ -107,17 +104,13 @@ const Profile = () => {
   };
 
   const getFriends = async () => {
-    const response = await fetch(
-      `/api/friends?name=${encodeURIComponent(name)}`,
-    );
+    const response = await fetch("/api/friends");
     if (!response.ok) return;
     setFriends(await response.json());
   };
 
   const getDailyChallenges = async () => {
-    const response = await fetch(
-      `/api/daily-challenges?name=${encodeURIComponent(name)}`,
-    );
+    const response = await fetch("/api/daily-challenges");
     if (!response.ok) return;
     setDailyChallenges(await response.json());
   };
@@ -126,7 +119,7 @@ const Profile = () => {
     const response = await fetch("/api/daily-challenges/claim", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, challengeId }),
+      body: JSON.stringify({ challengeId }),
     });
     const data = await response.json();
     setStatus(data.status || "");
@@ -140,7 +133,7 @@ const Profile = () => {
     const response = await fetch(`/api/friends${path}`, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, friendName }),
+      body: JSON.stringify({ friendName }),
     });
     const data = await response.json();
     setStatus(data.status || "");
@@ -152,7 +145,6 @@ const Profile = () => {
 
   const inviteFriend = async (friendName) => {
     const result = await createFriendDuel({
-      ownerName: name,
       friendName,
       pairs: gamePairs,
     });
@@ -203,31 +195,20 @@ const Profile = () => {
     const response = await fetch("/api/rooms/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ room, name }),
+      body: JSON.stringify({ room }),
     });
     const data = response.status === 204 ? {} : await response.json();
     setStatus(data.status || "");
     await getInvitations();
   };
 
-  const handleDisconnect = () => {
-    setName("");
-    setIsLoggedIn(false);
-    setUserStats({
-      onlineGamesPlayed: 0,
-      onlineGamesWon: 0,
-      onlineGamesLost: 0,
-      onlineWinRate: 0,
-      currentWinStreak: 0,
-      bestWinStreak: 0,
-      totalPairsFound: 0,
-      shinyPairsFound: 0,
-      soloGamesPlayed: 0,
-      soloGamesWon: 0,
-      soloWinRate: 0,
-      soloBestRemainingTries: 0,
-      createdAt: null,
-    });
+  const handleDisconnect = async () => {
+    const response = await fetch("/api/login/session", { method: "DELETE" });
+    if (!response.ok) {
+      setStatus(localizedStatus("status.logoutError"));
+      return;
+    }
+    clearAuthentication();
     navigate("/");
   };
 

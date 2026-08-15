@@ -11,10 +11,9 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const name = String(req.query.name || "").trim();
     const [users] = await pool.execute(
-      "SELECT id FROM users WHERE name = ? LIMIT 1",
-      [name],
+      "SELECT id FROM users WHERE id = ? LIMIT 1",
+      [req.auth.id],
     );
     if (!users[0]) {
       return res.status(404).json({ status: "Joueur introuvable." });
@@ -51,7 +50,6 @@ router.post("/claim", async (req, res) => {
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
-    const name = String(req.body.name || "").trim();
     const challengeId = String(req.body.challengeId || "");
     const date = getParisDateKey();
     const challenge = getDailyChallenges(date).find(
@@ -63,8 +61,8 @@ router.post("/claim", async (req, res) => {
     }
 
     const [users] = await connection.execute(
-      "SELECT id, user_profile FROM users WHERE name = ? LIMIT 1 FOR UPDATE",
-      [name],
+      "SELECT id, user_profile FROM users WHERE id = ? LIMIT 1 FOR UPDATE",
+      [req.auth.id],
     );
     const user = users[0];
     if (!user) {

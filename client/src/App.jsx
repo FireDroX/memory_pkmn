@@ -4,7 +4,7 @@ import { Routes, Route, useLocation, Navigate } from "react-router";
 import { UserContext } from "./utils/UserContext";
 
 import Navbar from "./components/Navbar/Navbar";
-import { Loadable } from "./components/Loading/Loading";
+import { Loadable, Loader } from "./components/Loading/Loading";
 
 const Home = lazy(() => import("./pages/Home/Home"));
 const Login = lazy(() => import("./pages/Login/Login"));
@@ -14,8 +14,10 @@ const Leaderboard = lazy(() => import("./pages/Leaderboard/Leaderboard"));
 const Colors = lazy(() => import("./pages/Colors/Colors"));
 
 function App() {
-  const { isLoggedIn } = useContext(UserContext);
+  const { isLoggedIn, isSessionReady } = useContext(UserContext);
   const location = useLocation();
+
+  if (!isSessionReady) return <Loader />;
 
   return (
     <>

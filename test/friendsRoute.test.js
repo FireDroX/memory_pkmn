@@ -17,7 +17,7 @@ test("GET /friends classe les amis et demandes du joueur", async () => {
   };
   const router = loadRouterWithPool("../server/express/friendsRoute", pool);
   const response = await invokeRoute(router, "GET", "/", {
-    query: { name: "Ash" },
+    auth: { id: "USER-A", name: "Ash" },
   });
 
   assert.equal(response.statusCode, 200);
@@ -43,7 +43,8 @@ test("POST /friends/request cree une demande unique", async () => {
   };
   const router = loadRouterWithPool("../server/express/friendsRoute", pool);
   const response = await invokeRoute(router, "POST", "/request", {
-    body: { name: "Ash", friendName: "Misty" },
+    auth: { id: "USER-A", name: "Ash" },
+    body: { friendName: "Misty" },
   });
 
   assert.equal(response.statusCode, 201);
@@ -65,7 +66,8 @@ test("POST /friends/accept n'accepte que la demande recue", async () => {
   };
   const router = loadRouterWithPool("../server/express/friendsRoute", pool);
   const response = await invokeRoute(router, "POST", "/accept", {
-    body: { name: "Ash", friendName: "Brock" },
+    auth: { id: "USER-A", name: "Ash" },
+    body: { friendName: "Brock" },
   });
 
   assert.equal(response.statusCode, 200);

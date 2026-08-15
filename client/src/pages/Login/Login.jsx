@@ -9,8 +9,7 @@ import {
 } from "../../utils/serverStatus";
 
 function Login({ connect }) {
-  const { setName, setIsLoggedIn, setUserProfile, setUserStats } =
-    useContext(UserContext);
+  const { authenticate } = useContext(UserContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [inputName, setUsername] = useState("");
@@ -22,6 +21,7 @@ function Login({ connect }) {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({ name: inputName, password: password }),
     };
 
@@ -37,10 +37,7 @@ function Login({ connect }) {
 
       setStatus(json?.status || "");
       if (json?.status === "" && postLink === "/api/login") {
-        setName(json.name);
-        setIsLoggedIn(true);
-        setUserProfile(json.profile);
-        setUserStats(json.stats);
+        authenticate(json);
         navigate("/profile");
       }
     }

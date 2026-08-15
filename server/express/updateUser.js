@@ -13,13 +13,12 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const name = String(req.body.name || "").trim();
     const earnedXp = Math.max(0, Number(req.body.xp) || 0);
     const gameResult = req.body.gameResult;
 
     const [players] = await pool.execute(
-      "SELECT id, user_profile FROM users WHERE name = ? LIMIT 1",
-      [name],
+      "SELECT id, user_profile FROM users WHERE id = ? LIMIT 1",
+      [req.auth.id],
     );
     if (!players[0]) {
       return res.status(404).json({ status: "Joueur introuvable." });
@@ -71,8 +70,8 @@ router.post("/", async (req, res) => {
     }
 
     await pool.execute(
-      "UPDATE users SET user_profile = ? WHERE name = ?",
-      [JSON.stringify(updatedUser), name],
+      "UPDATE users SET user_profile = ? WHERE id = ?",
+      [JSON.stringify(updatedUser), req.auth.id],
     );
 
     if (gameResult && typeof gameResult.won === "boolean") {
