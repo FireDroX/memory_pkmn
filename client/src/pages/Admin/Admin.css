@@ -192,6 +192,16 @@
   box-shadow: inset 0 0 0 2px rgba(77, 124, 255, 0.24);
 }
 
+.admin-user-card.is-disabled {
+  border-top-color: #8a93a3;
+  background: #eeece6;
+}
+
+.admin-user-card.is-disabled header img {
+  filter: grayscale(1);
+  opacity: 0.65;
+}
+
 .admin-user-card > header {
   min-width: 0;
   display: grid;
@@ -242,6 +252,31 @@
 .admin-role--admin {
   background: rgba(239, 91, 91, 0.13);
   color: #bc3838;
+}
+
+.admin-user-badges {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+
+.admin-account-status {
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.admin-account-status--active {
+  background: rgba(54, 165, 111, 0.14);
+  color: #24774e;
+}
+
+.admin-account-status--disabled {
+  background: rgba(96, 105, 120, 0.14);
+  color: #596171;
 }
 
 .admin-user-stats {
@@ -305,6 +340,45 @@
   opacity: 0.55;
 }
 
+.admin-user-controls {
+  display: grid;
+  gap: 11px;
+}
+
+.admin-status-button {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.admin-status-button.is-danger {
+  color: #b63d3d;
+}
+
+.admin-status-button.is-success {
+  color: #24774e;
+}
+
+.admin-status-button:hover:not(:disabled) {
+  background: currentColor;
+  color: white;
+}
+
+.admin-status-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .admin-empty {
   margin: 0;
   padding: 36px;
@@ -364,6 +438,12 @@
 
   .admin-role {
     grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .admin-user-badges {
+    grid-column: 1 / -1;
+    grid-auto-flow: column;
     justify-self: start;
   }
 }

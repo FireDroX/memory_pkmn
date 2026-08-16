@@ -40,3 +40,16 @@ test("le backfill des parties online ne reecrit pas les statistiques existantes"
     /WHERE\s+`online_games_played`\s*=\s*0\s+AND\s+`online_games_won`\s*>\s*0/i,
   );
 });
+
+test("la migration du statut utilisateur conserve les comptes existants actifs", async () => {
+  const sql = await readFile(
+    new URL("008_add_user_active_status.sql", migrationsDirectory),
+    "utf8",
+  );
+
+  assert.match(
+    sql,
+    /ADD COLUMN IF NOT EXISTS `is_active` BOOLEAN NOT NULL DEFAULT TRUE/i,
+  );
+  assert.match(sql, /ADD KEY IF NOT EXISTS `users_active_index` \(`is_active`\)/i);
+});

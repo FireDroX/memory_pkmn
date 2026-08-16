@@ -18,7 +18,7 @@ test("la page admin est reservee au role admin cote client", async () => {
   assert.match(navbarSource, /navigate\("\/admin"\)/);
 });
 
-test("la page admin charge les donnees et modifie les roles via l'API", async () => {
+test("la page admin charge les donnees et gere les roles et statuts via l'API", async () => {
   const adminSource = await readFile(
     new URL("../client/src/pages/Admin/Admin.jsx", import.meta.url),
     "utf8",
@@ -26,5 +26,8 @@ test("la page admin charge les donnees et modifie les roles via l'API", async ()
 
   assert.match(adminSource, /fetch\("\/api\/admin"/);
   assert.match(adminSource, /`\/api\/admin\/users\/\$\{user\.id\}\/role`/);
+  assert.match(adminSource, /`\/api\/admin\/users\/\$\{user\.id\}\/status`/);
+  assert.match(adminSource, /JSON\.stringify\(\{ isActive: !user\.isActive \}\)/);
+  assert.match(adminSource, /user\.isActive \? "is-active" : "is-disabled"/);
   assert.match(adminSource, /method: "PATCH"/);
 });

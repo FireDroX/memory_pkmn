@@ -5,7 +5,9 @@ const router = express.Router();
 
 router.get("/", async (_, res) => {
   try {
-    const [users] = await pool.query("SELECT name FROM users ORDER BY name");
+    const [users] = await pool.query(
+      "SELECT name FROM users WHERE is_active = TRUE ORDER BY name",
+    );
     return res.json({ users: users.map((user) => user.name) });
   } catch (error) {
     console.error("Users error:", error);

@@ -84,6 +84,7 @@ test("GET /admin renvoie les utilisateurs et les statistiques globales", async (
       id: "USER-ADMIN",
       name: "Admin",
       role: "admin",
+      is_active: 1,
       online_games_played: 5,
       online_games_won: 3,
       online_games_lost: 2,
@@ -98,6 +99,7 @@ test("GET /admin renvoie les utilisateurs et les statistiques globales", async (
       id: "USER-2",
       name: "Misty",
       role: "user",
+      is_active: 0,
       online_games_played: 2,
       online_games_won: 1,
       online_games_lost: 1,
@@ -130,7 +132,76 @@ test("GET /admin renvoie les utilisateurs et les statistiques globales", async (
     shinyPairsFound: 1,
   });
   assert.equal(response.body.users[0].level, 3);
+  assert.equal(response.body.users[0].isActive, true);
+  assert.equal(response.body.users[1].isActive, false);
   assert.equal(JSON.stringify(response.body).includes("password"), false);
+});
+
+test("PATCH /admin/users/:id/status desactive le joueur et retire ses salons ouverts", async (t) => {
+  const calls = {
+    update: null,
+    deletedRooms: null,
+    deletedSessions: null,
+    committed: false,
+  };
+  const connection = {
+    beginTransaction: async () => {},
+    execute: async (sql, parameters) => {
+      if (sql.includes("SELECT id, name, role, is_active")) {
+        return [[
+          { id: "USER-ADMIN", name: "Admin", role: "admin", is_active: 1 },
+          { id: "USER-2", name: "Misty", role: "user", is_active: 1 },
+        ]];
+      }
+      if (sql.includes("SELECT id, players FROM rooms")) {
+        return [[
+          {
+            id: "ROOM-1",
+            players: JSON.stringify([
+              { id: "USER-ADMIN", name: "Admin" },
+              { id: "USER-2", name: "Misty" },
+            ]),
+          },
+          {
+            id: "ROOM-2",
+            players: JSON.stringify([
+              { id: "USER-ADMIN", name: "Admin" },
+              { id: "USER-3", name: "Brock" },
+            ]),
+          },
+        ]];
+      }
+      if (sql.includes("UPDATE users SET is_active")) calls.update = parameters;
+      if (sql.includes("DELETE FROM rooms")) calls.deletedRooms = parameters;
+      if (sql.includes("DELETE FROM sessions")) calls.deletedSessions = parameters;
+      return [[]];
+    },
+    commit: async () => { calls.committed = true; },
+    rollback: async () => {},
+    release: () => {},
+  };
+  const database = {
+    execute: async () => [[{ role: "admin", is_active: 1 }]],
+    getConnection: async () => connection,
+  };
+  const response = await requestAdmin(t, {
+    database,
+    sessionUser: { id: "USER-ADMIN", name: "Admin" },
+    path: "/admin/users/USER-2/status",
+    method: "PATCH",
+    body: { isActive: false },
+  });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body.user, {
+    id: "USER-2",
+    name: "Misty",
+    isActive: false,
+  });
+  assert.deepEqual(calls.update, [false, "USER-2"]);
+  assert.deepEqual(calls.deletedRooms, ["ROOM-1"]);
+  assert.deepEqual(calls.deletedSessions, ["USER-2"]);
+  assert.equal(calls.committed, true);
 });
 
 test("PATCH /admin/users/:id/role permet a un admin de promouvoir un joueur", async (t) => {
@@ -140,7 +211,7 @@ test("PATCH /admin/users/:id/role permet a un admin de promouvoir un joueur", as
     execute: async (sql, parameters) => {
       if (sql.includes("SELECT id, name, role") && sql.includes("FOR UPDATE")) {
         return [[
-          { id: "USER-ADMIN", name: "Admin", role: "admin" },
+          { id: "USER-ADMIN", name: "Admin", role: "admin", is_active: 1 },
           { id: "USER-2", name: "Misty", role: "user" },
         ]];
       }
@@ -154,7 +225,7 @@ test("PATCH /admin/users/:id/role permet a un admin de promouvoir un joueur", as
     release: () => { calls.released = true; },
   };
   const database = {
-    execute: async () => [[{ role: "admin" }]],
+    execute: async () => [[{ role: "admin", is_active: 1 }]],
     getConnection: async () => connection,
   };
   const response = await requestAdmin(t, {
@@ -177,7 +248,12 @@ test("le dernier administrateur ne peut pas retirer son propre role", async (t) 
     beginTransaction: async () => {},
     execute: async (sql) => {
       if (sql.includes("SELECT id, name, role")) {
-        return [[{ id: "USER-ADMIN", name: "Admin", role: "admin" }]];
+        return [[{
+          id: "USER-ADMIN",
+          name: "Admin",
+          role: "admin",
+          is_active: 1,
+        }]];
       }
       if (sql.includes("WHERE role = 'admin'")) {
         return [[{ id: "USER-ADMIN" }]];
@@ -189,7 +265,7 @@ test("le dernier administrateur ne peut pas retirer son propre role", async (t) 
     release: () => {},
   };
   const database = {
-    execute: async () => [[{ role: "admin" }]],
+    execute: async () => [[{ role: "admin", is_active: 1 }]],
     getConnection: async () => connection,
   };
   const response = await requestAdmin(t, {

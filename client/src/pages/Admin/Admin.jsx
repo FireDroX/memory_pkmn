@@ -1,5 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import {
+  FaBan,
+  FaCheckCircle,
   FaClone,
   FaGamepad,
   FaSearch,
@@ -143,6 +145,43 @@ const Admin = () => {
     }
   };
 
+  const updateStatus = async (user) => {
+    setSavingUserId(user.id);
+    try {
+      const response = await fetch(`/api/admin/users/${user.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !user.isActive }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setStatus(data.status || localizedStatus("status.adminStatusUpdate"));
+        return;
+      }
+
+      setDashboard((current) => ({
+        ...current,
+        users: current.users.map((entry) =>
+          entry.id === user.id
+            ? { ...entry, isActive: data.user.isActive }
+            : entry,
+        ),
+      }));
+      setStatus(
+        localizedStatus(
+          data.user.isActive
+            ? "status.adminUserActivated"
+            : "status.adminUserDeactivated",
+          { name: user.name },
+        ),
+      );
+    } catch {
+      setStatus(localizedStatus("status.adminStatusUpdate"));
+    } finally {
+      setSavingUserId("");
+    }
+  };
+
   return (
     <section className="App admin-page">
       <div>
@@ -199,7 +238,9 @@ const Admin = () => {
                   <article
                     className={`admin-user-card ${
                       user.role === "admin" ? "is-admin" : ""
-                    } ${user.name === name ? "is-current" : ""}`}
+                    } ${user.name === name ? "is-current" : ""} ${
+                      user.isActive ? "is-active" : "is-disabled"
+                    }`}
                     key={user.id}
                   >
                     <header>
@@ -222,9 +263,22 @@ const Admin = () => {
                               })}
                         </small>
                       </div>
-                      <span className={`admin-role admin-role--${user.role}`}>
-                        {t(`admin.roles.${user.role}`)}
-                      </span>
+                      <div className="admin-user-badges">
+                        <span className={`admin-role admin-role--${user.role}`}>
+                          {t(`admin.roles.${user.role}`)}
+                        </span>
+                        <span
+                          className={`admin-account-status admin-account-status--${
+                            user.isActive ? "active" : "disabled"
+                          }`}
+                        >
+                          {t(
+                            user.isActive
+                              ? "admin.status.active"
+                              : "admin.status.disabled",
+                          )}
+                        </span>
+                      </div>
                     </header>
 
                     <dl className="admin-user-stats">
@@ -243,18 +297,47 @@ const Admin = () => {
                       </div>
                     </dl>
 
-                    <label className="admin-role-control">
-                      <span>{t("admin.role")}</span>
-                      <select
-                        value={user.role}
-                        disabled={savingUserId === user.id}
-                        onChange={(event) => updateRole(user, event.target.value)}
-                        aria-label={t("admin.changeRole", { name: user.name })}
+                    <div className="admin-user-controls">
+                      <label className="admin-role-control">
+                        <span>{t("admin.role")}</span>
+                        <select
+                          value={user.role}
+                          disabled={savingUserId === user.id}
+                          onChange={(event) =>
+                            updateRole(user, event.target.value)
+                          }
+                          aria-label={t("admin.changeRole", { name: user.name })}
+                        >
+                          <option value="user">{t("admin.roles.user")}</option>
+                          <option value="admin">{t("admin.roles.admin")}</option>
+                        </select>
+                      </label>
+                      <button
+                        type="button"
+                        className={`admin-status-button ${
+                          user.isActive ? "is-danger" : "is-success"
+                        }`}
+                        disabled={
+                          savingUserId === user.id || user.name === name
+                        }
+                        onClick={() => updateStatus(user)}
+                        aria-label={t("admin.changeStatus", {
+                          name: user.name,
+                          action: t(
+                            user.isActive
+                              ? "admin.deactivate"
+                              : "admin.reactivate",
+                          ),
+                        })}
                       >
-                        <option value="user">{t("admin.roles.user")}</option>
-                        <option value="admin">{t("admin.roles.admin")}</option>
-                      </select>
-                    </label>
+                        {user.isActive ? <FaBan /> : <FaCheckCircle />}
+                        {t(
+                          user.isActive
+                            ? "admin.deactivate"
+                            : "admin.reactivate",
+                        )}
+                      </button>
+                    </div>
                   </article>
                 ))}
               </div>

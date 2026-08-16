@@ -125,6 +125,13 @@
     "pairs": "Paires",
     "role": "Rôle du compte",
     "changeRole": "Modifier le rôle de {{name}}",
+    "changeStatus": "{{action}} le compte de {{name}}",
+    "deactivate": "Désactiver",
+    "reactivate": "Réactiver",
+    "status": {
+      "active": "Actif",
+      "disabled": "Désactivé"
+    },
     "roles": {
       "user": "Utilisateur",
       "admin": "Admin"
@@ -307,6 +314,12 @@
     "adminInvalidRole": "Rôle utilisateur invalide.",
     "adminLastRole": "Le dernier administrateur doit conserver son rôle.",
     "adminRoleUpdate": "Mise à jour du rôle impossible.",
-    "adminRoleUpdated": "Rôle de {{name}} mis à jour."
+    "adminRoleUpdated": "Rôle de {{name}} mis à jour.",
+    "adminInvalidStatus": "Statut utilisateur invalide.",
+    "adminSelfDisable": "Tu ne peux pas désactiver ton propre compte.",
+    "adminStatusUpdate": "Mise à jour du statut impossible.",
+    "adminUserActivated": "Compte de {{name}} réactivé.",
+    "adminUserDeactivated": "Compte de {{name}} désactivé.",
+    "accountDisabled": "Ce compte est désactivé."
   }
 }
