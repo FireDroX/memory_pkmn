@@ -378,7 +378,10 @@ const Profile = () => {
                     onClick={() =>
                       setGamePairs({ c: pairs.columns, r: pairs.rows })
                     }
-                    data-active={gamePairs.c === pairs.columns && gamePairs.r === pairs.rows}
+                    data-active={
+                      gamePairs.c === pairs.columns &&
+                      gamePairs.r === pairs.rows
+                    }
                   >
                     {(pairs.columns * pairs.rows) / 2}
                   </button>
@@ -429,10 +432,7 @@ const Profile = () => {
                   <p key={game.id}>
                     {game.players.map((player, playerIndex) => (
                       <Fragment key={`${game.id}-${player.name}`}>
-                        <strong
-                          className={player.skin}
-                          data-name={player.name}
-                        >
+                        <strong className={player.skin} data-name={player.name}>
                           {player.name}
                         </strong>
                         {playerIndex < game.players.length - 1 && (
@@ -461,9 +461,7 @@ const Profile = () => {
                   </p>
                 ))}
               {gamesArray.length === 0 && (
-                <p className="profile-invites-empty">
-                  {t("profile.noRooms")}
-                </p>
+                <p className="profile-invites-empty">{t("profile.noRooms")}</p>
               )}
             </div>
 
@@ -553,23 +551,63 @@ const Profile = () => {
             <article>
               <h4>{t("stats.online")}</h4>
               <dl>
-                <div><dt>{t("stats.games")}</dt><dd>{userStats.onlineGamesPlayed}</dd></div>
-                <div><dt>{t("stats.wins")}</dt><dd>{userStats.onlineGamesWon}</dd></div>
-                <div><dt>{t("stats.losses")}</dt><dd>{userStats.onlineGamesLost}</dd></div>
-                <div><dt>{t("stats.winRate")}</dt><dd>{userStats.onlineWinRate}%</dd></div>
-                <div><dt>{t("stats.currentStreak")}</dt><dd>{userStats.currentWinStreak}</dd></div>
-                <div><dt>{t("stats.bestStreak")}</dt><dd>{userStats.bestWinStreak}</dd></div>
+                <div>
+                  <dt>{t("stats.games")}</dt>
+                  <dd>{userStats.onlineGamesPlayed}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.wins")}</dt>
+                  <dd>{userStats.onlineGamesWon}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.losses")}</dt>
+                  <dd>{userStats.onlineGamesLost}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.winRate")}</dt>
+                  <dd>{userStats.onlineWinRate}%</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.currentStreak")}</dt>
+                  <dd>{userStats.currentWinStreak}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.bestStreak")}</dt>
+                  <dd>{userStats.bestWinStreak}</dd>
+                </div>
               </dl>
             </article>
             <article>
               <h4>{t("stats.soloCollection")}</h4>
               <dl>
-                <div><dt>{t("stats.soloGames")}</dt><dd>{userStats.soloGamesPlayed}</dd></div>
-                <div><dt>{t("stats.soloWins")}</dt><dd>{userStats.soloGamesWon}</dd></div>
-                <div><dt>{t("stats.soloRate")}</dt><dd>{userStats.soloWinRate}%</dd></div>
-                <div><dt>{t("stats.bestRemaining")}</dt><dd>{t("stats.tries", { count: userStats.soloBestRemainingTries })}</dd></div>
-                <div><dt>{t("stats.pairsFound")}</dt><dd>{userStats.totalPairsFound}</dd></div>
-                <div><dt>{t("stats.shinyPairs")}</dt><dd>{userStats.shinyPairsFound}</dd></div>
+                <div>
+                  <dt>{t("stats.soloGames")}</dt>
+                  <dd>{userStats.soloGamesPlayed}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.soloWins")}</dt>
+                  <dd>{userStats.soloGamesWon}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.soloRate")}</dt>
+                  <dd>{userStats.soloWinRate}%</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.bestRemaining")}</dt>
+                  <dd>
+                    {t("stats.tries", {
+                      count: userStats.soloBestRemainingTries,
+                    })}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t("stats.pairsFound")}</dt>
+                  <dd>{userStats.totalPairsFound}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.shinyPairs")}</dt>
+                  <dd>{userStats.shinyPairsFound}</dd>
+                </div>
               </dl>
             </article>
           </div>
@@ -579,7 +617,9 @@ const Profile = () => {
           <div className="friends-heading">
             <div>
               <span className="eyebrow">{t("friends.eyebrow")}</span>
-              <h3><FaUsers aria-hidden="true" /> {t("friends.title")}</h3>
+              <h3>
+                <FaUsers aria-hidden="true" /> {t("friends.title")}
+              </h3>
             </div>
             <div className="friend-request-form">
               <select
@@ -596,7 +636,9 @@ const Profile = () => {
                       !friends.incoming.includes(user) &&
                       !friends.outgoing.includes(user),
                   )
-                  .map((user) => <option key={user}>{user}</option>)}
+                  .map((user) => (
+                    <option key={user}>{user}</option>
+                  ))}
               </select>
               <button
                 disabled={!selectedFriend}
