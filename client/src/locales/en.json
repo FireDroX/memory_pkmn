@@ -193,6 +193,7 @@
     "playSolo": "Play solo",
     "joinArena": "Join an arena",
     "refreshRooms": "Refresh rooms",
+    "deleteRoom": "Delete room {{room}}",
     "join": "JOIN",
     "viewLeaderboard": "View leaderboard",
     "noRooms": "No rooms yet",

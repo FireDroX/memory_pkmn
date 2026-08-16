@@ -193,6 +193,7 @@
     "playSolo": "Jouer en solo",
     "joinArena": "Rejoindre une arène",
     "refreshRooms": "Actualiser les salons",
+    "deleteRoom": "Supprimer le salon {{room}}",
     "join": "REJOINDRE",
     "viewLeaderboard": "Voir le classement",
     "noRooms": "Aucun salon pour le moment",

@@ -141,6 +141,9 @@
   padding: 10px 18px;
   border: 2px solid var(--ink);
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   color: var(--ink);
   font-size: 0.78rem;
   font-weight: 900;
@@ -203,7 +206,7 @@
   background: var(--blue);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .navbar-container {
     height: 64px;
   }
@@ -243,5 +246,9 @@
   .nav-login {
     padding: 8px 10px;
     font-size: 0.68rem;
+  }
+
+  .nav-login span {
+    display: none;
   }
 }

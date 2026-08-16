@@ -369,8 +369,13 @@
   color: #24774e;
 }
 
-.admin-status-button:hover:not(:disabled) {
-  background: currentColor;
+.admin-status-button.is-danger:hover:not(:disabled) {
+  background: #b63d3d;
+  color: white;
+}
+
+.admin-status-button.is-success:hover:not(:disabled) {
+  background: #24774e;
   color: white;
 }
 

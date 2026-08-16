@@ -1,6 +1,12 @@
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { FaShieldAlt, FaTrophy } from "react-icons/fa";
+import {
+  FaDoorOpen,
+  FaGamepad,
+  FaShieldAlt,
+  FaSignInAlt,
+  FaTrophy,
+} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
 import { getLanguage } from "../../utils/languages";
@@ -39,18 +45,22 @@ const Navbar = () => {
         </button>
         <nav className="nav-links" aria-label={t("nav.main")}>
           <button
+            aria-label={t("nav.solo")}
             className={location.pathname === "/" ? "active" : ""}
             onClick={() => navigate("/")}
           >
-            {t("nav.solo")}
+            <FaGamepad aria-hidden="true" />
+            <span>{t("nav.solo")}</span>
           </button>
           {isLoggedIn && (
             <>
               <button
+                aria-label={t("nav.rooms")}
                 className={location.pathname === "/profile" ? "active" : ""}
                 onClick={() => navigate("/profile")}
               >
-                {t("nav.rooms")}
+                <FaDoorOpen aria-hidden="true" />
+                <span>{t("nav.rooms")}</span>
               </button>
               <button
                 aria-label={t("nav.leaderboard")}
@@ -59,7 +69,7 @@ const Navbar = () => {
                 }
                 onClick={() => navigate("/profile/leaderboard")}
               >
-                <FaTrophy />
+                <FaTrophy aria-hidden="true" />
                 <span>{t("nav.leaderboard")}</span>
               </button>
               {role === "admin" && (
@@ -68,7 +78,7 @@ const Navbar = () => {
                   className={location.pathname === "/admin" ? "active" : ""}
                   onClick={() => navigate("/admin")}
                 >
-                  <FaShieldAlt />
+                  <FaShieldAlt aria-hidden="true" />
                   <span>{t("nav.admin")}</span>
                 </button>
               )}
@@ -118,8 +128,13 @@ const Navbar = () => {
             </span>
             </button>
           ) : (
-            <button className="nav-login" onClick={() => navigate("/login")}>
-              {t("nav.login")}
+            <button
+              className="nav-login"
+              onClick={() => navigate("/login")}
+              aria-label={t("nav.login")}
+            >
+              <FaSignInAlt aria-hidden="true" />
+              <span>{t("nav.login")}</span>
             </button>
           )}
         </div>

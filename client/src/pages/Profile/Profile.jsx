@@ -15,10 +15,16 @@ import {
   FaCheck,
   FaCalendarCheck,
   FaChartLine,
+  FaDoorOpen,
   FaGamepad,
   FaGift,
+  FaMedal,
   FaPalette,
+  FaPlay,
+  FaPlus,
+  FaSignInAlt,
   FaSignOutAlt,
+  FaStar,
   FaTrashAlt,
   FaTrophy,
   FaUserPlus,
@@ -267,15 +273,15 @@ const Profile = () => {
           </div>
 
           <div className="trainer-stats">
-            <div>
+            <div className="trainer-stat trainer-stat--wins">
               <strong>{userStats.onlineGamesWon || 0}</strong>
               <span>{t("profile.wins")}</span>
             </div>
-            <div>
+            <div className="trainer-stat trainer-stat--shiny">
               <strong>{userStats.shinyPairsFound || 0}</strong>
               <span>{t("profile.shiny")}</span>
             </div>
-            <div>
+            <div className="trainer-stat trainer-stat--achievements">
               <strong>
                 {unlockedAchievements.size}/{achievements.length}
               </strong>
@@ -298,7 +304,10 @@ const Profile = () => {
         <div className="profile-container">
           <div className="profile-infos">
             <span className="eyebrow">{t("profile.onlineEyebrow")}</span>
-            <h5>{t("profile.createArena")}</h5>
+            <h5 className="profile-section-title">
+              <FaGamepad aria-hidden="true" />
+              {t("profile.createArena")}
+            </h5>
             <p className="profile-subtitle">{t("profile.createHint")}</p>
             <div className="profile-invite">
               <div className="profile-inputs">
@@ -369,9 +378,7 @@ const Profile = () => {
                     onClick={() =>
                       setGamePairs({ c: pairs.columns, r: pairs.rows })
                     }
-                    data-active={
-                      gamePairs.c === pairs.columns && gamePairs.r === pairs.rows
-                    }
+                    data-active={gamePairs.c === pairs.columns && gamePairs.r === pairs.rows}
                   >
                     {(pairs.columns * pairs.rows) / 2}
                   </button>
@@ -381,6 +388,7 @@ const Profile = () => {
 
               <div className="profile-buttons-joining">
                 <button className="profile-disconnect" onClick={handleInvite}>
+                  <FaPlus aria-hidden="true" />
                   {t("profile.createRoom")}
                 </button>
               </div>
@@ -390,13 +398,17 @@ const Profile = () => {
               className="profile-disconnect secondary"
               onClick={() => navigate("/")}
             >
+              <FaPlay aria-hidden="true" />
               {t("profile.playSolo")}
             </button>
           </div>
 
           <div className="profile-invites">
             <h5>
-              {t("profile.joinArena")}
+              <span>
+                <FaDoorOpen aria-hidden="true" />
+                {t("profile.joinArena")}
+              </span>
               <button
                 className={isRefreshing ? "refreshing" : ""}
                 onClick={refresh}
@@ -428,11 +440,23 @@ const Profile = () => {
                         )}
                       </Fragment>
                     ))}
-                    <span onClick={() => navigate(`/online?id=${game.id}`)}>
+                    <button
+                      type="button"
+                      className="profile-room-join"
+                      onClick={() => navigate(`/online?id=${game.id}`)}
+                    >
+                      <FaSignInAlt aria-hidden="true" />
                       {t("profile.join")}
-                    </span>
+                    </button>
                     {game.players[0]?.name === name && (
-                      <FaTrashAlt onClick={() => handleDelete(game.id)} />
+                      <button
+                        type="button"
+                        className="profile-room-delete"
+                        aria-label={t("profile.deleteRoom", { room: game.id })}
+                        onClick={() => handleDelete(game.id)}
+                      >
+                        <FaTrashAlt aria-hidden="true" />
+                      </button>
                     )}
                   </p>
                 ))}
@@ -458,7 +482,7 @@ const Profile = () => {
             <div>
               <span className="eyebrow">{t("daily.eyebrow")}</span>
               <h3>
-                <FaCalendarCheck /> {t("daily.title")}
+                <FaCalendarCheck aria-hidden="true" /> {t("daily.title")}
               </h3>
             </div>
             <p>{t("daily.refresh")}</p>
@@ -512,7 +536,7 @@ const Profile = () => {
             <div>
               <span className="eyebrow">{t("stats.eyebrow")}</span>
               <h3>
-                <FaChartLine /> {t("stats.title")}
+                <FaChartLine aria-hidden="true" /> {t("stats.title")}
               </h3>
             </div>
             {userStats.createdAt && (
@@ -555,7 +579,7 @@ const Profile = () => {
           <div className="friends-heading">
             <div>
               <span className="eyebrow">{t("friends.eyebrow")}</span>
-              <h3><FaUsers /> {t("friends.title")}</h3>
+              <h3><FaUsers aria-hidden="true" /> {t("friends.title")}</h3>
             </div>
             <div className="friend-request-form">
               <select
@@ -641,7 +665,9 @@ const Profile = () => {
           <div className="achievements-heading">
             <div>
               <span className="eyebrow">{t("achievements.eyebrow")}</span>
-              <h3>{t("achievements.title")}</h3>
+              <h3>
+                <FaTrophy aria-hidden="true" /> {t("achievements.title")}
+              </h3>
             </div>
             <p>
               {t("achievements.unlockedCount", {
