@@ -278,9 +278,9 @@
       "2": { "name": "On a roll", "description": "Reach 5 online wins." },
       "3": { "name": "Unstoppable", "description": "Reach 10 online wins." },
       "10": { "name": "Double XP", "description": "Complete a game during the weekend." },
-      "100": { "name": "Zekrom", "description": "Find a Zekrom pair." },
+      "100": { "name": "Zekrom", "description": "Find a Zekrom pair (online)." },
       "150": { "name": "Maximum level", "description": "Reach level 5." },
-      "200": { "name": "One in 8192", "description": "Find a shiny pair." }
+      "200": { "name": "One in 8192", "description": "Find a shiny pair (online)." }
     }
   },
   "status": {

@@ -278,9 +278,9 @@
       "2": { "name": "Sur la lancée", "description": "Atteindre 5 victoires en ligne." },
       "3": { "name": "Inarrêtable", "description": "Atteindre 10 victoires en ligne." },
       "10": { "name": "Double XP", "description": "Terminer une partie pendant le week-end." },
-      "100": { "name": "Zekrom", "description": "Trouver une paire de Zekrom." },
+      "100": { "name": "Zekrom", "description": "Trouver une paire de Zekrom (online)." },
       "150": { "name": "Niveau maximum", "description": "Atteindre le niveau 5." },
-      "200": { "name": "Une chance sur 8192", "description": "Trouver une paire shiny." }
+      "200": { "name": "Une chance sur 8192", "description": "Trouver une paire shiny (online)." }
     }
   },
   "status": {
