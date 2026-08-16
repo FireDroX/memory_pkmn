@@ -102,10 +102,23 @@
     }
   },
   "leaderboard": {
+    "eyebrow": "HALL DES DRESSEURS",
     "title": "CLASSEMENTS",
+    "description": "Compare tes performances avec les meilleurs dresseurs actifs de PokeFlip.",
+    "activeTrainers_one": "{{count}} dresseur actif",
+    "activeTrainers_other": "{{count}} dresseurs actifs",
+    "topFive": "TOP 5",
     "levels": "NIVEAUX",
     "wins": "VICTOIRES",
-    "shiny": "SHINY TROUVÉS"
+    "shiny": "SHINY TROUVÉS",
+    "levelScore": "NIV.",
+    "winsScore": "VIC.",
+    "shinyScore": "SHINY",
+    "rank": "Rang {{rank}}",
+    "you": "TOI",
+    "loading": "Chargement des classements...",
+    "loadError": "Impossible de charger les classements.",
+    "empty": "Aucun dresseur classé pour le moment."
   },
   "admin": {
     "eyebrow": "CENTRE DE CONTRÔLE",

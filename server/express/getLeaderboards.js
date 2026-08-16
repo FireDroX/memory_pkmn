@@ -6,7 +6,11 @@ const router = express.Router();
 
 router.get("/", async (_, res) => {
   try {
-    const [users] = await pool.query("SELECT * FROM users");
+    const [users] = await pool.query(
+      `SELECT name, user_profile, online_games_won, shiny_pairs_found
+       FROM users
+       WHERE is_active = TRUE`,
+    );
     const leaderboard = {
       levels: [],
       game_wons: [],
@@ -24,12 +28,12 @@ router.get("/", async (_, res) => {
       });
       leaderboard.game_wons.push({
         name: user.name,
-        score: user.online_games_won,
+        score: Number(user.online_games_won) || 0,
         color,
       });
       leaderboard.shiny_pairs_found.push({
         name: user.name,
-        score: user.shiny_pairs_found,
+        score: Number(user.shiny_pairs_found) || 0,
         color,
       });
     });

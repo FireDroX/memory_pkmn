@@ -102,10 +102,23 @@
     }
   },
   "leaderboard": {
+    "eyebrow": "TRAINER HALL",
     "title": "LEADERBOARDS",
+    "description": "Compare your performance with PokeFlip's best active trainers.",
+    "activeTrainers_one": "{{count}} active trainer",
+    "activeTrainers_other": "{{count}} active trainers",
+    "topFive": "TOP 5",
     "levels": "LEVELS",
     "wins": "GAMES WON",
-    "shiny": "SHINY FOUND"
+    "shiny": "SHINY FOUND",
+    "levelScore": "LVL.",
+    "winsScore": "WINS",
+    "shinyScore": "SHINY",
+    "rank": "Rank {{rank}}",
+    "you": "YOU",
+    "loading": "Loading leaderboards...",
+    "loadError": "Unable to load the leaderboards.",
+    "empty": "No ranked trainer yet."
   },
   "admin": {
     "eyebrow": "CONTROL CENTER",
