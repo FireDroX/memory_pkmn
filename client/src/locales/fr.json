@@ -158,6 +158,44 @@
       "shinyPairsFound": "Paires shiny"
     }
   },
+  "admin": {
+    "eyebrow": "CENTRE DE CONTRÔLE",
+    "title": "Administration",
+    "description": "Consulte l'activité globale de PokeFlip et gère les droits des dresseurs depuis un espace sécurisé.",
+    "globalStats": "Statistiques globales",
+    "usersEyebrow": "COMMUNAUTÉ",
+    "usersTitle": "Gestion des utilisateurs",
+    "search": "Rechercher un dresseur",
+    "loading": "Chargement des données administrateur...",
+    "noUsers": "Aucun utilisateur ne correspond à cette recherche.",
+    "currentUser": "Ton compte",
+    "memberSince": "Inscrit le {{date}}",
+    "level": "Niveau",
+    "onlineRecord": "Online",
+    "soloRecord": "Solo",
+    "pairs": "Paires",
+    "role": "Rôle du compte",
+    "changeRole": "Modifier le rôle de {{name}}",
+    "changeStatus": "{{action}} le compte de {{name}}",
+    "deactivate": "Désactiver",
+    "reactivate": "Réactiver",
+    "status": {
+      "active": "Actif",
+      "disabled": "Désactivé"
+    },
+    "roles": {
+      "user": "Utilisateur",
+      "admin": "Admin"
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs",
+      "totalAdmins": "Administrateurs",
+      "onlineGamesPlayed": "Participations online",
+      "soloGamesPlayed": "Parties solo",
+      "totalPairsFound": "Paires trouvées",
+      "shinyPairsFound": "Paires shiny"
+    }
+  },
   "game": {
     "rotate": "Tourne ton appareil en mode paysage pour une meilleure expérience.",
     "triesLeft_one": "{{count}} ESSAI RESTANT !",
