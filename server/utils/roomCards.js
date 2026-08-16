@@ -6,6 +6,30 @@ const shuffle = (items) => {
   return items;
 };
 
+const shuffleWithoutAdjacentPairs = (items, columns, rows) => {
+  for (let attempt = 0; attempt < 1000; attempt += 1) {
+    const shuffled = shuffle([...items]);
+    let valid = true;
+    for (let index = 0; index < shuffled.length; index += 1) {
+      const x = Math.floor(index / rows);
+      const y = index % rows;
+      const neighbors = [
+        [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1],
+      ];
+      for (const [neighborX, neighborY] of neighbors) {
+        if (
+          neighborX >= 0 && neighborX < columns &&
+          neighborY >= 0 && neighborY < rows &&
+          shuffled[index].id === shuffled[neighborX * rows + neighborY].id
+        ) valid = false;
+      }
+      if (!valid) break;
+    }
+    if (valid) return shuffled;
+  }
+  return shuffle([...items]);
+};
+
 const createCards = (columns, rows) => {
   const pairCount = (columns * rows) / 2;
   const usedNumbers = new Set();
@@ -20,7 +44,7 @@ const createCards = (columns, rows) => {
     pairs.push({ id, shiny }, { id, shiny });
   }
 
-  const cards = shuffle(pairs);
+  const cards = shuffleWithoutAdjacentPairs(pairs, columns, rows);
   return Array.from({ length: columns }, (_, columnIndex) =>
     Array.from({ length: rows }, (_, rowIndex) => ({
       ...cards[columnIndex * rows + rowIndex],
@@ -29,4 +53,4 @@ const createCards = (columns, rows) => {
   );
 };
 
-module.exports = { createCards };
+module.exports = { createCards, shuffleWithoutAdjacentPairs };

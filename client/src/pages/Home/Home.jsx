@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Solo from "../Memory/Solo/Solo";
+import { shuffleWithoutAdjacentPairs } from "../../utils/createSoloCards";
 import "./Home.css";
 
 function Home() {
@@ -16,14 +17,6 @@ function Home() {
   const parisDate = new Date(parisTime);
   const isWeekend = parisDate.getDay() === 6 || parisDate.getDay() === 0;
 
-  const shuffleArray = (array) => {
-    for (let index = array.length - 1; index > 0; index -= 1) {
-      const target = Math.floor(Math.random() * (index + 1));
-      [array[index], array[target]] = [array[target], array[index]];
-    }
-    return array;
-  };
-
   const setDefaultCards = (columns, rows) => {
     const pairCount = (columns * rows) / 2;
     const usedNumbers = new Set();
@@ -37,7 +30,7 @@ function Home() {
       }
     }
 
-    const shuffledCards = shuffleArray(pairs);
+    const shuffledCards = shuffleWithoutAdjacentPairs(pairs, columns, rows);
     setCards(
       Array.from({ length: columns }, (_, columnIndex) =>
         Array.from(
