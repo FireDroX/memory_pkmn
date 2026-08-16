@@ -172,7 +172,9 @@
     "pairsRemaining_other": "There are {{count}} pairs left...",
     "pokemonAlt": "Pokemon",
     "winMascotAlt": "Machoke",
-    "lossMascotAlt": "Hitmontop"
+    "lossMascotAlt": "Hitmontop",
+    "home": "Home",
+    "restart": "Restart"
   },
   "online": {
     "players": "Players: {{ready}}/{{total}}",
@@ -185,7 +187,9 @@
     "resultSubtitle_one": "Final ranking · {{count}} player",
     "resultSubtitle_other": "Final ranking · {{count}} players",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
-    "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}"
+    "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}",
+    "revenge": "Rematch",
+    "deleteRoom": "Delete room"
   },
   "profile": {
     "eyebrow": "TRAINER PROFILE",

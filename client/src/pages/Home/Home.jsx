@@ -70,6 +70,18 @@ function Home() {
     }));
   };
 
+  const restartSolo = () => {
+    const rows = cards[0]?.length || 7;
+    setCards([]);
+    setGame({ pairs: -1, tries: -1, started: false });
+    setTimeout(() => setDefaultCards(4, rows), 0);
+  };
+
+  const leaveSolo = () => {
+    setCards([]);
+    setGame({ pairs: -1, tries: -1, started: false });
+  };
+
   return (
     <section className="App home-page">
       <div className="page-shell">
@@ -168,6 +180,8 @@ function Home() {
             setTries={setTries}
             setGame={setGame}
             shinyMode={shinyMode}
+            onRestart={restartSolo}
+            onHome={leaveSolo}
           />
         )}
       </div>

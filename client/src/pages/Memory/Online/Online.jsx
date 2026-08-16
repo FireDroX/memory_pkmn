@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
-import { FaCrown } from "react-icons/fa";
+import { useNavigate } from "react-router";
+import { FaCrown, FaRedoAlt, FaTrashAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import GameResult from "../../../components/GameResult/GameResult";
 import { UserContext } from "../../../utils/UserContext";
@@ -13,6 +14,7 @@ import { Loading } from "../../../components/Loading/Loading";
 const Online = ({ id }) => {
   const { name, isLoggedIn } = useContext(UserContext);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [roomExists, setRoomExists] = useState(true);
   const [users, setUsers] = useState([]);
   const [cards, setCards] = useState([]);
@@ -42,6 +44,34 @@ const Online = ({ id }) => {
     setUsers(json.users);
     setRoom(json.room);
     setCards(json.room.cards);
+  };
+
+  const handleRevenge = async () => {
+    const response = await fetch("/api/rooms/revenge", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room: id }),
+    });
+    if (response.status === 204) {
+      navigate("/profile");
+      return;
+    }
+    if (response.ok) {
+      const data = await response.json();
+      setRoom(data.room);
+      setCards(data.room.cards);
+      setFlippedCards([]);
+      setEndOfGame(false);
+    }
+  };
+
+  const handleDeleteRoom = async () => {
+    const response = await fetch("/api/rooms/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room: id }),
+    });
+    if (response.ok || response.status === 204) navigate("/profile");
   };
 
   const handleFlipCard = (coll, row, index) => {
@@ -133,15 +163,19 @@ const Online = ({ id }) => {
       setRoom(updatedRoomValues);
       setCards(updatedRoomValues.cards);
       setFlippedCards([]);
+      setEndOfGame(false);
     };
+    const handleRoomDeleted = () => navigate("/profile");
 
     socket.on("connect", handleConnect);
-    socket.on("refresh-room", handleRefresh);
+      socket.on("refresh-room", handleRefresh);
+      socket.on("room-deleted", handleRoomDeleted);
     socket.connect();
     getRoomValues();
     return () => {
       socket.off("connect", handleConnect);
       socket.off("refresh-room", handleRefresh);
+      socket.off("room-deleted", handleRoomDeleted);
       socket.disconnect();
     };
   }, [id]);
@@ -458,6 +492,18 @@ const Online = ({ id }) => {
                   description={t("online.resultSubtitle", {
                     count: rankedPlayers.length,
                   })}
+                  actions={
+                    <>
+                      <button className="game-result__action game-result__action--primary" type="button" onClick={handleRevenge}>
+                        <FaRedoAlt aria-hidden="true" /> {t("online.revenge")}
+                      </button>
+                      {room.players[0]?.name === name && (
+                        <button className="game-result__action" type="button" onClick={handleDeleteRoom}>
+                          <FaTrashAlt aria-hidden="true" /> {t("online.deleteRoom")}
+                        </button>
+                      )}
+                    </>
+                  }
                 >
                   <ol
                     className="online-result-ranking"

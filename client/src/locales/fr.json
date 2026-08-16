@@ -172,7 +172,9 @@
     "pairsRemaining_other": "Il reste {{count}} paires...",
     "pokemonAlt": "Pokemon",
     "winMascotAlt": "Machopeur",
-    "lossMascotAlt": "Kapoera"
+    "lossMascotAlt": "Kapoera",
+    "home": "Accueil",
+    "restart": "Recommencer"
   },
   "online": {
     "players": "Joueurs : {{ready}}/{{total}}",
@@ -185,7 +187,9 @@
     "resultSubtitle_one": "Classement final · {{count}} joueur",
     "resultSubtitle_other": "Classement final · {{count}} joueurs",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
-    "cardBackAlt": "Pokemon révélé - {{column}}-{{row}}"
+    "cardBackAlt": "Pokemon révélé - {{column}}-{{row}}",
+    "revenge": "Revanche",
+    "deleteRoom": "Supprimer le salon"
   },
   "profile": {
     "eyebrow": "PROFIL DRESSEUR",
