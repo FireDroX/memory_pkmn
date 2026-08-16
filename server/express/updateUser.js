@@ -1,8 +1,8 @@
 const express = require("express");
 const pool = require("../../db");
-const levels = require("../utils/Levels");
 const parseJson = require("../utils/parseJson");
 const {
+  addXp,
   prepareProfile,
   unlockAchievement,
   isWeekendInParis,
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
     const currentProfile = prepareProfile(
       parseJson(players[0].user_profile, {}),
     );
-    let updatedUser = prepareProfile(currentProfile);
+    let updatedUser = addXp(currentProfile, earnedXp);
     if (req.body.userProfile) {
       const requestedColors =
         req.body.userProfile?.inventory?.[0]?.colors || [];
@@ -42,26 +42,14 @@ router.post("/", async (req, res) => {
           status: "Selection de couleur invalide.",
         });
       }
-      updatedUser.inventory[0].colors = [...requestedColors];
+      const newlyUnlockedColors = updatedUser.inventory[0].colors.filter(
+        (color) => !currentColors.includes(color),
+      );
+      updatedUser.inventory[0].colors = [
+        ...requestedColors,
+        ...newlyUnlockedColors,
+      ];
     }
-    const currentXp = Number(currentProfile.xp) || 0;
-    const xpNeeded = Number(currentProfile.xpNeeded) || 10;
-    const level = Number(currentProfile.level) || 0;
-
-    if (currentXp + earnedXp >= xpNeeded && levels[level + 1]) {
-      const nextLevel = levels[level + 1];
-      updatedUser.level = nextLevel.level;
-      updatedUser.xp = currentXp + earnedXp - xpNeeded;
-      updatedUser.xpNeeded = nextLevel.xpNeeded;
-      nextLevel.rewards.colors.forEach((color) => {
-        if (!updatedUser.inventory[0].colors.includes(color)) {
-          updatedUser.inventory[0].colors.push(color);
-        }
-      });
-    } else if (!req.body.userProfile) {
-      updatedUser.xp = currentXp + earnedXp;
-    }
-
     if (earnedXp > 0 && isWeekendInParis()) {
       updatedUser = unlockAchievement(updatedUser, 10);
     }
