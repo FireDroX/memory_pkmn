@@ -165,6 +165,13 @@
   text-align: left;
 }
 
+.profile-section-title,
+.profile-invites > h5 > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .profile-subtitle {
   margin-bottom: 8px;
   color: var(--ink-soft);
@@ -347,20 +354,29 @@
   font-size: 0.68rem;
 }
 
-.profile-invitesList > p > span {
+.profile-room-join {
   margin-left: auto;
   padding: 5px 8px;
+  border: 0;
   border-radius: 7px;
   cursor: pointer;
   background: var(--mint);
   color: var(--ink);
   font-size: 0.58rem;
   font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.profile-invitesList > p > svg {
+.profile-room-delete {
   margin-left: 3px;
+  padding: 5px;
+  border: 0;
   cursor: pointer;
+  display: grid;
+  place-items: center;
+  background: transparent;
   color: var(--red);
 }
 
@@ -714,6 +730,9 @@
 
 .achievements-heading h3 {
   margin: 7px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 2rem;
 }
 

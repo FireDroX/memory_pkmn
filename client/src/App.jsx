@@ -12,9 +12,10 @@ const Profile = lazy(() => import("./pages/Profile/Profile"));
 const Online = lazy(() => import("./pages/Memory/Online/Online"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard/Leaderboard"));
 const Colors = lazy(() => import("./pages/Colors/Colors"));
+const Admin = lazy(() => import("./pages/Admin/Admin"));
 
 function App() {
-  const { isLoggedIn, isSessionReady } = useContext(UserContext);
+  const { isLoggedIn, isSessionReady, role } = useContext(UserContext);
   const location = useLocation();
 
   if (!isSessionReady) return <Loader />;
@@ -75,6 +76,16 @@ function App() {
               Loadable(Leaderboard)
             ) : (
               <Navigate to={"/login"} replace />
+            )
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            isLoggedIn && role === "admin" ? (
+              Loadable(Admin)
+            ) : (
+              <Navigate to={isLoggedIn ? "/" : "/login"} replace />
             )
           }
         />

@@ -28,6 +28,29 @@ test("GET /friends classe les amis et demandes du joueur", async () => {
   });
 });
 
+test("GET /friends masque les relations avec un joueur desactive", async () => {
+  const pool = {
+    execute: async (sql) => {
+      const filtersInactiveUsers =
+        sql.includes("owner.is_active = TRUE") &&
+        sql.includes("friend.is_active = TRUE");
+      return [[
+        { status: "accepted", requested_by: "USER-A", name: "Misty" },
+        ...(filtersInactiveUsers
+          ? []
+          : [{ status: "accepted", requested_by: "USER-A", name: "Brock" }]),
+      ]];
+    },
+  };
+  const router = loadRouterWithPool("../server/express/friendsRoute", pool);
+  const response = await invokeRoute(router, "GET", "/", {
+    auth: { id: "USER-A", name: "Ash" },
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(response.body.friends, ["Misty"]);
+});
+
 test("POST /friends/request cree une demande unique", async () => {
   const writes = [];
   const pool = {

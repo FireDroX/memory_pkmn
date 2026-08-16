@@ -20,6 +20,7 @@
     "solo": "Solo",
     "rooms": "Salons",
     "leaderboard": "Classement",
+    "admin": "Administration",
     "login": "Connexion",
     "level": "Niv. {{level}}"
   },
@@ -106,6 +107,44 @@
     "wins": "VICTOIRES",
     "shiny": "SHINY TROUVÉS"
   },
+  "admin": {
+    "eyebrow": "CENTRE DE CONTRÔLE",
+    "title": "Administration",
+    "description": "Consulte l'activité globale de PokeFlip et gère les droits des dresseurs depuis un espace sécurisé.",
+    "globalStats": "Statistiques globales",
+    "usersEyebrow": "COMMUNAUTÉ",
+    "usersTitle": "Gestion des utilisateurs",
+    "search": "Rechercher un dresseur",
+    "loading": "Chargement des données administrateur...",
+    "noUsers": "Aucun utilisateur ne correspond à cette recherche.",
+    "currentUser": "Ton compte",
+    "memberSince": "Inscrit le {{date}}",
+    "level": "Niveau",
+    "onlineRecord": "Online",
+    "soloRecord": "Solo",
+    "pairs": "Paires",
+    "role": "Rôle du compte",
+    "changeRole": "Modifier le rôle de {{name}}",
+    "changeStatus": "{{action}} le compte de {{name}}",
+    "deactivate": "Désactiver",
+    "reactivate": "Réactiver",
+    "status": {
+      "active": "Actif",
+      "disabled": "Désactivé"
+    },
+    "roles": {
+      "user": "Utilisateur",
+      "admin": "Admin"
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs",
+      "totalAdmins": "Administrateurs",
+      "onlineGamesPlayed": "Participations online",
+      "soloGamesPlayed": "Parties solo",
+      "totalPairsFound": "Paires trouvées",
+      "shinyPairsFound": "Paires shiny"
+    }
+  },
   "game": {
     "rotate": "Tourne ton appareil en mode paysage pour une meilleure expérience.",
     "triesLeft_one": "{{count}} ESSAI RESTANT !",
@@ -154,6 +193,7 @@
     "playSolo": "Jouer en solo",
     "joinArena": "Rejoindre une arène",
     "refreshRooms": "Actualiser les salons",
+    "deleteRoom": "Supprimer le salon {{room}}",
     "join": "REJOINDRE",
     "viewLeaderboard": "Voir le classement",
     "noRooms": "Aucun salon pour le moment",
@@ -268,6 +308,19 @@
     "hostOnlyDelete": "Seul l'hôte peut supprimer ce salon.",
     "roomDeleted": "Salon {{roomID}} supprimé.",
     "invalidColor": "Sélection de couleur invalide.",
-    "profileUpdate": "Mise à jour du profil impossible."
+    "profileUpdate": "Mise à jour du profil impossible.",
+    "adminRequired": "Accès administrateur requis.",
+    "adminRoleCheck": "Vérification du rôle impossible.",
+    "adminLoad": "Chargement de l'administration impossible.",
+    "adminInvalidRole": "Rôle utilisateur invalide.",
+    "adminLastRole": "Le dernier administrateur doit conserver son rôle.",
+    "adminRoleUpdate": "Mise à jour du rôle impossible.",
+    "adminRoleUpdated": "Rôle de {{name}} mis à jour.",
+    "adminInvalidStatus": "Statut utilisateur invalide.",
+    "adminSelfDisable": "Tu ne peux pas désactiver ton propre compte.",
+    "adminStatusUpdate": "Mise à jour du statut impossible.",
+    "adminUserActivated": "Compte de {{name}} réactivé.",
+    "adminUserDeactivated": "Compte de {{name}} désactivé.",
+    "accountDisabled": "Ce compte est désactivé."
   }
 }

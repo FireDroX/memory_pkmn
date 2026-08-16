@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import GameResult from "../../../components/GameResult/GameResult";
 import { UserContext } from "../../../utils/UserContext";
 import { socket } from "../../../socket";
+import { pokemonIdFromName } from "../../../utils/pokemon";
 import "../../../pages/Memory/Solo/Solo.css";
 import "./Online.css";
 
@@ -41,12 +42,6 @@ const Online = ({ id }) => {
     setUsers(json.users);
     setRoom(json.room);
     setCards(json.room.cards);
-  };
-
-  const stringToDecimal = (str) => {
-    let decimal = 0;
-    str.split("").map((char) => (decimal += char.charCodeAt(0)));
-    return ((decimal - 1) % 1025) + 1;
   };
 
   const handleFlipCard = (coll, row, index) => {
@@ -253,7 +248,7 @@ const Online = ({ id }) => {
                     style={{ border: "2px solid lightblue" }}
                   >
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                         users[0].name,
                       )}.png`}
                       alt={t("common.user")}
@@ -288,7 +283,7 @@ const Online = ({ id }) => {
                     style={{ border: "2px solid burlywood" }}
                   >
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                         users[3].name,
                       )}.png`}
                       alt={t("common.user")}
@@ -391,7 +386,7 @@ const Online = ({ id }) => {
                     style={{ border: "2px solid lightcoral" }}
                   >
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                         users[1].name,
                       )}.png`}
                       alt={t("common.user")}
@@ -426,7 +421,7 @@ const Online = ({ id }) => {
                     style={{ border: "2px solid lightgreen" }}
                   >
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                         users[2].name,
                       )}.png`}
                       alt={t("common.user")}
@@ -478,7 +473,7 @@ const Online = ({ id }) => {
                           #{playerIndex + 1}
                         </span>
                         <img
-                          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+                          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                             player.name,
                           )}.png`}
                           alt=""

@@ -22,6 +22,7 @@ const statusKeys = new Map([
   ["Suppression impossible.", "status.deleteError"],
   ["Chargement du profil impossible.", "status.profileLoad"],
   ["Identifiant ou mot de passe incorrect.", "status.invalidCredentials"],
+  ["Compte desactive.", "status.accountDisabled"],
   ["Connexion impossible.", "status.loginError"],
   ["Choisis un pseudo alphanumerique et un mot de passe.", "status.registerInvalid"],
   ["Ce pseudo est deja utilise.", "status.usernameTaken"],
@@ -30,6 +31,15 @@ const statusKeys = new Map([
   ["Seul l'hote peut supprimer ce salon.", "status.hostOnlyDelete"],
   ["Selection de couleur invalide.", "status.invalidColor"],
   ["Mise a jour du profil impossible.", "status.profileUpdate"],
+  ["Acces administrateur requis.", "status.adminRequired"],
+  ["Verification du role impossible.", "status.adminRoleCheck"],
+  ["Chargement de l'administration impossible.", "status.adminLoad"],
+  ["Role utilisateur invalide.", "status.adminInvalidRole"],
+  ["Le dernier administrateur doit conserver son role.", "status.adminLastRole"],
+  ["Mise a jour du role impossible.", "status.adminRoleUpdate"],
+  ["Statut utilisateur invalide.", "status.adminInvalidStatus"],
+  ["Tu ne peux pas desactiver ton propre compte.", "status.adminSelfDisable"],
+  ["Mise a jour du statut impossible.", "status.adminStatusUpdate"],
 ]);
 
 const statusPatterns = [

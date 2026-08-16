@@ -1,9 +1,16 @@
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { FaTrophy } from "react-icons/fa";
+import {
+  FaDoorOpen,
+  FaGamepad,
+  FaShieldAlt,
+  FaSignInAlt,
+  FaTrophy,
+} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
 import { getLanguage } from "../../utils/languages";
+import { pokemonIdFromName } from "../../utils/pokemon";
 import frenchFlag from "../../assets/flags/fr.svg";
 import britishFlag from "../../assets/flags/gb.svg";
 import "./Navbar.css";
@@ -15,17 +22,11 @@ const languageFlags = Object.freeze({
 });
 
 const Navbar = () => {
-  const { name, isLoggedIn, userProfile } = useContext(UserContext);
+  const { name, isLoggedIn, role, userProfile } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const language = getLanguage(i18n.resolvedLanguage);
-
-  const stringToDecimal = (str) => {
-    let decimal = 0;
-    str.split("").map((char) => (decimal += char.charCodeAt(0)));
-    return ((decimal - 1) % 1025) + 1;
-  };
 
   const xpPercentage = (userProfile.xp / userProfile.xpNeeded) * 100;
 
@@ -44,18 +45,22 @@ const Navbar = () => {
         </button>
         <nav className="nav-links" aria-label={t("nav.main")}>
           <button
+            aria-label={t("nav.solo")}
             className={location.pathname === "/" ? "active" : ""}
             onClick={() => navigate("/")}
           >
-            {t("nav.solo")}
+            <FaGamepad aria-hidden="true" />
+            <span>{t("nav.solo")}</span>
           </button>
           {isLoggedIn && (
             <>
               <button
+                aria-label={t("nav.rooms")}
                 className={location.pathname === "/profile" ? "active" : ""}
                 onClick={() => navigate("/profile")}
               >
-                {t("nav.rooms")}
+                <FaDoorOpen aria-hidden="true" />
+                <span>{t("nav.rooms")}</span>
               </button>
               <button
                 aria-label={t("nav.leaderboard")}
@@ -64,9 +69,19 @@ const Navbar = () => {
                 }
                 onClick={() => navigate("/profile/leaderboard")}
               >
-                <FaTrophy />
+                <FaTrophy aria-hidden="true" />
                 <span>{t("nav.leaderboard")}</span>
               </button>
+              {role === "admin" && (
+                <button
+                  aria-label={t("nav.admin")}
+                  className={location.pathname === "/admin" ? "active" : ""}
+                  onClick={() => navigate("/admin")}
+                >
+                  <FaShieldAlt aria-hidden="true" />
+                  <span>{t("nav.admin")}</span>
+                </button>
+              )}
             </>
           )}
         </nav>
@@ -87,7 +102,7 @@ const Navbar = () => {
           {name !== "" && isLoggedIn ? (
             <button className="user-chip" onClick={() => navigate("/profile")}>
             <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                 name,
               )}.png`}
               alt=""
@@ -113,8 +128,13 @@ const Navbar = () => {
             </span>
             </button>
           ) : (
-            <button className="nav-login" onClick={() => navigate("/login")}>
-              {t("nav.login")}
+            <button
+              className="nav-login"
+              onClick={() => navigate("/login")}
+              aria-label={t("nav.login")}
+            >
+              <FaSignInAlt aria-hidden="true" />
+              <span>{t("nav.login")}</span>
             </button>
           )}
         </div>

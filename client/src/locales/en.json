@@ -20,6 +20,7 @@
     "solo": "Solo",
     "rooms": "Rooms",
     "leaderboard": "Leaderboard",
+    "admin": "Administration",
     "login": "Log in",
     "level": "Lvl. {{level}}"
   },
@@ -106,6 +107,44 @@
     "wins": "GAMES WON",
     "shiny": "SHINY FOUND"
   },
+  "admin": {
+    "eyebrow": "CONTROL CENTER",
+    "title": "Administration",
+    "description": "Review global PokeFlip activity and manage trainer permissions from one secure space.",
+    "globalStats": "Global statistics",
+    "usersEyebrow": "COMMUNITY",
+    "usersTitle": "User management",
+    "search": "Search for a trainer",
+    "loading": "Loading administration data...",
+    "noUsers": "No user matches this search.",
+    "currentUser": "Your account",
+    "memberSince": "Joined {{date}}",
+    "level": "Level",
+    "onlineRecord": "Online",
+    "soloRecord": "Solo",
+    "pairs": "Pairs",
+    "role": "Account role",
+    "changeRole": "Change {{name}}'s role",
+    "changeStatus": "{{action}} {{name}}'s account",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "status": {
+      "active": "Active",
+      "disabled": "Disabled"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "stats": {
+      "totalUsers": "Users",
+      "totalAdmins": "Administrators",
+      "onlineGamesPlayed": "Online participations",
+      "soloGamesPlayed": "Solo games",
+      "totalPairsFound": "Pairs found",
+      "shinyPairsFound": "Shiny pairs"
+    }
+  },
   "game": {
     "rotate": "Please rotate your device to landscape mode for a better experience.",
     "triesLeft_one": "{{count}} TRY LEFT!",
@@ -154,6 +193,7 @@
     "playSolo": "Play solo",
     "joinArena": "Join an arena",
     "refreshRooms": "Refresh rooms",
+    "deleteRoom": "Delete room {{room}}",
     "join": "JOIN",
     "viewLeaderboard": "View leaderboard",
     "noRooms": "No rooms yet",
@@ -268,6 +308,19 @@
     "hostOnlyDelete": "Only the host can delete this room.",
     "roomDeleted": "Room {{roomID}} deleted.",
     "invalidColor": "Invalid color selection.",
-    "profileUpdate": "Unable to update the profile."
+    "profileUpdate": "Unable to update the profile.",
+    "adminRequired": "Administrator access required.",
+    "adminRoleCheck": "Unable to verify the role.",
+    "adminLoad": "Unable to load administration data.",
+    "adminInvalidRole": "Invalid user role.",
+    "adminLastRole": "The last administrator must keep their role.",
+    "adminRoleUpdate": "Unable to update the role.",
+    "adminRoleUpdated": "{{name}}'s role has been updated.",
+    "adminInvalidStatus": "Invalid user status.",
+    "adminSelfDisable": "You cannot deactivate your own account.",
+    "adminStatusUpdate": "Unable to update the account status.",
+    "adminUserActivated": "{{name}}'s account has been reactivated.",
+    "adminUserDeactivated": "{{name}}'s account has been deactivated.",
+    "accountDisabled": "This account is disabled."
   }
 }

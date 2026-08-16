@@ -15,10 +15,16 @@ import {
   FaCheck,
   FaCalendarCheck,
   FaChartLine,
+  FaDoorOpen,
   FaGamepad,
   FaGift,
+  FaMedal,
   FaPalette,
+  FaPlay,
+  FaPlus,
+  FaSignInAlt,
   FaSignOutAlt,
+  FaStar,
   FaTrashAlt,
   FaTrophy,
   FaUserPlus,
@@ -31,18 +37,11 @@ import StatusPopup, {
 import { createFriendDuel } from "../../utils/friendDuelInvite";
 import { localizedStatus } from "../../utils/serverStatus";
 import { getLanguage } from "../../utils/languages";
+import { pokemonIdFromName } from "../../utils/pokemon";
 import {
   achievements,
   getUnlockedAchievementIds,
 } from "../../utils/achievements";
-
-const pokemonForName = (name) => {
-  const total = [...name].reduce(
-    (value, character) => value + character.charCodeAt(0),
-    0,
-  );
-  return ((total - 1) % 1025) + 1;
-};
 
 const Profile = () => {
   const {
@@ -246,7 +245,7 @@ const Profile = () => {
           <div className="trainer-identity">
             <div className="trainer-avatar">
               <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonForName(
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                   name,
                 )}.png`}
                 alt=""
@@ -274,15 +273,15 @@ const Profile = () => {
           </div>
 
           <div className="trainer-stats">
-            <div>
+            <div className="trainer-stat trainer-stat--wins">
               <strong>{userStats.onlineGamesWon || 0}</strong>
               <span>{t("profile.wins")}</span>
             </div>
-            <div>
+            <div className="trainer-stat trainer-stat--shiny">
               <strong>{userStats.shinyPairsFound || 0}</strong>
               <span>{t("profile.shiny")}</span>
             </div>
-            <div>
+            <div className="trainer-stat trainer-stat--achievements">
               <strong>
                 {unlockedAchievements.size}/{achievements.length}
               </strong>
@@ -305,7 +304,10 @@ const Profile = () => {
         <div className="profile-container">
           <div className="profile-infos">
             <span className="eyebrow">{t("profile.onlineEyebrow")}</span>
-            <h5>{t("profile.createArena")}</h5>
+            <h5 className="profile-section-title">
+              <FaGamepad aria-hidden="true" />
+              {t("profile.createArena")}
+            </h5>
             <p className="profile-subtitle">{t("profile.createHint")}</p>
             <div className="profile-invite">
               <div className="profile-inputs">
@@ -377,7 +379,8 @@ const Profile = () => {
                       setGamePairs({ c: pairs.columns, r: pairs.rows })
                     }
                     data-active={
-                      gamePairs.c === pairs.columns && gamePairs.r === pairs.rows
+                      gamePairs.c === pairs.columns &&
+                      gamePairs.r === pairs.rows
                     }
                   >
                     {(pairs.columns * pairs.rows) / 2}
@@ -388,6 +391,7 @@ const Profile = () => {
 
               <div className="profile-buttons-joining">
                 <button className="profile-disconnect" onClick={handleInvite}>
+                  <FaPlus aria-hidden="true" />
                   {t("profile.createRoom")}
                 </button>
               </div>
@@ -397,13 +401,17 @@ const Profile = () => {
               className="profile-disconnect secondary"
               onClick={() => navigate("/")}
             >
+              <FaPlay aria-hidden="true" />
               {t("profile.playSolo")}
             </button>
           </div>
 
           <div className="profile-invites">
             <h5>
-              {t("profile.joinArena")}
+              <span>
+                <FaDoorOpen aria-hidden="true" />
+                {t("profile.joinArena")}
+              </span>
               <button
                 className={isRefreshing ? "refreshing" : ""}
                 onClick={refresh}
@@ -424,10 +432,7 @@ const Profile = () => {
                   <p key={game.id}>
                     {game.players.map((player, playerIndex) => (
                       <Fragment key={`${game.id}-${player.name}`}>
-                        <strong
-                          className={player.skin}
-                          data-name={player.name}
-                        >
+                        <strong className={player.skin} data-name={player.name}>
                           {player.name}
                         </strong>
                         {playerIndex < game.players.length - 1 && (
@@ -435,18 +440,28 @@ const Profile = () => {
                         )}
                       </Fragment>
                     ))}
-                    <span onClick={() => navigate(`/online?id=${game.id}`)}>
+                    <button
+                      type="button"
+                      className="profile-room-join"
+                      onClick={() => navigate(`/online?id=${game.id}`)}
+                    >
+                      <FaSignInAlt aria-hidden="true" />
                       {t("profile.join")}
-                    </span>
+                    </button>
                     {game.players[0]?.name === name && (
-                      <FaTrashAlt onClick={() => handleDelete(game.id)} />
+                      <button
+                        type="button"
+                        className="profile-room-delete"
+                        aria-label={t("profile.deleteRoom", { room: game.id })}
+                        onClick={() => handleDelete(game.id)}
+                      >
+                        <FaTrashAlt aria-hidden="true" />
+                      </button>
                     )}
                   </p>
                 ))}
               {gamesArray.length === 0 && (
-                <p className="profile-invites-empty">
-                  {t("profile.noRooms")}
-                </p>
+                <p className="profile-invites-empty">{t("profile.noRooms")}</p>
               )}
             </div>
 
@@ -465,7 +480,7 @@ const Profile = () => {
             <div>
               <span className="eyebrow">{t("daily.eyebrow")}</span>
               <h3>
-                <FaCalendarCheck /> {t("daily.title")}
+                <FaCalendarCheck aria-hidden="true" /> {t("daily.title")}
               </h3>
             </div>
             <p>{t("daily.refresh")}</p>
@@ -519,7 +534,7 @@ const Profile = () => {
             <div>
               <span className="eyebrow">{t("stats.eyebrow")}</span>
               <h3>
-                <FaChartLine /> {t("stats.title")}
+                <FaChartLine aria-hidden="true" /> {t("stats.title")}
               </h3>
             </div>
             {userStats.createdAt && (
@@ -536,23 +551,63 @@ const Profile = () => {
             <article>
               <h4>{t("stats.online")}</h4>
               <dl>
-                <div><dt>{t("stats.games")}</dt><dd>{userStats.onlineGamesPlayed}</dd></div>
-                <div><dt>{t("stats.wins")}</dt><dd>{userStats.onlineGamesWon}</dd></div>
-                <div><dt>{t("stats.losses")}</dt><dd>{userStats.onlineGamesLost}</dd></div>
-                <div><dt>{t("stats.winRate")}</dt><dd>{userStats.onlineWinRate}%</dd></div>
-                <div><dt>{t("stats.currentStreak")}</dt><dd>{userStats.currentWinStreak}</dd></div>
-                <div><dt>{t("stats.bestStreak")}</dt><dd>{userStats.bestWinStreak}</dd></div>
+                <div>
+                  <dt>{t("stats.games")}</dt>
+                  <dd>{userStats.onlineGamesPlayed}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.wins")}</dt>
+                  <dd>{userStats.onlineGamesWon}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.losses")}</dt>
+                  <dd>{userStats.onlineGamesLost}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.winRate")}</dt>
+                  <dd>{userStats.onlineWinRate}%</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.currentStreak")}</dt>
+                  <dd>{userStats.currentWinStreak}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.bestStreak")}</dt>
+                  <dd>{userStats.bestWinStreak}</dd>
+                </div>
               </dl>
             </article>
             <article>
               <h4>{t("stats.soloCollection")}</h4>
               <dl>
-                <div><dt>{t("stats.soloGames")}</dt><dd>{userStats.soloGamesPlayed}</dd></div>
-                <div><dt>{t("stats.soloWins")}</dt><dd>{userStats.soloGamesWon}</dd></div>
-                <div><dt>{t("stats.soloRate")}</dt><dd>{userStats.soloWinRate}%</dd></div>
-                <div><dt>{t("stats.bestRemaining")}</dt><dd>{t("stats.tries", { count: userStats.soloBestRemainingTries })}</dd></div>
-                <div><dt>{t("stats.pairsFound")}</dt><dd>{userStats.totalPairsFound}</dd></div>
-                <div><dt>{t("stats.shinyPairs")}</dt><dd>{userStats.shinyPairsFound}</dd></div>
+                <div>
+                  <dt>{t("stats.soloGames")}</dt>
+                  <dd>{userStats.soloGamesPlayed}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.soloWins")}</dt>
+                  <dd>{userStats.soloGamesWon}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.soloRate")}</dt>
+                  <dd>{userStats.soloWinRate}%</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.bestRemaining")}</dt>
+                  <dd>
+                    {t("stats.tries", {
+                      count: userStats.soloBestRemainingTries,
+                    })}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t("stats.pairsFound")}</dt>
+                  <dd>{userStats.totalPairsFound}</dd>
+                </div>
+                <div>
+                  <dt>{t("stats.shinyPairs")}</dt>
+                  <dd>{userStats.shinyPairsFound}</dd>
+                </div>
               </dl>
             </article>
           </div>
@@ -562,7 +617,9 @@ const Profile = () => {
           <div className="friends-heading">
             <div>
               <span className="eyebrow">{t("friends.eyebrow")}</span>
-              <h3><FaUsers /> {t("friends.title")}</h3>
+              <h3>
+                <FaUsers aria-hidden="true" /> {t("friends.title")}
+              </h3>
             </div>
             <div className="friend-request-form">
               <select
@@ -579,7 +636,9 @@ const Profile = () => {
                       !friends.incoming.includes(user) &&
                       !friends.outgoing.includes(user),
                   )
-                  .map((user) => <option key={user}>{user}</option>)}
+                  .map((user) => (
+                    <option key={user}>{user}</option>
+                  ))}
               </select>
               <button
                 disabled={!selectedFriend}
@@ -615,7 +674,7 @@ const Profile = () => {
             {friends.friends.map((friend) => (
               <article key={friend}>
                 <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonForName(friend)}.png`}
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(friend)}.png`}
                   alt=""
                   draggable={false}
                 />
@@ -648,7 +707,9 @@ const Profile = () => {
           <div className="achievements-heading">
             <div>
               <span className="eyebrow">{t("achievements.eyebrow")}</span>
-              <h3>{t("achievements.title")}</h3>
+              <h3>
+                <FaTrophy aria-hidden="true" /> {t("achievements.title")}
+              </h3>
             </div>
             <p>
               {t("achievements.unlockedCount", {

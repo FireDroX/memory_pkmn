@@ -59,7 +59,8 @@ router.post("/", async (req, res) => {
 
     const placeholders = requestedPlayers.map(() => "?").join(", ");
     const [users] = await pool.execute(
-      `SELECT id, name FROM users WHERE name IN (${placeholders})`,
+      `SELECT id, name FROM users
+       WHERE name IN (${placeholders}) AND is_active = TRUE`,
       requestedPlayers,
     );
 

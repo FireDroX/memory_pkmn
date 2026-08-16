@@ -1,15 +1,19 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const pool = require("../../db");
+const {
+  isValidUsername,
+  normalizeUsername,
+} = require("../utils/username");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const name = String(req.body.name || "").trim();
+    const name = normalizeUsername(req.body.name);
     const password = String(req.body.password || "");
 
-    if (!/^[a-zA-Z0-9]{1,25}$/.test(name) || !password) {
+    if (!isValidUsername(name) || !password) {
       return res.status(400).json({
         status: "Choisis un pseudo alphanumerique et un mot de passe.",
       });

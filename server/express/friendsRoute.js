@@ -5,7 +5,7 @@ const router = express.Router();
 
 const getUser = async (name) => {
   const [users] = await pool.execute(
-    "SELECT id, name FROM users WHERE name = ? LIMIT 1",
+    `SELECT id, name FROM users WHERE name = ? AND is_active = TRUE LIMIT 1`,
     [String(name || "").trim()],
   );
   return users[0];
@@ -29,7 +29,9 @@ router.get("/", async (req, res) => {
        FROM friendships f
        JOIN users owner ON owner.id = f.user_id
        JOIN users friend ON friend.id = f.friend_id
-       WHERE f.user_id = ? OR f.friend_id = ?
+       WHERE (f.user_id = ? OR f.friend_id = ?)
+         AND owner.is_active = TRUE
+         AND friend.is_active = TRUE
        ORDER BY name`,
       [user.id, user.id, user.id],
     );

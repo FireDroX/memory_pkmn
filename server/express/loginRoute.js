@@ -20,6 +20,7 @@ const buildAuthenticatedUser = (user) => {
   return {
     status: "",
     name: user.name,
+    role: user.role === "admin" ? "admin" : "user",
     stats: formatPlayerStats(user),
     profile,
   };
@@ -57,6 +58,9 @@ router.post("/", async (req, res) => {
         .status(401)
         .json({ status: "Identifiant ou mot de passe incorrect." });
     }
+    if (!user.is_active) {
+      return res.status(403).json({ status: "Compte desactive." });
+    }
 
     await regenerateSession(req);
     req.session.user = { id: user.id, name: user.name };
@@ -81,7 +85,7 @@ router.get("/session", async (req, res) => {
       [userId],
     );
     const user = users[0];
-    if (!user) {
+    if (!user || !user.is_active) {
       return req.session.destroy(() => {
         res.clearCookie(sessionCookieName, { path: "/" });
         return res.status(401).json({ authenticated: false });

@@ -14,6 +14,35 @@ const migrationsDirectory = path.resolve(
 const database = process.env.SQL_DBNAME || "pokeflip";
 const port = Number(process.env.SQL_PORT || 3306);
 
+const compatibleMigrationRevisions = new Map([
+  [
+    "004_add_detailed_player_stats.sql",
+    new Map([
+      [
+        "f7e94866da9ab3d7b275603877913e02940f8db75d6018c4eae5b3a6f04c9d95",
+        "686360daa86933f99dfaaea52c2aa315d444b46848aec7623cfcaa2681ffb61d",
+      ],
+      [
+        "5e1c92e34b1bcd77b3f8f2db8bdb011fab0ea0524d24045a8e339a7b62ff8f7e",
+        "686360daa86933f99dfaaea52c2aa315d444b46848aec7623cfcaa2681ffb61d",
+      ],
+    ]),
+  ],
+  [
+    "007_add_user_roles.sql",
+    new Map([
+      [
+        "c4b59cad5430c7cfaf2dfeacb8a8dd8377e8376a795e1a7610d0c1b4b7b9e0c9",
+        "112565fd0b3834b69f181037b4a5d17ffd825cb2fe1967bd0ab4785e01fca5e3",
+      ],
+      [
+        "850424495e7e3d265a5a439adcc9b81244ee61e19bd55f8f78d29b1b773530ab",
+        "112565fd0b3834b69f181037b4a5d17ffd825cb2fe1967bd0ab4785e01fca5e3",
+      ],
+    ]),
+  ],
+]);
+
 if (!/^[a-zA-Z0-9_]+$/.test(database)) {
   throw new Error("SQL_DBNAME contient des caracteres non autorises.");
 }
@@ -29,6 +58,11 @@ const connectionConfig = {
   password: process.env.SQL_PASSWORD || "",
   charset: "utf8mb4",
 };
+
+const migrationChecksum = (sql) =>
+  createHash("sha256")
+    .update(sql.replace(/\r\n/g, "\n"))
+    .digest("hex");
 
 const getMigrations = async () => {
   const entries = await readdir(migrationsDirectory, { withFileTypes: true });
@@ -57,9 +91,10 @@ const getMigrations = async () => {
         path.join(migrationsDirectory, filename),
         "utf8",
       );
-      const checksum = createHash("sha256").update(sql).digest("hex");
+      const checksum = migrationChecksum(sql);
+      const rawChecksum = createHash("sha256").update(sql).digest("hex");
 
-      return { filename, sql, checksum };
+      return { filename, sql, checksum, rawChecksum };
     }),
   );
 };
@@ -88,6 +123,17 @@ const formatError = (error) => {
 
   return String(error);
 };
+
+const isCompatibleMigrationChecksum = (
+  filename,
+  appliedChecksum,
+  currentChecksum,
+  rawCurrentChecksum,
+) =>
+  appliedChecksum === currentChecksum ||
+  appliedChecksum === rawCurrentChecksum ||
+  compatibleMigrationRevisions.get(filename)?.get(appliedChecksum) ===
+    currentChecksum;
 
 const migrate = async () => {
   const migrations = await getMigrations();
@@ -134,12 +180,25 @@ const migrate = async () => {
 
       if (appliedChecksum) {
         if (appliedChecksum !== migration.checksum) {
-          throw new Error(
-            `La migration deja appliquee "${migration.filename}" a ete modifiee.`,
-          );
-        }
+          if (!isCompatibleMigrationChecksum(
+            migration.filename,
+            appliedChecksum,
+            migration.checksum,
+            migration.rawChecksum,
+          )) {
+            throw new Error(
+              `La migration deja appliquee "${migration.filename}" a ete modifiee.`,
+            );
+          }
 
-        console.log(`Deja appliquee : ${migration.filename}`);
+          await connection.execute(
+            "UPDATE schema_migrations SET checksum = ? WHERE filename = ?",
+            [migration.checksum, migration.filename],
+          );
+          console.log(`Empreinte actualisee : ${migration.filename}`);
+        } else {
+          console.log(`Deja appliquee : ${migration.filename}`);
+        }
         continue;
       }
 
@@ -165,10 +224,14 @@ const migrate = async () => {
   }
 };
 
-migrate().catch((error) => {
-  console.error(
-    "Impossible d'appliquer les migrations MySQL :",
-    formatError(error),
-  );
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  migrate().catch((error) => {
+    console.error(
+      "Impossible d'appliquer les migrations MySQL :",
+      formatError(error),
+    );
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { isCompatibleMigrationChecksum, migrationChecksum };

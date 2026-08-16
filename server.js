@@ -10,6 +10,7 @@ const {
   createSessionMiddleware,
   createSessionStore,
 } = require("./server/session");
+const noIndex = require("./server/noIndex");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.set("io", io);
 
 // Import Express routes
 const routes = require("./server/express");
+app.use(noIndex);
 app.use(express.json({ limit: "1mb" }));
 app.use(sessionMiddleware);
 

@@ -3,6 +3,7 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../../utils/UserContext";
+import { pokemonIdFromName } from "../../utils/pokemon";
 import StatusPopup, {
   useStatusPopup,
 } from "../../components/StatusPopup/StatusPopup";
@@ -68,12 +69,6 @@ function Login({ connect }) {
     };
   }, [connect, inputName, password, confirmPassword, t]);
 
-  const stringToDecimal = (str) => {
-    let decimal = 0;
-    str.split("").map((char) => (decimal += char.charCodeAt(0)));
-    return ((decimal - 1) % 1025) + 1;
-  };
-
   return (
     <section className="App">
       <StatusPopup
@@ -92,7 +87,7 @@ function Login({ connect }) {
               {t(connect ? "auth.loginIntro" : "auth.registerIntro")}
             </p>
             <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${stringToDecimal(
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonIdFromName(
                 inputName,
               )}.png`}
               alt={t("auth.userAlt")}
