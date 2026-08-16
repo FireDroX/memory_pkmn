@@ -102,10 +102,61 @@
     }
   },
   "leaderboard": {
+    "eyebrow": "HALL DES DRESSEURS",
     "title": "CLASSEMENTS",
+    "description": "Compare tes performances avec les meilleurs dresseurs actifs de PokeFlip.",
+    "activeTrainers_one": "{{count}} dresseur actif",
+    "activeTrainers_other": "{{count}} dresseurs actifs",
+    "topFive": "TOP 5",
     "levels": "NIVEAUX",
     "wins": "VICTOIRES",
-    "shiny": "SHINY TROUVÉS"
+    "shiny": "SHINY TROUVÉS",
+    "levelScore": "NIV.",
+    "winsScore": "VIC.",
+    "shinyScore": "SHINY",
+    "rank": "Rang {{rank}}",
+    "you": "TOI",
+    "loading": "Chargement des classements...",
+    "loadError": "Impossible de charger les classements.",
+    "empty": "Aucun dresseur classé pour le moment."
+  },
+  "admin": {
+    "eyebrow": "CENTRE DE CONTRÔLE",
+    "title": "Administration",
+    "description": "Consulte l'activité globale de PokeFlip et gère les droits des dresseurs depuis un espace sécurisé.",
+    "globalStats": "Statistiques globales",
+    "usersEyebrow": "COMMUNAUTÉ",
+    "usersTitle": "Gestion des utilisateurs",
+    "search": "Rechercher un dresseur",
+    "loading": "Chargement des données administrateur...",
+    "noUsers": "Aucun utilisateur ne correspond à cette recherche.",
+    "currentUser": "Ton compte",
+    "memberSince": "Inscrit le {{date}}",
+    "level": "Niveau",
+    "onlineRecord": "Online",
+    "soloRecord": "Solo",
+    "pairs": "Paires",
+    "role": "Rôle du compte",
+    "changeRole": "Modifier le rôle de {{name}}",
+    "changeStatus": "{{action}} le compte de {{name}}",
+    "deactivate": "Désactiver",
+    "reactivate": "Réactiver",
+    "status": {
+      "active": "Actif",
+      "disabled": "Désactivé"
+    },
+    "roles": {
+      "user": "Utilisateur",
+      "admin": "Admin"
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs",
+      "totalAdmins": "Administrateurs",
+      "onlineGamesPlayed": "Participations online",
+      "soloGamesPlayed": "Parties solo",
+      "totalPairsFound": "Paires trouvées",
+      "shinyPairsFound": "Paires shiny"
+    }
   },
   "admin": {
     "eyebrow": "CENTRE DE CONTRÔLE",
@@ -159,7 +210,9 @@
     "pairsRemaining_other": "Il reste {{count}} paires...",
     "pokemonAlt": "Pokemon",
     "winMascotAlt": "Machopeur",
-    "lossMascotAlt": "Kapoera"
+    "lossMascotAlt": "Kapoera",
+    "home": "Accueil",
+    "restart": "Recommencer"
   },
   "online": {
     "players": "Joueurs : {{ready}}/{{total}}",
@@ -172,7 +225,9 @@
     "resultSubtitle_one": "Classement final · {{count}} joueur",
     "resultSubtitle_other": "Classement final · {{count}} joueurs",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
-    "cardBackAlt": "Pokemon révélé - {{column}}-{{row}}"
+    "cardBackAlt": "Pokemon révélé - {{column}}-{{row}}",
+    "revenge": "Revanche",
+    "deleteRoom": "Supprimer le salon"
   },
   "profile": {
     "eyebrow": "PROFIL DRESSEUR",
@@ -265,9 +320,9 @@
       "2": { "name": "Sur la lancée", "description": "Atteindre 5 victoires en ligne." },
       "3": { "name": "Inarrêtable", "description": "Atteindre 10 victoires en ligne." },
       "10": { "name": "Double XP", "description": "Terminer une partie pendant le week-end." },
-      "100": { "name": "Zekrom", "description": "Trouver une paire de Zekrom." },
+      "100": { "name": "Zekrom", "description": "Trouver une paire de Zekrom (online)." },
       "150": { "name": "Niveau maximum", "description": "Atteindre le niveau 5." },
-      "200": { "name": "Une chance sur 8192", "description": "Trouver une paire shiny." }
+      "200": { "name": "Une chance sur 8192", "description": "Trouver une paire shiny (online)." }
     }
   },
   "status": {

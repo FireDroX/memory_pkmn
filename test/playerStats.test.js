@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { formatPlayerStats, percentage } = require("../server/utils/playerStats");
 const { addXp } = require("../server/utils/profileProgress");
+const levels = require("../server/utils/Levels");
 
 test("percentage gere les totaux nuls et arrondit le ratio", () => {
   assert.equal(percentage(0, 0), 0);
@@ -23,6 +24,33 @@ test("addXp applique les gains de defi et les passages de niveau", () => {
   assert.equal(profile.level, 1);
   assert.equal(profile.xp, 6);
   assert.ok(profile.xpNeeded > 10);
+});
+
+test("addXp conserve l'XP excedentaire au niveau maximum pour les futurs niveaux", (t) => {
+  const levelCount = levels.length;
+  t.after(() => levels.splice(levelCount));
+
+  const profile = {
+    level: 5,
+    xp: 600,
+    xpNeeded: 250,
+    inventory: [{ colors: ["color-default"] }],
+    achievements: [0],
+  };
+
+  const atCurrentMaximum = addXp(profile, 15);
+  assert.equal(atCurrentMaximum.level, 5);
+  assert.equal(atCurrentMaximum.xp, 615);
+
+  levels.push({
+    level: 6,
+    xpNeeded: 300,
+    rewards: { colors: [] },
+  });
+
+  const afterNewLevel = addXp(profile, 15);
+  assert.equal(afterNewLevel.level, 6);
+  assert.equal(afterNewLevel.xp, 365);
 });
 
 test("formatPlayerStats expose un bilan complet et numerique", () => {

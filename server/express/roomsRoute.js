@@ -1,6 +1,7 @@
 const express = require("express");
 const pool = require("../../db");
 const parseJson = require("../utils/parseJson");
+const { createCards } = require("../utils/roomCards");
 
 const router = express.Router();
 
@@ -63,10 +64,75 @@ router.post("/delete", async (req, res) => {
     }
 
     await pool.execute("DELETE FROM rooms WHERE id = ?", [req.body.room]);
+    req.app.get("io")?.to(req.body.room).emit("room-deleted");
     return res.json({ status: `Salon ${req.body.room} supprime.` });
   } catch (error) {
     console.error("Room deletion error:", error);
     return res.sendStatus(500);
+  }
+});
+
+router.post("/revenge", async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [rooms] = await connection.execute(
+      "SELECT players, cards, completed_at FROM rooms WHERE id = ? LIMIT 1 FOR UPDATE",
+      [req.body.room],
+    );
+    const room = rooms[0];
+    if (!room) {
+      await connection.rollback();
+      return res.sendStatus(204);
+    }
+
+    const players = parseJson(room.players, []);
+    if (!room.completed_at) {
+      await connection.rollback();
+      return res.status(409).json({ status: "La partie est encore en cours." });
+    }
+    if (!players.some((player) => player.id === req.auth.id)) {
+      await connection.rollback();
+      return res.status(403).json({ status: "Acces au salon refuse." });
+    }
+
+    const cards = parseJson(room.cards, []);
+    const columns = cards.length;
+    const rows = cards[0]?.length;
+    if (!columns || !rows) {
+      await connection.rollback();
+      return res.status(400).json({ status: "Configuration du salon invalide." });
+    }
+
+    const resetPlayers = players.map((player) => ({
+      ...player,
+      score: 0,
+      ready: false,
+    }));
+    const resetCards = createCards(columns, rows);
+    await connection.execute(
+      `UPDATE rooms
+       SET players = ?, playerTurn = NULL, cards = ?, completed_at = NULL
+       WHERE id = ?`,
+      [JSON.stringify(resetPlayers), JSON.stringify(resetCards), req.body.room],
+    );
+    await connection.commit();
+
+    const roomData = {
+      players: resetPlayers,
+      playerTurn: null,
+      cards: resetCards,
+      completed_at: null,
+    };
+    req.app.get("io")?.to(req.body.room).emit("refresh-room", roomData);
+    return res.json({ status: "Nouvelle revanche lancee !", room: roomData });
+  } catch (error) {
+    if (connection) await connection.rollback();
+    console.error("Room revenge error:", error);
+    return res.sendStatus(500);
+  } finally {
+    connection?.release();
   }
 });
 

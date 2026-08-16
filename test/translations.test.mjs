@@ -62,3 +62,28 @@ test("chaque cle i18n statique utilisee par React existe", async () => {
   );
   assert.deepEqual(missingKeys, []);
 });
+
+test("les succes Zekrom et shiny indiquent le mode online", async () => {
+  const [fr, en] = await Promise.all([readCatalog("fr"), readCatalog("en")]);
+
+  assert.equal(fr.achievements.items["100"].name, "Zekrom");
+  assert.equal(
+    fr.achievements.items["100"].description,
+    "Trouver une paire de Zekrom (online).",
+  );
+  assert.equal(fr.achievements.items["200"].name, "Une chance sur 8192");
+  assert.equal(
+    fr.achievements.items["200"].description,
+    "Trouver une paire shiny (online).",
+  );
+  assert.equal(en.achievements.items["100"].name, "Zekrom");
+  assert.equal(
+    en.achievements.items["100"].description,
+    "Find a Zekrom pair (online).",
+  );
+  assert.equal(en.achievements.items["200"].name, "One in 8192");
+  assert.equal(
+    en.achievements.items["200"].description,
+    "Find a shiny pair (online).",
+  );
+});

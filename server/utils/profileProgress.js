@@ -40,21 +40,16 @@ const unlockStatAchievements = (profile, { wins = 0, shiny = 0 } = {}) => {
 
 const addXp = (profile, amount) => {
   const prepared = prepareProfile(profile);
-  let remainingXp = Math.max(0, Number(amount) || 0);
+  prepared.xp += Math.max(0, Number(amount) || 0);
 
-  while (remainingXp > 0) {
-    const xpNeeded = Number(prepared.xpNeeded) || 10;
-    const xpToLevel = Math.max(0, xpNeeded - prepared.xp);
+  while (true) {
+    const xpNeeded = Math.max(1, Number(prepared.xpNeeded) || 10);
     const nextLevel = levels[prepared.level + 1];
 
-    if (!nextLevel || remainingXp < xpToLevel) {
-      prepared.xp += remainingXp;
-      break;
-    }
+    if (!nextLevel || prepared.xp < xpNeeded) break;
 
-    remainingXp -= xpToLevel;
+    prepared.xp -= xpNeeded;
     prepared.level = nextLevel.level;
-    prepared.xp = 0;
     prepared.xpNeeded = nextLevel.xpNeeded;
     for (const color of nextLevel.rewards.colors) {
       if (!prepared.inventory[0].colors.includes(color)) {

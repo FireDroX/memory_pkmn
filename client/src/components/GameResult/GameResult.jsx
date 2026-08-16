@@ -1,4 +1,5 @@
 import "./GameResult.css";
+import { useEffect, useRef } from "react";
 
 const GameResult = ({
   tone,
@@ -8,9 +9,35 @@ const GameResult = ({
   image,
   imageAlt,
   children,
-}) => (
-  <div className="game-result-overlay">
+  actions,
+}) => {
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    const previousFocus = document.activeElement;
+    const dialog = dialogRef.current;
+    const getButtons = () => [...(dialog?.querySelectorAll("button") || [])];
+    const firstButton = getButtons()[0];
+    firstButton?.focus();
+    const trapFocus = (event) => {
+      if (event.key !== "Tab") return;
+      const buttons = getButtons();
+      if (!buttons.length) return;
+      const currentIndex = buttons.indexOf(document.activeElement);
+      const nextIndex = event.shiftKey
+        ? (currentIndex - 1 + buttons.length) % buttons.length
+        : (currentIndex + 1) % buttons.length;
+      event.preventDefault();
+      buttons[nextIndex].focus();
+    };
+    dialog?.addEventListener("keydown", trapFocus);
+    return () => {
+      dialog?.removeEventListener("keydown", trapFocus);
+      previousFocus?.focus?.();
+    };
+  }, []);
+  return <div className="game-result-overlay">
     <section
+      ref={dialogRef}
       className={`game-result game-result--${tone} ${image ? "game-result--solo" : "game-result--ranking"}`}
       role="dialog"
       aria-modal="true"
@@ -32,8 +59,9 @@ const GameResult = ({
         </div>
       </div>
       {children}
+      {actions && <div className="game-result__actions">{actions}</div>}
     </section>
-  </div>
-);
+  </div>;
+};
 
 export default GameResult;

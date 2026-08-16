@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { FaHome, FaRedoAlt } from "react-icons/fa";
 import GameResult from "../../../components/GameResult/GameResult";
 import { UserContext } from "../../../utils/UserContext";
 import "./Solo.css";
@@ -12,9 +14,12 @@ const Solo = ({
   game,
   setGame,
   shinyMode,
+  onRestart,
+  onHome,
 }) => {
   const { isLoggedIn, setUserProfile } = useContext(UserContext);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [playerWon, setPlayerWon] = useState(false);
@@ -237,6 +242,7 @@ const Solo = ({
             description={t("game.winRemaining", { count: game.tries })}
             image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png"
             imageAlt={t("game.winMascotAlt")}
+            actions={<ResultActions onRestart={onRestart} onHome={onHome} navigate={navigate} t={t} />}
           />
         ) : playerLost ? (
           <GameResult
@@ -246,11 +252,23 @@ const Solo = ({
             description={t("game.pairsRemaining", { count: game.pairs })}
             image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png"
             imageAlt={t("game.lossMascotAlt")}
+            actions={<ResultActions onRestart={onRestart} onHome={onHome} navigate={navigate} t={t} />}
           />
         ) : null}
       </div>
     </>
   );
 };
+
+const ResultActions = ({ onRestart, onHome, navigate, t }) => (
+  <>
+    <button className="game-result__action" type="button" onClick={() => { onHome(); navigate("/"); }}>
+      <FaHome aria-hidden="true" /> {t("game.home")}
+    </button>
+    <button className="game-result__action game-result__action--primary" type="button" onClick={onRestart}>
+      <FaRedoAlt aria-hidden="true" /> {t("game.restart")}
+    </button>
+  </>
+);
 
 export default Solo;

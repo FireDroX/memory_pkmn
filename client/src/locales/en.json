@@ -102,10 +102,61 @@
     }
   },
   "leaderboard": {
+    "eyebrow": "TRAINER HALL",
     "title": "LEADERBOARDS",
+    "description": "Compare your performance with PokeFlip's best active trainers.",
+    "activeTrainers_one": "{{count}} active trainer",
+    "activeTrainers_other": "{{count}} active trainers",
+    "topFive": "TOP 5",
     "levels": "LEVELS",
     "wins": "GAMES WON",
-    "shiny": "SHINY FOUND"
+    "shiny": "SHINY FOUND",
+    "levelScore": "LVL.",
+    "winsScore": "WINS",
+    "shinyScore": "SHINY",
+    "rank": "Rank {{rank}}",
+    "you": "YOU",
+    "loading": "Loading leaderboards...",
+    "loadError": "Unable to load the leaderboards.",
+    "empty": "No ranked trainer yet."
+  },
+  "admin": {
+    "eyebrow": "CONTROL CENTER",
+    "title": "Administration",
+    "description": "Review global PokeFlip activity and manage trainer permissions from one secure space.",
+    "globalStats": "Global statistics",
+    "usersEyebrow": "COMMUNITY",
+    "usersTitle": "User management",
+    "search": "Search for a trainer",
+    "loading": "Loading administration data...",
+    "noUsers": "No user matches this search.",
+    "currentUser": "Your account",
+    "memberSince": "Joined {{date}}",
+    "level": "Level",
+    "onlineRecord": "Online",
+    "soloRecord": "Solo",
+    "pairs": "Pairs",
+    "role": "Account role",
+    "changeRole": "Change {{name}}'s role",
+    "changeStatus": "{{action}} {{name}}'s account",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "status": {
+      "active": "Active",
+      "disabled": "Disabled"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "stats": {
+      "totalUsers": "Users",
+      "totalAdmins": "Administrators",
+      "onlineGamesPlayed": "Online participations",
+      "soloGamesPlayed": "Solo games",
+      "totalPairsFound": "Pairs found",
+      "shinyPairsFound": "Shiny pairs"
+    }
   },
   "admin": {
     "eyebrow": "CONTROL CENTER",
@@ -159,7 +210,9 @@
     "pairsRemaining_other": "There are {{count}} pairs left...",
     "pokemonAlt": "Pokemon",
     "winMascotAlt": "Machoke",
-    "lossMascotAlt": "Hitmontop"
+    "lossMascotAlt": "Hitmontop",
+    "home": "Home",
+    "restart": "Restart"
   },
   "online": {
     "players": "Players: {{ready}}/{{total}}",
@@ -172,7 +225,9 @@
     "resultSubtitle_one": "Final ranking · {{count}} player",
     "resultSubtitle_other": "Final ranking · {{count}} players",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
-    "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}"
+    "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}",
+    "revenge": "Rematch",
+    "deleteRoom": "Delete room"
   },
   "profile": {
     "eyebrow": "TRAINER PROFILE",
@@ -265,9 +320,9 @@
       "2": { "name": "On a roll", "description": "Reach 5 online wins." },
       "3": { "name": "Unstoppable", "description": "Reach 10 online wins." },
       "10": { "name": "Double XP", "description": "Complete a game during the weekend." },
-      "100": { "name": "Zekrom", "description": "Find a Zekrom pair." },
+      "100": { "name": "Zekrom", "description": "Find a Zekrom pair (online)." },
       "150": { "name": "Maximum level", "description": "Reach level 5." },
-      "200": { "name": "One in 8192", "description": "Find a shiny pair." }
+      "200": { "name": "One in 8192", "description": "Find a shiny pair (online)." }
     }
   },
   "status": {
