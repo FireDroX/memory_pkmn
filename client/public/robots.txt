@@ -1,0 +1,5 @@
+# Crawling remains allowed so search engines can read the noindex directives.
+User-agent: *
+Allow: /
+
+Sitemap: https://pokeflip.addrien.fr/sitemap.xml
