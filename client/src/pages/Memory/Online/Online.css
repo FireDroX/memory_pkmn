@@ -16,6 +16,48 @@
   display: none;
 }
 
+.online-container .cards-column,
+.online-container .cards-row {
+  width: 100%;
+  min-width: 0;
+}
+
+.online-container .cards-row {
+  grid-template-columns: repeat(
+    var(--online-cards-per-row),
+    minmax(0, 82px)
+  );
+  display: grid;
+}
+
+.online-container .card {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 82 / 110;
+}
+
+.online-shiny-indicator {
+  position: absolute;
+  top: 7%;
+  left: 7%;
+  z-index: 2;
+  width: min(32%, 26px);
+  aspect-ratio: 1;
+  border: clamp(1px, 0.18vw, 2px) solid var(--paper);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--yellow);
+  filter: drop-shadow(0 2px 1px rgba(19, 35, 63, 0.28));
+}
+
+.online-shiny-indicator svg {
+  width: 58%;
+  height: 58%;
+  display: block;
+}
+
 .player-container {
   min-width: 0;
   padding: 12px 8px;

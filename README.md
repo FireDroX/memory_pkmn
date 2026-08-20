@@ -39,7 +39,8 @@ Les migrations sont exécutées dans l'ordre de leur nom depuis
 - `001_create_users.sql` crée la table `users` ;
 - `002_create_rooms.sql` crée la table `rooms` ;
 - `006_create_sessions.sql` crée le stockage persistant des sessions Express ;
-- `007_add_user_roles.sql` ajoute les rôles et attribue le rôle administrateur au compte canonique `Admin` existant.
+- `007_add_user_roles.sql` ajoute les rôles et attribue le rôle administrateur au compte canonique `Admin` existant ;
+- `009_create_room_messages.sql` stocke le chat des salons et supprime ses messages en cascade avec leur salon.
 
 La table `schema_migrations` enregistre automatiquement les fichiers déjà
 appliqués et leur empreinte. La commande peut donc être relancée sans recréer

@@ -225,9 +225,20 @@
     "resultSubtitle_one": "Final ranking · {{count}} player",
     "resultSubtitle_other": "Final ranking · {{count}} players",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
+    "shinyCard": "Shiny card",
     "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}",
     "revenge": "Rematch",
-    "deleteRoom": "Delete room"
+    "deleteRoom": "Delete room",
+    "chatTitle": "Room chat",
+    "chatDescription": "Visible only to players in this match.",
+    "chatEmpty": "No messages yet.",
+    "chatLabel": "Message",
+    "chatPlaceholder": "Write to your opponents...",
+    "chatSend": "Send",
+    "chatOpen": "Open chat",
+    "chatClose": "Close chat",
+    "chatUnread_one": "{{count}} new message",
+    "chatUnread_other": "{{count}} new messages"
   },
   "profile": {
     "eyebrow": "TRAINER PROFILE",

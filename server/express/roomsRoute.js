@@ -23,6 +23,16 @@ router.post("/get", async (req, res) => {
     if (!room.players.some((player) => player.id === req.auth.id)) {
       return res.status(403).json({ status: "Acces au salon refuse." });
     }
+    const [messages] = await pool.execute(
+      `SELECT id, author_name AS author, message AS text,
+              created_at AS createdAt
+       FROM room_messages
+       WHERE room_id = ?
+       ORDER BY created_at DESC, id DESC
+       LIMIT 100`,
+      [req.body.room],
+    );
+    room.messages = messages.reverse();
     const playerIds = room.players.map((player) => player.id);
 
     if (playerIds.length === 0) return res.json({ users: [], room });
