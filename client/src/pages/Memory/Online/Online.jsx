@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { FaCrown, FaRedoAlt, FaStar, FaTrashAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import GameResult from "../../../components/GameResult/GameResult";
+import RoomChat from "../../../components/RoomChat/RoomChat";
 import { UserContext } from "../../../utils/UserContext";
 import { socket } from "../../../socket";
 import { pokemonIdFromName } from "../../../utils/pokemon";
@@ -227,6 +228,7 @@ const Online = ({ id }) => {
     ? [...room.players].sort((first, second) => second.score - first.score)
     : [];
   const currentPlayerWon = rankedPlayers[0]?.name === name;
+  const isParticipant = room?.players?.some((player) => player.name === name);
   const isCardRevealed = (card, column, row) =>
     [2, 3, 4, 5].includes(card.state) ||
     flippedCards.some(
@@ -576,6 +578,13 @@ const Online = ({ id }) => {
                 </GameResult>
               ) : (
                 false
+              )}
+              {isParticipant && (
+                <RoomChat
+                  roomId={id}
+                  currentUser={name}
+                  initialMessages={room.messages}
+                />
               )}
             </div>
           </>

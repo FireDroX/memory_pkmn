@@ -55,6 +55,7 @@
 .online-shiny-indicator svg {
   width: 58%;
   height: 58%;
+  display: block;
 }
 
 .player-container {

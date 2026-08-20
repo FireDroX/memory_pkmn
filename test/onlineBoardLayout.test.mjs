@@ -15,3 +15,15 @@ test("la grille online adapte les cartes aux 11 emplacements du mode 22 paires",
   );
   assert.match(styles, /\.online-container \.card\s*{[^}]*width:\s*100%/s);
 });
+
+test("l'etoile shiny neutralise l'alignement inline du SVG", async () => {
+  const styles = await readFile(
+    "client/src/pages/Memory/Online/Online.css",
+    "utf8",
+  );
+
+  assert.match(
+    styles,
+    /\.online-shiny-indicator svg\s*{[^}]*display:\s*block;/s,
+  );
+});

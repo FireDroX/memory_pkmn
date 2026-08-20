@@ -228,7 +228,17 @@
     "shinyCard": "Carte shiny",
     "cardBackAlt": "Pokemon révélé - {{column}}-{{row}}",
     "revenge": "Revanche",
-    "deleteRoom": "Supprimer le salon"
+    "deleteRoom": "Supprimer le salon",
+    "chatTitle": "Chat du salon",
+    "chatDescription": "Visible uniquement par les joueurs de cette partie.",
+    "chatEmpty": "Aucun message pour le moment.",
+    "chatLabel": "Message",
+    "chatPlaceholder": "Écris à tes adversaires...",
+    "chatSend": "Envoyer",
+    "chatOpen": "Ouvrir le chat",
+    "chatClose": "Fermer le chat",
+    "chatUnread_one": "{{count}} nouveau message",
+    "chatUnread_other": "{{count}} nouveaux messages"
   },
   "profile": {
     "eyebrow": "PROFIL DRESSEUR",

@@ -14,4 +14,5 @@ module.exports = (io, sessionMiddleware) => {
   // Import event files
   require("./userConnected")(io);
   require("./updateRoom")(io);
+  require("./roomChat")(io);
 };
