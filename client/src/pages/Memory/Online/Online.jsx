@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { FaCrown, FaRedoAlt, FaTrashAlt } from "react-icons/fa";
+import { FaCrown, FaRedoAlt, FaStar, FaTrashAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import GameResult from "../../../components/GameResult/GameResult";
 import { UserContext } from "../../../utils/UserContext";
@@ -227,6 +227,12 @@ const Online = ({ id }) => {
     ? [...room.players].sort((first, second) => second.score - first.score)
     : [];
   const currentPlayerWon = rankedPlayers[0]?.name === name;
+  const isCardRevealed = (card, column, row) =>
+    [2, 3, 4, 5].includes(card.state) ||
+    flippedCards.some(
+      (flippedCard) =>
+        flippedCard.coll === column && flippedCard.row === row,
+    );
 
   return (
     <section className="App">
@@ -399,6 +405,21 @@ const Online = ({ id }) => {
                             />
                           </div>
                           <div className="card-back">
+                            {card.shiny && (
+                              <span
+                                className="online-shiny-indicator"
+                                aria-label={
+                                  isCardRevealed(card, index, i)
+                                    ? t("online.shinyCard")
+                                    : undefined
+                                }
+                                aria-hidden={
+                                  !isCardRevealed(card, index, i)
+                                }
+                              >
+                                <FaStar aria-hidden="true" />
+                              </span>
+                            )}
                             <img
                               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                                 card.shiny ? "shiny/" : ""

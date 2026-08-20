@@ -225,6 +225,7 @@
     "resultSubtitle_one": "Classement final · {{count}} joueur",
     "resultSubtitle_other": "Classement final · {{count}} joueurs",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
+    "shinyCard": "Carte shiny",
     "cardBackAlt": "Pokemon révélé - {{column}}-{{row}}",
     "revenge": "Revanche",
     "deleteRoom": "Supprimer le salon"

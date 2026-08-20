@@ -225,6 +225,7 @@
     "resultSubtitle_one": "Final ranking · {{count}} player",
     "resultSubtitle_other": "Final ranking · {{count}} players",
     "cardAlt": "Pokemon - {{column}}-{{row}}",
+    "shinyCard": "Shiny card",
     "cardBackAlt": "Revealed Pokemon - {{column}}-{{row}}",
     "revenge": "Rematch",
     "deleteRoom": "Delete room"
