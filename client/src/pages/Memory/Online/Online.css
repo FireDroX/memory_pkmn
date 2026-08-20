@@ -16,6 +16,26 @@
   display: none;
 }
 
+.online-container .cards-column,
+.online-container .cards-row {
+  width: 100%;
+  min-width: 0;
+}
+
+.online-container .cards-row {
+  grid-template-columns: repeat(
+    var(--online-cards-per-row),
+    minmax(0, 82px)
+  );
+  display: grid;
+}
+
+.online-container .card {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 82 / 110;
+}
+
 .player-container {
   min-width: 0;
   padding: 12px 8px;

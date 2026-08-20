@@ -347,7 +347,10 @@ const Online = ({ id }) => {
                 )}
               </div>
               <div className="cards">
-                <div className="cards-column">
+                <div
+                  className="cards-column"
+                  style={{ "--online-cards-per-row": cards[0]?.length || 1 }}
+                >
                   {cards.map((row, index) => (
                     <div className="cards-row" key={index}>
                       {row.map((card, i) => (
