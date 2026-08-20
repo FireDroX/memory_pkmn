@@ -14,6 +14,9 @@ const buildAuthenticatedUser = (user) => {
     {
       wins: user.online_games_won,
       shiny: user.shiny_pairs_found,
+      winStreak: user.best_win_streak,
+      pairs: user.total_pairs_found,
+      friends: user.friend_count,
     },
   );
 
@@ -48,7 +51,11 @@ router.post("/", async (req, res) => {
     }
 
     const [users] = await pool.execute(
-      "SELECT * FROM users WHERE name = ? LIMIT 1",
+      `SELECT u.*,
+              (SELECT COUNT(*) FROM friendships f
+               WHERE f.status = 'accepted'
+                 AND (f.user_id = u.id OR f.friend_id = u.id)) AS friend_count
+       FROM users u WHERE u.name = ? LIMIT 1`,
       [name],
     );
     const user = users[0];
@@ -81,7 +88,11 @@ router.get("/session", async (req, res) => {
     }
 
     const [users] = await pool.execute(
-      "SELECT * FROM users WHERE id = ? LIMIT 1",
+      `SELECT u.*,
+              (SELECT COUNT(*) FROM friendships f
+               WHERE f.status = 'accepted'
+                 AND (f.user_id = u.id OR f.friend_id = u.id)) AS friend_count
+       FROM users u WHERE u.id = ? LIMIT 1`,
       [userId],
     );
     const user = users[0];

@@ -28,13 +28,26 @@ const unlockAchievement = (profile, id) => {
   return prepared;
 };
 
-const unlockStatAchievements = (profile, { wins = 0, shiny = 0 } = {}) => {
+const unlockStatAchievements = (
+  profile,
+  {
+    wins = 0,
+    shiny = 0,
+    winStreak = 0,
+    pairs = 0,
+    friends = 0,
+  } = {},
+) => {
   let prepared = prepareProfile(profile);
   if (wins >= 1) prepared = unlockAchievement(prepared, 1);
   if (wins >= 5) prepared = unlockAchievement(prepared, 2);
   if (wins >= 10) prepared = unlockAchievement(prepared, 3);
+  if (winStreak >= 3) prepared = unlockAchievement(prepared, 4);
+  if (winStreak >= 5) prepared = unlockAchievement(prepared, 5);
   if (prepared.level >= 5) prepared = unlockAchievement(prepared, 150);
   if (shiny >= 1) prepared = unlockAchievement(prepared, 200);
+  if (pairs >= 100) prepared = unlockAchievement(prepared, 300);
+  if (friends >= 2) prepared = unlockAchievement(prepared, 400);
   return prepared;
 };
 

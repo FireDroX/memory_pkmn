@@ -1,7 +1,10 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { formatPlayerStats, percentage } = require("../server/utils/playerStats");
-const { addXp } = require("../server/utils/profileProgress");
+const {
+  addXp,
+  unlockStatAchievements,
+} = require("../server/utils/profileProgress");
 const levels = require("../server/utils/Levels");
 
 test("percentage gere les totaux nuls et arrondit le ratio", () => {
@@ -72,4 +75,34 @@ test("formatPlayerStats expose un bilan complet et numerique", () => {
   assert.equal(stats.soloWinRate, 75);
   assert.equal(stats.bestWinStreak, 3);
   assert.equal(stats.totalPairsFound, 42);
+});
+
+test("unlockStatAchievements debloque les series, les paires et le trio", () => {
+  const profile = {
+    level: 0,
+    xp: 0,
+    xpNeeded: 10,
+    inventory: [{ colors: ["color-default"] }],
+    achievements: [0],
+  };
+
+  const beforeThresholds = unlockStatAchievements(profile, {
+    winStreak: 2,
+    pairs: 99,
+    friends: 1,
+  });
+  assert.deepEqual(beforeThresholds.achievements, [0]);
+
+  const threeWins = unlockStatAchievements(profile, {
+    winStreak: 3,
+    pairs: 100,
+    friends: 2,
+  });
+  assert.equal(threeWins.achievements.includes(4), true);
+  assert.equal(threeWins.achievements.includes(5), false);
+  assert.equal(threeWins.achievements.includes(300), true);
+  assert.equal(threeWins.achievements.includes(400), true);
+
+  const fiveWins = unlockStatAchievements(threeWins, { winStreak: 5 });
+  assert.equal(fiveWins.achievements.includes(5), true);
 });

@@ -330,10 +330,14 @@
       "1": { "name": "First victory", "description": "Win an online game." },
       "2": { "name": "On a roll", "description": "Reach 5 online wins." },
       "3": { "name": "Unstoppable", "description": "Reach 10 online wins." },
+      "4": { "name": "Winning hat-trick", "description": "Win 3 consecutive online games." },
+      "5": { "name": "Legendary streak", "description": "Win 5 consecutive online games." },
       "10": { "name": "Double XP", "description": "Complete a game during the weekend." },
       "100": { "name": "Zekrom", "description": "Find a Zekrom pair (online)." },
       "150": { "name": "Maximum level", "description": "Reach level 5." },
-      "200": { "name": "One in 8192", "description": "Find a shiny pair (online)." }
+      "200": { "name": "One in 8192", "description": "Find a shiny pair (online)." },
+      "300": { "name": "Centennial collector", "description": "Find 100 pairs in total across all game modes." },
+      "400": { "name": "Legendary trio", "description": "Form a trio by having 2 friends in your list." }
     }
   },
   "status": {

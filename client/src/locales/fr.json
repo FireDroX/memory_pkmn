@@ -330,10 +330,14 @@
       "1": { "name": "Première victoire", "description": "Gagner une partie en ligne." },
       "2": { "name": "Sur la lancée", "description": "Atteindre 5 victoires en ligne." },
       "3": { "name": "Inarrêtable", "description": "Atteindre 10 victoires en ligne." },
+      "4": { "name": "Triplé gagnant", "description": "Gagner 3 parties en ligne consécutives." },
+      "5": { "name": "Série légendaire", "description": "Gagner 5 parties en ligne consécutives." },
       "10": { "name": "Double XP", "description": "Terminer une partie pendant le week-end." },
       "100": { "name": "Zekrom", "description": "Trouver une paire de Zekrom (online)." },
       "150": { "name": "Niveau maximum", "description": "Atteindre le niveau 5." },
-      "200": { "name": "Une chance sur 8192", "description": "Trouver une paire shiny (online)." }
+      "200": { "name": "Une chance sur 8192", "description": "Trouver une paire shiny (online)." },
+      "300": { "name": "Collectionneur centenaire", "description": "Trouver 100 paires au total, tous modes confondus." },
+      "400": { "name": "Trio légendaire", "description": "Former un trio en ayant 2 amis dans ta liste." }
     }
   },
   "status": {

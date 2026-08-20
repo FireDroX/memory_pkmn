@@ -87,3 +87,13 @@ test("les succes Zekrom et shiny indiquent le mode online", async () => {
     "Find a shiny pair (online).",
   );
 });
+
+test("les nouveaux succes de progression sont traduits", async () => {
+  const [fr, en] = await Promise.all([readCatalog("fr"), readCatalog("en")]);
+
+  assert.equal(fr.achievements.items["4"].name, "Triplé gagnant");
+  assert.equal(fr.achievements.items["5"].name, "Série légendaire");
+  assert.equal(fr.achievements.items["300"].name, "Collectionneur centenaire");
+  assert.equal(fr.achievements.items["400"].name, "Trio légendaire");
+  assert.equal(en.achievements.items["400"].name, "Legendary trio");
+});

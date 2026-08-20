@@ -5,6 +5,7 @@ const {
   addXp,
   prepareProfile,
   unlockAchievement,
+  unlockStatAchievements,
   isWeekendInParis,
 } = require("../utils/profileProgress");
 const { recordDailyProgress } = require("../utils/dailyChallenges");
@@ -17,7 +18,9 @@ router.post("/", async (req, res) => {
     const gameResult = req.body.gameResult;
 
     const [players] = await pool.execute(
-      "SELECT id, user_profile FROM users WHERE id = ? LIMIT 1",
+      `SELECT id, user_profile, online_games_won, best_win_streak,
+              shiny_pairs_found, total_pairs_found
+       FROM users WHERE id = ? LIMIT 1`,
       [req.auth.id],
     );
     if (!players[0]) {
@@ -57,13 +60,23 @@ router.post("/", async (req, res) => {
       updatedUser = unlockAchievement(updatedUser, 150);
     }
 
+    const pairsFound =
+      gameResult && typeof gameResult.won === "boolean"
+        ? Math.max(0, Number(gameResult.pairsFound) || 0)
+        : 0;
+    updatedUser = unlockStatAchievements(updatedUser, {
+      wins: players[0].online_games_won,
+      shiny: players[0].shiny_pairs_found,
+      winStreak: players[0].best_win_streak,
+      pairs: (Number(players[0].total_pairs_found) || 0) + pairsFound,
+    });
+
     await pool.execute(
       "UPDATE users SET user_profile = ? WHERE id = ?",
       [JSON.stringify(updatedUser), req.auth.id],
     );
 
     if (gameResult && typeof gameResult.won === "boolean") {
-      const pairsFound = Math.max(0, Number(gameResult.pairsFound) || 0);
       const remainingTries = Math.max(
         0,
         Number(gameResult.remainingTries) || 0,

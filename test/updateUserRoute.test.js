@@ -13,6 +13,10 @@ test("POST /profile/update enregistre une victoire solo avec l'identite de sessi
       if (sql.includes("SELECT id, user_profile")) {
         return [[{
           id: "USER-ADMIN",
+          online_games_won: 0,
+          best_win_streak: 0,
+          shiny_pairs_found: 0,
+          total_pairs_found: 99,
           user_profile: JSON.stringify({
             level: 0,
             xp: 0,
@@ -44,6 +48,7 @@ test("POST /profile/update enregistre une victoire solo avec l'identite de sessi
     sql.includes("solo_games_played = solo_games_played + 1"),
   );
   assert.equal(soloUpdate.parameters.at(-1), "USER-ADMIN");
+  assert.equal(response.body.profile.achievements.includes(300), true);
 });
 
 test("POST /profile/update conserve l'XP excedentaire pour les futurs niveaux", async (t) => {

@@ -77,8 +77,13 @@ const Profile = () => {
   ]);
 
   const unlockedAchievements = useMemo(
-    () => getUnlockedAchievementIds(userProfile, userStats),
-    [userProfile, userStats],
+    () =>
+      getUnlockedAchievementIds(
+        userProfile,
+        userStats,
+        friends.friends.length,
+      ),
+    [friends.friends.length, userProfile, userStats],
   );
 
   const getInvitations = async () => {
@@ -138,7 +143,7 @@ const Profile = () => {
     setStatus(data.status || "");
     if (response.ok) {
       setSelectedFriend("");
-      await getFriends();
+      await Promise.all([getFriends(), getProfileSummary()]);
     }
   };
 

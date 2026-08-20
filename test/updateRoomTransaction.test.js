@@ -98,3 +98,80 @@ test("une mise a jour valide est commitee avant sa diffusion", async () => {
   assert.equal(handler.getEmission().event, "refresh-room");
   assert.equal(handler.getEmission().payload.playerTurn, "Other");
 });
+
+test("la derniere paire enregistre les succes de serie et de collection", async () => {
+  const profile = JSON.stringify({
+    level: 0,
+    xp: 0,
+    xpNeeded: 10,
+    inventory: [{ colors: ["color-default"] }],
+    achievements: [0],
+  });
+  const previousCards = [[
+    { id: 25, shiny: false, state: 0 },
+    { id: 25, shiny: false, state: 0 },
+  ]];
+  const nextCards = [[
+    { id: 25, shiny: false, state: 2 },
+    { id: 25, shiny: false, state: 2 },
+  ]];
+  const userUpdates = [];
+  const database = {
+    execute: async (sql, parameters) => {
+      if (sql.startsWith("SELECT * FROM rooms")) {
+        return [[{
+          id: "ROOM-1",
+          playerTurn: "Admin",
+          players: JSON.stringify([
+            { id: "USER-1", name: "Admin", score: 2 },
+            { id: "USER-2", name: "Other", score: 1 },
+          ]),
+          cards: JSON.stringify(previousCards),
+          completed_at: null,
+        }]];
+      }
+      if (sql.includes("online_games_played = online_games_played + 1")) {
+        userUpdates.push(parameters);
+      }
+      return [{ affectedRows: 1 }];
+    },
+    query: async () => [[
+      {
+        id: "USER-1",
+        name: "Admin",
+        online_games_won: 2,
+        current_win_streak: 2,
+        best_win_streak: 2,
+        shiny_pairs_found: 0,
+        total_pairs_found: 97,
+        user_profile: profile,
+      },
+      {
+        id: "USER-2",
+        name: "Other",
+        online_games_won: 0,
+        current_win_streak: 0,
+        best_win_streak: 0,
+        shiny_pairs_found: 0,
+        total_pairs_found: 99,
+        user_profile: profile,
+      },
+    ]],
+  };
+
+  const room = await registerUpdateRoom.processRoomUpdate(
+    database,
+    { id: "USER-1", name: "Admin" },
+    { room: "ROOM-1", cards: nextCards },
+  );
+
+  assert.equal(room.players[0].score, 3);
+  assert.equal(userUpdates.length, 2);
+
+  const winnerProfile = JSON.parse(userUpdates[0][5]);
+  assert.equal(winnerProfile.achievements.includes(4), true);
+  assert.equal(winnerProfile.achievements.includes(300), true);
+
+  const otherProfile = JSON.parse(userUpdates[1][5]);
+  assert.equal(otherProfile.achievements.includes(300), true);
+});

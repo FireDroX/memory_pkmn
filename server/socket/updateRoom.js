@@ -86,13 +86,49 @@ const processRoomUpdate = async (
       const winnerName = [...roomData.players].sort(
         (a, b) => b.score - a.score,
       )[0].name;
-      const winner = parsedUsers.find((user) => user.name === winnerName);
 
       for (const roomPlayer of roomData.players) {
         const isWinner = roomPlayer.name === winnerName;
+        const storedPlayer = parsedUsers.find(
+          (user) => user.id === roomPlayer.id,
+        );
+        if (!storedPlayer) continue;
+
+        const pairsFound = Math.max(0, Number(roomPlayer.score) || 0);
+        const nextWins =
+          (Number(storedPlayer.online_games_won) || 0) + (isWinner ? 1 : 0);
+        const nextWinStreak = isWinner
+          ? (Number(storedPlayer.current_win_streak) || 0) + 1
+          : 0;
+        const nextBestWinStreak = Math.max(
+          Number(storedPlayer.best_win_streak) || 0,
+          nextWinStreak,
+        );
+        const nextShiny =
+          (Number(storedPlayer.shiny_pairs_found) || 0) +
+          (storedPlayer.id === currentUser.id ? shinyIncrement : 0);
+        const nextPairs =
+          (Number(storedPlayer.total_pairs_found) || 0) + pairsFound;
+        let profile =
+          storedPlayer.id === currentUser.id
+            ? currentProfile
+            : storedPlayer.user_profile;
+
+        if (isWinner) profile = addXp(profile, 15);
+        profile = unlockStatAchievements(profile, {
+          wins: nextWins,
+          shiny: nextShiny,
+          winStreak: nextBestWinStreak,
+          pairs: nextPairs,
+        });
+        if (isWinner && isWeekendInParis()) {
+          profile = unlockAchievement(profile, 10);
+        }
+
         await database.execute(
           `UPDATE users
            SET online_games_played = online_games_played + 1,
+               online_games_won = online_games_won + ?,
                online_games_lost = online_games_lost + ?,
                best_win_streak = CASE
                  WHEN ? = 1 THEN GREATEST(best_win_streak, current_win_streak + 1)
@@ -101,51 +137,24 @@ const processRoomUpdate = async (
                current_win_streak = CASE
                  WHEN ? = 1 THEN current_win_streak + 1 ELSE 0
                END,
-               total_pairs_found = total_pairs_found + ?
+               total_pairs_found = total_pairs_found + ?,
+               user_profile = ?
            WHERE id = ?`,
           [
+            isWinner ? 1 : 0,
             isWinner ? 0 : 1,
             isWinner ? 1 : 0,
             isWinner ? 1 : 0,
-            Math.max(0, Number(roomPlayer.score) || 0),
+            pairsFound,
+            JSON.stringify(profile),
             roomPlayer.id,
           ],
         );
         await recordDailyProgress(database, roomPlayer.id, {
-          pairsFound: Math.max(0, Number(roomPlayer.score) || 0),
+          pairsFound,
           onlineGames: 1,
           onlineWins: isWinner ? 1 : 0,
         });
-      }
-
-      if (winner) {
-        const nextWins = winner.online_games_won + 1;
-        const winnerShiny =
-          winner.shiny_pairs_found +
-          (winner.id === currentUser.id ? shinyIncrement : 0);
-        let profile =
-          winner.id === currentUser.id
-            ? currentProfile
-            : winner.user_profile;
-
-        profile = addXp(profile, 15);
-        profile = unlockStatAchievements(profile, {
-          wins: nextWins,
-          shiny: winnerShiny,
-        });
-        if (isWeekendInParis()) {
-          profile = unlockAchievement(profile, 10);
-        }
-        if (profile.level >= 5) {
-          profile = unlockAchievement(profile, 150);
-        }
-
-        await database.execute(
-          `UPDATE users
-           SET online_games_won = ?, user_profile = ?
-           WHERE id = ?`,
-          [nextWins, JSON.stringify(profile), winner.id],
-        );
       }
       roomData.completed_at = new Date();
     }
