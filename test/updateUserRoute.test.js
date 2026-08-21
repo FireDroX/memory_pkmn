@@ -34,7 +34,7 @@ test("POST /profile/update enregistre une victoire solo avec l'identite de sessi
   const response = await invokeRoute(router, "POST", "/", {
     auth: { id: "USER-ADMIN", name: "Admin" },
     body: {
-      xp: 5,
+      xp: 0,
       gameResult: { won: true, pairsFound: 6, remainingTries: 4 },
     },
   });
@@ -49,6 +49,46 @@ test("POST /profile/update enregistre une victoire solo avec l'identite de sessi
   );
   assert.equal(soloUpdate.parameters.at(-1), "USER-ADMIN");
   assert.equal(response.body.profile.achievements.includes(300), true);
+  assert.equal(response.body.profile.level, 1);
+  assert.equal(response.body.profile.xp, 40);
+});
+
+test("POST /profile/update rattrape la recompense d'un succes deja debloque", async () => {
+  const pool = {
+    execute: async (sql) => {
+      if (sql.includes("SELECT id, user_profile")) {
+        return [[{
+          id: "USER-LEGACY",
+          online_games_won: 0,
+          best_win_streak: 0,
+          shiny_pairs_found: 0,
+          total_pairs_found: 100,
+          user_profile: JSON.stringify({
+            level: 0,
+            xp: 0,
+            xpNeeded: 10,
+            inventory: [{ colors: ["color-default"] }],
+            achievements: [0, 300],
+          }),
+        }]];
+      }
+      return [{ affectedRows: 1 }];
+    },
+  };
+  const router = loadRouterWithPool("../server/express/updateUser", pool);
+
+  const response = await invokeRoute(router, "POST", "/", {
+    auth: { id: "USER-LEGACY", name: "Legacy" },
+    body: { xp: 0 },
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.profile.level, 1);
+  assert.equal(response.body.profile.xp, 40);
+  assert.equal(
+    response.body.profile.achievementRewardsClaimed.includes(300),
+    true,
+  );
 });
 
 test("POST /profile/update conserve l'XP excedentaire pour les futurs niveaux", async (t) => {

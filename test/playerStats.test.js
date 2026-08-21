@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const { formatPlayerStats, percentage } = require("../server/utils/playerStats");
 const {
   addXp,
+  unlockAchievement,
   unlockStatAchievements,
 } = require("../server/utils/profileProgress");
 const levels = require("../server/utils/Levels");
@@ -54,6 +55,25 @@ test("addXp conserve l'XP excedentaire au niveau maximum pour les futurs niveaux
   const afterNewLevel = addXp(profile, 15);
   assert.equal(afterNewLevel.level, 6);
   assert.equal(afterNewLevel.xp, 365);
+});
+
+test("unlockAchievement attribue et memorise la recompense XP une seule fois", () => {
+  const legacyProfile = {
+    level: 0,
+    xp: 0,
+    xpNeeded: 10,
+    inventory: [{ colors: ["color-default"] }],
+    achievements: [0, 300],
+  };
+
+  const rewarded = unlockAchievement(legacyProfile, 300);
+  assert.equal(rewarded.level, 1);
+  assert.equal(rewarded.xp, 40);
+  assert.equal(rewarded.achievementRewardsClaimed.includes(300), true);
+
+  const rewardedAgain = unlockAchievement(rewarded, 300);
+  assert.equal(rewardedAgain.level, 1);
+  assert.equal(rewardedAgain.xp, 40);
 });
 
 test("formatPlayerStats expose un bilan complet et numerique", () => {

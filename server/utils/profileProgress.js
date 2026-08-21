@@ -11,43 +11,9 @@ const prepareProfile = (profile) => {
   prepared.inventory[0].colors ||= ["color-default"];
   prepared.achievements ||= [0];
   if (!prepared.achievements.includes(0)) prepared.achievements.unshift(0);
-  return prepared;
-};
-
-const unlockAchievement = (profile, id) => {
-  const prepared = prepareProfile(profile);
-  if (prepared.achievements.includes(id)) return prepared;
-
-  prepared.achievements.push(id);
-  const achievement = achievements.find((entry) => entry.id === id);
-  for (const color of achievement?.rewards?.colors || []) {
-    if (!prepared.inventory[0].colors.includes(color)) {
-      prepared.inventory[0].colors.push(color);
-    }
+  if (!Array.isArray(prepared.achievementRewardsClaimed)) {
+    prepared.achievementRewardsClaimed = [];
   }
-  return prepared;
-};
-
-const unlockStatAchievements = (
-  profile,
-  {
-    wins = 0,
-    shiny = 0,
-    winStreak = 0,
-    pairs = 0,
-    friends = 0,
-  } = {},
-) => {
-  let prepared = prepareProfile(profile);
-  if (wins >= 1) prepared = unlockAchievement(prepared, 1);
-  if (wins >= 5) prepared = unlockAchievement(prepared, 2);
-  if (wins >= 10) prepared = unlockAchievement(prepared, 3);
-  if (winStreak >= 3) prepared = unlockAchievement(prepared, 4);
-  if (winStreak >= 5) prepared = unlockAchievement(prepared, 5);
-  if (prepared.level >= 5) prepared = unlockAchievement(prepared, 150);
-  if (shiny >= 1) prepared = unlockAchievement(prepared, 200);
-  if (pairs >= 100) prepared = unlockAchievement(prepared, 300);
-  if (friends >= 2) prepared = unlockAchievement(prepared, 400);
   return prepared;
 };
 
@@ -71,6 +37,47 @@ const addXp = (profile, amount) => {
     }
   }
 
+  return prepared;
+};
+
+const unlockAchievement = (profile, id) => {
+  let prepared = prepareProfile(profile);
+  const isUnlocked = prepared.achievements.includes(id);
+  const isRewardClaimed = prepared.achievementRewardsClaimed.includes(id);
+  if (isUnlocked && isRewardClaimed) return prepared;
+
+  const achievement = achievements.find((entry) => entry.id === id);
+  if (!isUnlocked) prepared.achievements.push(id);
+  prepared = addXp(prepared, achievement?.rewards?.xp);
+  for (const color of achievement?.rewards?.colors || []) {
+    if (!prepared.inventory[0].colors.includes(color)) {
+      prepared.inventory[0].colors.push(color);
+    }
+  }
+  prepared.achievementRewardsClaimed.push(id);
+  return prepared;
+};
+
+const unlockStatAchievements = (
+  profile,
+  {
+    wins = 0,
+    shiny = 0,
+    winStreak = 0,
+    pairs = 0,
+    friends = 0,
+  } = {},
+) => {
+  let prepared = prepareProfile(profile);
+  if (wins >= 1) prepared = unlockAchievement(prepared, 1);
+  if (wins >= 5) prepared = unlockAchievement(prepared, 2);
+  if (wins >= 10) prepared = unlockAchievement(prepared, 3);
+  if (winStreak >= 3) prepared = unlockAchievement(prepared, 4);
+  if (winStreak >= 5) prepared = unlockAchievement(prepared, 5);
+  if (prepared.level >= 5) prepared = unlockAchievement(prepared, 150);
+  if (shiny >= 1) prepared = unlockAchievement(prepared, 200);
+  if (pairs >= 100) prepared = unlockAchievement(prepared, 300);
+  if (friends >= 2) prepared = unlockAchievement(prepared, 400);
   return prepared;
 };
 
