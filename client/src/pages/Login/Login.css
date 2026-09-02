@@ -98,6 +98,10 @@
   box-shadow: 0 0 0 4px rgba(77, 124, 255, 0.1);
 }
 
+.turnstile-widget {
+  margin-top: 8px;
+}
+
 .login-buttons {
   margin-top: 8px;
   display: flex;

@@ -5,3 +5,7 @@
 
 # misc
 .env
+.agents
+graphify-out
+CLAUDE.md
+.claude

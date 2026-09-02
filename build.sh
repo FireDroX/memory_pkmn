@@ -11,7 +11,10 @@ if [ ! -f .env ]; then
 fi
 
 echo "📦 Build image..."
-DOCKER_BUILDKIT=1 docker build -t pokeflip-image .
+TURNSTILE_SITE_KEY="$(grep -m1 '^TURNSTILE_SITE_KEY=' .env | cut -d= -f2-)"
+DOCKER_BUILDKIT=1 docker build \
+  --build-arg VITE_TURNSTILE_SITE_KEY="$TURNSTILE_SITE_KEY" \
+  -t pokeflip-image .
 
 echo "🛑 Stop container si existant..."
 docker stop pokeflip 2>/dev/null || true

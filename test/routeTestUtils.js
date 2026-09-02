@@ -5,7 +5,7 @@ const invokeRoute = async (router, method, path, request = {}) => {
   );
   if (!layer) throw new Error(`Route ${method} ${path} introuvable.`);
 
-  const result = { statusCode: 200, body: undefined };
+  const result = { statusCode: 200, body: undefined, headers: {} };
   const response = {
     status(code) {
       result.statusCode = code;
@@ -22,6 +22,13 @@ const invokeRoute = async (router, method, path, request = {}) => {
     clearCookie(name, options) {
       result.clearedCookie = { name, options };
       return response;
+    },
+    setHeader(name, value) {
+      result.headers[name] = value;
+      return response;
+    },
+    getHeader(name) {
+      return result.headers[name];
     },
   };
 

@@ -1,11 +1,20 @@
 const express = require("express");
+const { randomUUID } = require("node:crypto");
 const pool = require("../../db");
 const parseJson = require("../utils/parseJson");
 const { createCards } = require("../utils/roomCards");
+const { createRateLimiter } = require("../utils/rateLimit");
+const composeMiddleware = require("../utils/composeMiddleware");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+const inviteLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: "Trop de salons crees, reessaie dans une minute.",
+});
+
+router.post("/", composeMiddleware(inviteLimiter, async (req, res) => {
   try {
     const authenticatedName = req.auth.name;
     const invitedPlayers = [...new Set(req.body.players || [])]
@@ -55,7 +64,7 @@ router.post("/", async (req, res) => {
       const user = users.find((entry) => entry.name === name);
       return { name: user.name, id: user.id, score: 0, ready: false };
     });
-    const roomID = `ROOM-${Date.now()}`;
+    const roomID = `ROOM-${randomUUID()}`;
 
     await pool.execute(
       "INSERT INTO rooms (id, players, playerTurn, cards) VALUES (?, ?, ?, ?)",
@@ -75,6 +84,6 @@ router.post("/", async (req, res) => {
     console.error("Room creation error:", error);
     return res.status(500).json({ status: "Creation du salon impossible." });
   }
-});
+}));
 
 module.exports = router;

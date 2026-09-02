@@ -5,8 +5,18 @@ const parseJson = require("../utils/parseJson");
 const { unlockStatAchievements } = require("../utils/profileProgress");
 const { formatPlayerStats } = require("../utils/playerStats");
 const { sessionCookieName } = require("../session");
+const { createRateLimiter } = require("../utils/rateLimit");
+const { createTurnstileMiddleware } = require("../utils/turnstile");
+const composeMiddleware = require("../utils/composeMiddleware");
 
 const router = express.Router();
+
+const loginLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: "Trop de tentatives de connexion. Reessaie dans une minute.",
+});
+const verifyTurnstile = createTurnstileMiddleware();
 
 const buildAuthenticatedUser = (user) => {
   const profile = unlockStatAchievements(
@@ -41,7 +51,9 @@ const saveSession = (request) =>
     request.session.save((error) => (error ? reject(error) : resolve()));
   });
 
-router.post("/", async (req, res) => {
+router.post(
+  "/",
+  composeMiddleware(loginLimiter, verifyTurnstile, async (req, res) => {
   try {
     const name = String(req.body.name || "").trim();
     const password = String(req.body.password || "");
@@ -78,7 +90,8 @@ router.post("/", async (req, res) => {
     console.error("Login error:", error);
     return res.status(500).json({ status: "Connexion impossible." });
   }
-});
+  }),
+);
 
 router.get("/session", async (req, res) => {
   try {

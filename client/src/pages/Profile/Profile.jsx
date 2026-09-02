@@ -6,6 +6,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useNavigate } from "react-router";
@@ -86,10 +87,22 @@ const Profile = () => {
     [friends.friends.length, userProfile, userStats],
   );
 
+  const invitationsAbortRef = useRef(null);
+
   const getInvitations = async () => {
-    const response = await fetch("/api/invites");
-    const data = await response.json();
-    setGamesArray(Array.isArray(data) ? data : []);
+    invitationsAbortRef.current?.abort();
+    const controller = new AbortController();
+    invitationsAbortRef.current = controller;
+
+    try {
+      const response = await fetch("/api/invites", {
+        signal: controller.signal,
+      });
+      const data = await response.json();
+      setGamesArray(Array.isArray(data) ? data : []);
+    } catch (error) {
+      if (error.name !== "AbortError") throw error;
+    }
   };
 
   const getUsers = async () => {
@@ -235,7 +248,10 @@ const Profile = () => {
 
   useEffect(() => {
     const interval = setInterval(getInvitations, 10000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      invitationsAbortRef.current?.abort();
+    };
   }, []);
 
   return (

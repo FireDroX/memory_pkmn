@@ -8,6 +8,7 @@ import StatusPopup, {
   useStatusPopup,
 } from "../../components/StatusPopup/StatusPopup";
 import { localizedStatus } from "../../utils/serverStatus";
+import Turnstile from "../../components/Turnstile/Turnstile";
 
 function Login({ connect }) {
   const { authenticate } = useContext(UserContext);
@@ -16,6 +17,7 @@ function Login({ connect }) {
   const [inputName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const { status, statusId, setStatus, clearStatus } = useStatusPopup();
 
   const handlePost = async (postLink) => {
@@ -23,7 +25,11 @@ function Login({ connect }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "same-origin",
-      body: JSON.stringify({ name: inputName, password: password }),
+      body: JSON.stringify({
+        name: inputName,
+        password: password,
+        turnstileToken,
+      }),
     };
 
     if (inputName === "" || password === "")
@@ -44,6 +50,7 @@ function Login({ connect }) {
     }
     setPassword("");
     setConfirmPassword("");
+    setTurnstileToken("");
   };
 
   const handleInputChange = (e) => {
@@ -120,6 +127,7 @@ function Login({ connect }) {
                   minLength={1}
                 />
               </div>
+              <Turnstile onToken={setTurnstileToken} />
               <div className="login-buttons">
                 <button onClick={() => handlePost("/api/login")}>
                   {t("auth.login")}
@@ -161,7 +169,7 @@ function Login({ connect }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   maxLength={25}
-                  minLength={1}
+                  minLength={8}
                 />
               </div>
               <div className="login-inputs">
@@ -178,6 +186,7 @@ function Login({ connect }) {
                   minLength={1}
                 />
               </div>
+              <Turnstile onToken={setTurnstileToken} />
               <div className="login-buttons">
                 <small
                   className="login-change-pages"
