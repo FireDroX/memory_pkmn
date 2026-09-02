@@ -8,8 +8,14 @@ test("la migration de randomisation des ids remappe toutes les tables et colonne
     "utf8",
   );
 
-  assert.match(migration, /CREATE TEMPORARY TABLE `id_migration_users`/);
-  assert.match(migration, /CREATE TEMPORARY TABLE `id_migration_rooms`/);
+  assert.match(
+    migration,
+    /CREATE TEMPORARY TABLE `id_migration_users`[\s\S]*?COLLATE=utf8mb4_unicode_ci/,
+  );
+  assert.match(
+    migration,
+    /CREATE TEMPORARY TABLE `id_migration_rooms`[\s\S]*?COLLATE=utf8mb4_unicode_ci/,
+  );
 
   assert.match(migration, /SET r\.players = JSON_REPLACE\(r\.players, '\$\[0\]\.id', m\.new_id\)/);
   assert.match(migration, /SET f\.user_id = m\.new_id/);
@@ -28,4 +34,10 @@ test("la migration de randomisation des ids remappe toutes les tables et colonne
   assert.match(migration, /SET FOREIGN_KEY_CHECKS = 0;/);
   assert.match(migration, /SET FOREIGN_KEY_CHECKS = 1;/);
   assert.match(migration, /DELETE FROM `sessions`;/);
+
+  const transactionStart = migration.indexOf("START TRANSACTION;");
+  const transactionCommit = migration.indexOf("COMMIT;");
+  assert.ok(transactionStart > -1);
+  assert.ok(transactionStart < friendshipsUpdate);
+  assert.ok(transactionCommit > roomsPkUpdate);
 });

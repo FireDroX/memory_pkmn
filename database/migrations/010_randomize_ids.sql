@@ -4,7 +4,7 @@ CREATE TEMPORARY TABLE `id_migration_users` (
   `old_id` VARCHAR(64) NOT NULL,
   `new_id` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`old_id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `id_migration_users` (`old_id`, `new_id`)
 SELECT
@@ -22,7 +22,7 @@ CREATE TEMPORARY TABLE `id_migration_rooms` (
   `old_id` VARCHAR(64) NOT NULL,
   `new_id` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`old_id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `id_migration_rooms` (`old_id`, `new_id`)
 SELECT
@@ -35,6 +35,8 @@ SELECT
     )
   )
 FROM `rooms`;
+
+START TRANSACTION;
 
 UPDATE `rooms` r JOIN `id_migration_users` m
   ON m.old_id = JSON_UNQUOTE(JSON_EXTRACT(r.players, '$[0].id'))
@@ -79,6 +81,8 @@ SET u.id = m.new_id;
 
 UPDATE `rooms` r JOIN `id_migration_rooms` m ON m.old_id = r.id
 SET r.id = m.new_id;
+
+COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
