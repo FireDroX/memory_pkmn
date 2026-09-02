@@ -43,10 +43,15 @@ const loadRouterWithPool = (routePath, pool) => {
   const dbPath = require.resolve("../db");
   const resolvedRoute = require.resolve(routePath);
   const previousDb = require.cache[dbPath];
+  const hadTurnstileSecret = "TURNSTILE_SECRET_KEY" in process.env;
+  const previousTurnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  delete process.env.TURNSTILE_SECRET_KEY;
 
   require.cache[dbPath] = { exports: pool };
   delete require.cache[resolvedRoute];
   const router = require(resolvedRoute);
+
+  if (hadTurnstileSecret) process.env.TURNSTILE_SECRET_KEY = previousTurnstileSecret;
 
   if (previousDb) require.cache[dbPath] = previousDb;
   else delete require.cache[dbPath];
