@@ -32,5 +32,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
+  },
+  "overrides": {
+    "mysql2": "$mysql2"
   }
 }
