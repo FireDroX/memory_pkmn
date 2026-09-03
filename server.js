@@ -44,7 +44,7 @@ require("./server/socket")(io, sessionMiddleware);
 const clientDist = path.join(__dirname, "client", "dist");
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
-  app.get("*", (_, res) => {
+  app.get("/*splat", (_, res) => {
     res.sendFile(path.join(clientDist, "index.html"));
   });
 }
